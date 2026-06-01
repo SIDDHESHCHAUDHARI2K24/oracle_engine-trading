@@ -7,7 +7,6 @@ such as CORS, and wires feature routers.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 from fastapi import Depends
@@ -17,7 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.features.auth.routers import auth_router
 from app.features.core.config import settings
 from app.features.core.database import get_async_session
-from app.features.core.limiter import limiter
+from app.features.core.limiter import limiter, rate_limit_exceeded_handler
 from app.features.core.observability.logging import configure_logging
 from app.features.core.observability.middleware import RequestIdMiddleware
 from app.features.universes.router import universes_router
@@ -30,7 +29,7 @@ def create_app() -> FastAPI:
     app = FastAPI(title=settings.project_name)
 
     app.state.limiter = limiter
-    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+    app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
 
     app.add_middleware(
         CORSMiddleware,
