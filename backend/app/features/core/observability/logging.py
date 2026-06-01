@@ -1,72 +1,48 @@
-"""Structured logging configuration for the MBI Oracle Engine backend.
+"""Structured JSON logging for the MBI Oracle Engine backend.
 
-Configures loguru to emit JSON-formatted logs to stdout with the
-required fields: ts, level, request_id, event. Never logs secrets.
+Uses stdlib logging with a small JSON formatter. Required fields:
+ts, level, event, request_id, service. UTF-8 encoded; safe on Windows.
 """
 
-import io
+import json
 import logging
 import sys
+import time
 from contextvars import ContextVar
-
-from loguru import logger
 
 request_id_var: ContextVar[str] = ContextVar("request_id", default="")
 
 
-class InterceptHandler(logging.Handler):
-    """Forward standard library logs to loguru."""
+class JsonFormatter(logging.Formatter):
+    """Emit one JSON object per log record."""
 
-    def emit(self, record: logging.LogRecord) -> None:
-        level = logger.level(record.levelname).name if record.levelname else "INFO"
+    def __init__(self, request_id_var: ContextVar[str]) -> None:
+        super().__init__()
+        self._request_id_var = request_id_var
 
-        frame = logging.currentframe()
-        depth = 0
-        while frame and hasattr(frame, "f_code"):
-            depth += 1
-            frame = frame.f_back
-            if depth > 20:
-                break
-
-        logger.opt(depth=depth, exception=record.exc_info).log(
-            level, record.getMessage()
+    def format(self, record: logging.LogRecord) -> str:
+        return json.dumps(
+            {
+                "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(record.created)),
+                "level": record.levelname,
+                "event": record.getMessage(),
+                "request_id": self._request_id_var.get() or "",
+                "service": "mbi-backend",
+            },
+            ensure_ascii=False,
         )
 
 
-def _patcher(record: dict) -> None:
-    """Attach request_id and service name to every log record."""
-    record["extra"]["service"] = "mbi-backend"
-    record["extra"]["request_id"] = request_id_var.get() or ""
-
-
-def _wrap_stdout() -> None:
-    """Re-wrap stdout as UTF-8 so loguru JSON doesn't fail on Windows cp1252."""
-    if hasattr(sys.stdout, "buffer"):
-        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-
-
 def configure_logging() -> None:
-    """Configure loguru with structured JSON output and uvicorn interception."""
-    _wrap_stdout()
-    logger.remove()
+    """Configure root logger with JSON formatter; route uvicorn through it."""
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(JsonFormatter(request_id_var))
 
-    logger.configure(patcher=_patcher)
+    root = logging.getLogger()
+    root.handlers = [handler]
+    root.setLevel(logging.INFO)
 
-    logger.add(
-        sys.stdout,
-        serialize=True,
-        level="INFO",
-        format="",
-        backtrace=False,
-        catch=True,
-    )
-
-    logging.basicConfig(handlers=[InterceptHandler()], level=0, force=True)
-
-    for _logger_name in ("uvicorn", "uvicorn.access", "uvicorn.error"):
-        _logger = logging.getLogger(_logger_name)
-        _logger.handlers = []
-        _logger.propagate = False
-
-    uvicorn_access = logging.getLogger("uvicorn.access")
-    uvicorn_access.addHandler(InterceptHandler())
+    for name in ("uvicorn", "uvicorn.access", "uvicorn.error"):
+        lg = logging.getLogger(name)
+        lg.handlers = []
+        lg.propagate = True

@@ -3,7 +3,7 @@
 # Targets delegate into backend/ and frontend/ sub-projects.
 # =============================================================================
 
-.PHONY: help dev db-up db-down db-check migrate test test-backend test-frontend test-e2e lint format gen-api
+.PHONY: help dev dev-watch db-up db-down db-check migrate test test-backend test-frontend test-e2e lint format gen-api
 
 # Default target
 help: ## Show this help
@@ -15,14 +15,23 @@ help: ## Show this help
 
 # --- Stack ---
 
-dev: ## Start full local dev stack (backend + frontend + MinIO)
+dev: ## Start full local dev stack (no reload — fastest cold boot)
 	@echo "Starting MinIO..."
 	docker compose -f docker-compose.dev.yml up -d minio
 	@echo "Starting backend (FastAPI)..."
-	cd backend && uv run uvicorn app.app:create_app --factory --reload --loop asyncio --host 0.0.0.0 --port 8000 &
+	cd backend && uv run uvicorn app.app:create_app --factory --loop asyncio --host 0.0.0.0 --port 8000 &
 	@echo "Starting frontend (Vite)..."
 	cd frontend && pnpm dev &
 	@echo "Dev stack running: backend http://localhost:8000, frontend http://localhost:5173, MinIO console http://localhost:9001"
+
+dev-watch: ## Start backend with hot-reload (slower cold boot, faster iteration)
+	@echo "Starting MinIO..."
+	docker compose -f docker-compose.dev.yml up -d minio
+	@echo "Starting backend (FastAPI) with hot-reload..."
+	cd backend && uv run uvicorn app.app:create_app --factory --reload --loop asyncio --host 0.0.0.0 --port 8000 &
+	@echo "Starting frontend (Vite)..."
+	cd frontend && pnpm dev &
+	@echo "Dev stack (watch) running: backend http://localhost:8000, frontend http://localhost:5173, MinIO console http://localhost:9001"
 
 db-up: ## Start MinIO Docker service
 	docker compose -f docker-compose.dev.yml up -d minio

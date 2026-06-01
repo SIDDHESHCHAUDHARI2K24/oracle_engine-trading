@@ -47,3 +47,12 @@ htmlcov/
 .coverage
 coverage.xml
 .blackboxcli/
+
+# Runtime artifacts (uvicorn, loguru/stdlib logs, PID files)
+backend/stdout.log
+backend/stderr.log
+backend/startup_test.log
+backend/uvicorn.pid
+*.pid
+*.log
+!backend/.venv/**

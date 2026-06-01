@@ -1,7 +1,7 @@
 """Request-ID middleware for the MBI Oracle Engine backend.
 
 Assigns a unique request_id per HTTP request, stores it in the
-loguru context, and includes it in the response headers.
+stdlib logging context, and includes it in the response headers.
 """
 
 import uuid
@@ -14,7 +14,7 @@ from app.features.core.observability.logging import request_id_var
 
 
 class RequestIdMiddleware(BaseHTTPMiddleware):
-    """Assign a unique request_id per request and bind it to loguru context."""
+    """Assign a unique request_id per request and bind it to the logging context."""
 
     async def dispatch(self, request: Request, call_next: callable) -> Response:
         request_id = request.headers.get("X-Request-ID") or f"req_{uuid.uuid4().hex[:12]}"
