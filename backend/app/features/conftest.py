@@ -59,7 +59,7 @@ async def db_session(database_url: str):
     async_url = database_url.replace(
         "postgresql+psycopg2://", "postgresql+asyncpg://"
     ).replace("postgresql://", "postgresql+asyncpg://")
-    engine = create_async_engine(async_url, echo=False)
+    engine = create_async_engine(async_url, echo=False, pool_pre_ping=True)
 
     async with engine.connect() as connection:
         async with connection.begin() as transaction:

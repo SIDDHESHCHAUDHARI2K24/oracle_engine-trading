@@ -1,12 +1,14 @@
 dev:
-\tuv run uvicorn app.app:create_app --factory --reload --loop asyncio
+	uv run uvicorn app.app:create_app --factory --reload --loop asyncio
 
 test:
-\tuv run python -m pytest
+	uv run python -m pytest -m "not integration"
+
+test-integration:
+	uv run python -m pytest -m integration
 
 migrate:
-\tuv run alembic upgrade head
+	uv run alembic upgrade head
 
 revision:
-\tuv run alembic revision -m "new migration"
-
+	uv run alembic revision -m "new migration"

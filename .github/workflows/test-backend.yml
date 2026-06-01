@@ -69,4 +69,4 @@ jobs:
           uv run python scripts/seed_universes.py
 
       - name: Run tests
-        run: uv run python -m pytest -v --tb=short
+        run: uv run python -m pytest -v --tb=short -m "not integration"

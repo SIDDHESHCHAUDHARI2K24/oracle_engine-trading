@@ -15,6 +15,7 @@ _async_engine = create_async_engine(
     settings.database_url.replace("postgresql://", "postgresql+asyncpg://"),
     pool_size=10,
     max_overflow=10,
+    pool_pre_ping=True,
     echo=False,
     connect_args={
         "server_settings": {"statement_timeout": "30000"},
