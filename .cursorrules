@@ -1,0 +1,45 @@
+MBI Labs Oracle Engine — Cursor Rules
+
+PROJECT OVERVIEW
+- Self-improving research-grade ML pipeline
+- Pipeline A (current): Deep Learning Math Engine
+- Pipeline B (future): LLM Agent Swarm, Fusion Engine, paper-trading sandbox
+- Ingests OHLCV + macro → 31-dim feature tensor → Bi-LSTM + TFT Quad-Array per universe → conformal calibration → backtest validation → Conviction Tickets
+
+TECH STACK
+Backend: Python 3.11+ | FastAPI | SQLAlchemy 2.0 async + asyncpg | PostgreSQL 16 + TimescaleDB | PyTorch 2.2+ | pytorch-lightning | pytorch-forecasting | TA-Lib | vectorbt | Prefect 3 | loguru | ruff | uv | pytest + testcontainers
+Frontend: Vite | React 18 | TypeScript strict | React Router v6 | TanStack Query v5 | TanStack Table v8 | React Hook Form + Zod | Tailwind + shadcn/ui | TradingView Lightweight Charts | Recharts | Zustand | vitest | Playwright | pnpm
+
+REPO ARCHITECTURE
+backend/alembic/ — migrations
+backend/scripts/ — typer CLIs
+backend/src/backend/core/ — db, settings, logging, scheduler, security, artifact_store
+backend/src/backend/features/ — auth, universes, data_ingestion, feature_engineering, ml_models, backtesting, conviction_tickets, monitoring
+backend/src/backend/orchestration/ — Prefect flows
+frontend/src/core/ — api-client, query-client, auth-context, types
+frontend/src/features/ — mirrors backend feature names
+frontend/src/shared/ — components (shadcn), utils, hooks
+
+AGENT TOOLING
+- Obra Superpowers: TDD mandatory, spec→plan→execute, evidence before claims, subagent-driven development
+- Graphify: Query knowledge graph FIRST (graphify query, get_neighbors, shortest_path). Fallback to grep/glob/read only if graphify fails.
+
+MANDATORY CONVENTIONS
+- TDD: Write test first (RED), implement (GREEN), refactor. No exceptions.
+- Evidence: Run command, read output, then claim. Never "should work."
+- Loguru: JSON to stdout. Fields: ts, level, request_id, event. No secrets in logs.
+- Error envelope: {error_code, message, details, request_id}
+- Soft-delete: deleted_at column. Default: WHERE deleted_at IS NULL.
+- Repository pattern: Per-feature repository.py. No raw SQL in services.
+- Pydantic v2: ConfigDict(from_attributes=True), NOT orm_mode
+- SQLAlchemy async: AsyncSession + asyncpg. Alembic uses sync engine.
+- API prefix: /api/v1/
+- JWT: Access (24h) in memory. Refresh (30d) in HttpOnly Secure SameSite=Strict cookie.
+- Polling: No SSE/WebSockets in v1. TanStack Query refetchInterval.
+
+PIPELINE-SPECIFIC INSTRUCTIONS — READ BEFORE CODING
+→ agent-instructions/Pipeline-A-Agent-Instructions.md (backend: 9 features, locked decisions, data model, conventions)
+→ agent-instructions/Frontend-Agent-Instructions.md (frontend: TypeScript strict, React patterns, testing, accessibility)
+
+FUTURE PIPELINES
+→ (Placeholder for Pipeline-B-Agent-Instructions.md)

@@ -1,0 +1,49 @@
+# Graphify — commit graph.json for team use, ignore large/regenerable outputs
+graphify-out/graph.html
+graphify-out/GRAPH_REPORT.md
+graphify-out/cache/
+graphify-out/obsidian/
+graphify-out/wiki/
+graphify-out/converted/
+# Keep graphify-out/graph.json tracked (committed for team)
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+*.egg
+.pytest_cache/
+.ruff_cache/
+*.pt
+
+# Node / Frontend
+node_modules/
+dist/
+.vite/
+
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Model artifacts
+*.pt
+*.pth
+
+# Coverage
+htmlcov/
+.coverage
+coverage.xml
+.blackboxcli/
