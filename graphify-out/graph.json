@@ -1,0 +1,12 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {
+    "name": "MBI Labs Oracle Engine",
+    "source_path": "C:\\Projects\\Oracle Engine - Trading",
+    "created": "2026-06-01",
+    "status": "seed — no code files yet; populated during S0 implementation"
+  },
+  "nodes": [],
+  "links": []
+}

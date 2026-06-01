@@ -1,0 +1,25 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Environment files (keep .env.example tracked)
+.env
+
+# Caches / tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Logs / local DBs
+*.log
+*.sqlite3
+
+# OS files
+.DS_Store
