@@ -47,11 +47,16 @@ def create_app() -> FastAPI:
         return {"status": "ok"}
 
     @app.get("/ready", tags=["system"])
-    async def ready(db: AsyncSession = Depends(get_async_session)) -> dict[str, str]:
+    async def ready(
+        db: AsyncSession = Depends(get_async_session),
+    ) -> JSONResponse:
         """Readiness check — DB reachable."""
         try:
             result = await db.execute(text("SELECT 1 AS ok"))
-            return {"status": "ok", "db": str(result.scalar_one())}
+            return JSONResponse(
+                status_code=200,
+                content={"status": "ok", "db": str(result.scalar_one())},
+            )
         except Exception:
             return JSONResponse(
                 status_code=503,

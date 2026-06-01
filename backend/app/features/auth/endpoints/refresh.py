@@ -42,7 +42,16 @@ async def refresh(
         max_age=60 * 60 * 24 * 30,
     )
 
-    user = await get_user_by_id(db, auth_service.verify_access_token(access_token))
+    user_id = auth_service.verify_access_token(access_token)
+    if user_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={
+                "error_code": "INVALID_ACCESS_TOKEN",
+                "message": "Invalid access token after refresh",
+            },
+        )
+    user = await get_user_by_id(db, user_id)
     return TokenResponse(
         access_token=access_token,
         user=UserResponse.model_validate(user) if user else None,
