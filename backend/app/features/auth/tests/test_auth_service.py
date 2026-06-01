@@ -10,7 +10,6 @@ asyncio_mode = auto (set in pytest.ini) — no @pytest.mark.asyncio needed.
 
 import uuid
 
-import pytest
 from argon2 import PasswordHasher
 from sqlalchemy.ext.asyncio import AsyncSession
 
