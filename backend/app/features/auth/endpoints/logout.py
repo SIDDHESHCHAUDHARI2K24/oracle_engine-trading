@@ -1,18 +1,22 @@
-"""User logout endpoint."""
+import logging
 
-from fastapi import Request, Response
+from fastapi import Depends, Request, Response
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.features.core.dependencies import DbDep
+from app.features.auth import service as auth_service
+from app.features.core.database import get_async_session
 
-from .. import models
+logger = logging.getLogger("mbi.auth")
 
 
-async def logout(request: Request, response: Response, conn=DbDep) -> dict[str, str]:
-    """Invalidate the current session and clear the cookie."""
-    session_id = request.cookies.get("session_id")
-    if session_id:
-        await models.ensure_auth_schema(conn)
-        await models.delete_session(conn, session_token=session_id)
-
-    response.delete_cookie("session_id")
-    return {"detail": "Logged out"}
+async def logout(
+    request: Request,
+    response: Response,
+    db: AsyncSession = Depends(get_async_session),
+):
+    refresh_token = request.cookies.get("refresh_token")
+    if refresh_token:
+        await auth_service.revoke_refresh(db, refresh_token)
+    response.delete_cookie("refresh_token")
+    logger.info("logout")
+    return {"status": "ok"}

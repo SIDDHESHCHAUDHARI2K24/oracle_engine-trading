@@ -1,16 +1,9 @@
-"""Endpoint for retrieving the current authenticated user."""
-
 from fastapi import Depends
 
-from ..utils import get_current_user
-from ..schemas import UserOut
+from app.features.auth.dependencies import get_current_user
+from app.features.auth.models import User
+from app.features.auth.schemas import UserResponse
 
 
-async def me(user=Depends(get_current_user)) -> UserOut:
-    """Return the currently authenticated user."""
-    return UserOut(
-        id=user["id"],
-        email=user["email"],
-        created_at=user["created_at"],
-    )
-
+async def me(user: User = Depends(get_current_user)):
+    return UserResponse.model_validate(user)

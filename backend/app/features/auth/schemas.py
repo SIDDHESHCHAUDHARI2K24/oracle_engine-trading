@@ -1,35 +1,37 @@
-"""Pydantic schemas for auth requests and responses."""
+"""Pydantic v2 schemas for auth requests and responses."""
 
 from datetime import datetime
+from uuid import UUID
 
-from pydantic import BaseModel, EmailStr
-
-
-class RegisterRequest(BaseModel):
-    """Payload required to register a new user."""
-
-    email: EmailStr
-    password: str
+from pydantic import BaseModel, ConfigDict, EmailStr
 
 
 class LoginRequest(BaseModel):
-    """Payload required to log a user in."""
-
     email: EmailStr
     password: str
 
 
-class UserOut(BaseModel):
-    """Public representation of a user."""
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: "UserResponse"
 
-    id: int
-    email: EmailStr
+
+class UserResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    email: str
+    is_admin: bool
     created_at: datetime
 
 
-class SessionOut(BaseModel):
-    """Representation of a session created for a user."""
+class SessionInfo(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
 
-    session_token: str
+    id: UUID
+    created_at: datetime
     expires_at: datetime
 
+
+TokenResponse.model_rebuild()

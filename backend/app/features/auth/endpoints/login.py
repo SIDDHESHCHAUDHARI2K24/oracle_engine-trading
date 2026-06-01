@@ -1,44 +1,36 @@
-"""User login endpoint."""
+from fastapi import Depends, HTTPException, Response, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from fastapi import HTTPException, Response, status
-
-from app.features.core.dependencies import DbDep
-
-from .. import models, schemas
-from ..utils import generate_session_token, hash_password, verify_password
+from app.features.auth import service as auth_service
+from app.features.auth.schemas import LoginRequest, TokenResponse, UserResponse
+from app.features.core.database import get_async_session
 
 
 async def login(
-    payload: schemas.LoginRequest,
     response: Response,
-    conn=DbDep,
-) -> schemas.UserOut:
-    """Authenticate a user and establish a session via cookie."""
-    await models.ensure_auth_schema(conn)
-
-    user = await models.get_user_by_email(conn, email=payload.email)
-    if user is None or not verify_password(
-        payload.password, user["password_hash"]
-    ):
+    body: LoginRequest,
+    db: AsyncSession = Depends(get_async_session),
+):
+    user = await auth_service.authenticate(db, body.email, body.password)
+    if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password",
+            detail={
+                "error_code": "INVALID_CREDENTIALS",
+                "message": "Invalid email or password",
+            },
         )
 
-    session_token = generate_session_token()
-    await models.create_session(conn, user_id=user["id"], session_token=session_token)
-
-    # HttpOnly session cookie
+    access_token, refresh_token = await auth_service.issue_tokens(db, user.id)
     response.set_cookie(
-        key="session_id",
-        value=session_token,
+        key="refresh_token",
+        value=refresh_token,
         httponly=True,
-        samesite="lax",
+        secure=True,
+        samesite="strict",
+        max_age=60 * 60 * 24 * 30,
     )
-
-    return schemas.UserOut(
-        id=user["id"],
-        email=user["email"],
-        created_at=user["created_at"],
+    return TokenResponse(
+        access_token=access_token,
+        user=UserResponse.model_validate(user),
     )
-
