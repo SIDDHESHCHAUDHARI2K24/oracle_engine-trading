@@ -17,6 +17,7 @@ from app.features.core.config import settings
 from app.features.core.database import get_async_session
 from app.features.core.observability.logging import configure_logging
 from app.features.core.observability.middleware import RequestIdMiddleware
+from app.features.universes.router import universes_router
 
 
 def create_app() -> FastAPI:
@@ -53,5 +54,6 @@ def create_app() -> FastAPI:
             )
 
     app.include_router(auth_router)
+    app.include_router(universes_router)
 
     return app
