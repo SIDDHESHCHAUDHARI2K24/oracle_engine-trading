@@ -25,6 +25,7 @@ class UniverseSummary(BaseModel):
     display_name: str
     is_system_managed: bool
     created_at: datetime
+    ticker_count: int = 0
 
 
 class UniverseDetail(UniverseSummary):

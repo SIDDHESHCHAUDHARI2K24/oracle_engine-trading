@@ -15,11 +15,19 @@ from app.features.universes.schemas import (
 
 
 async def list_universes(db: AsyncSession) -> UniverseListResponse:
-    universes = await universes_repo.list_universes(db)
-    return UniverseListResponse(
-        universes=[UniverseSummary.model_validate(u) for u in universes],
-        total=len(universes),
-    )
+    rows = await universes_repo.list_universes_with_counts(db)
+    summaries = [
+        UniverseSummary(
+            id=universe.id,
+            name=universe.name,
+            display_name=universe.display_name,
+            is_system_managed=universe.is_system_managed,
+            created_at=universe.created_at,
+            ticker_count=count,
+        )
+        for universe, count in rows
+    ]
+    return UniverseListResponse(universes=summaries, total=len(summaries))
 
 
 async def get_universe_detail(

@@ -2,7 +2,7 @@
 
 import uuid
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -17,6 +17,25 @@ async def list_universes(db: AsyncSession) -> list[Universe]:
         .order_by(Universe.name)
     )
     return list(result.scalars().all())
+
+
+async def list_universes_with_counts(db: AsyncSession) -> list[tuple[Universe, int]]:
+    """Return non-deleted universes paired with their active-ticker counts."""
+    count_sq = (
+        select(func.count())
+        .select_from(UniverseMembership)
+        .where(
+            UniverseMembership.universe_id == Universe.id,
+            UniverseMembership.removed_at.is_(None),
+        )
+        .scalar_subquery()
+    )
+    result = await db.execute(
+        select(Universe, count_sq.label("ticker_count"))
+        .where(Universe.deleted_at.is_(None))
+        .order_by(Universe.name)
+    )
+    return [(row[0], int(row[1])) for row in result.all()]
 
 
 async def get_universe_by_id(db: AsyncSession, universe_id: uuid.UUID) -> Universe | None:
