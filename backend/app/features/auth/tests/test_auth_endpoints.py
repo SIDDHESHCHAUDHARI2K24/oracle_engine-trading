@@ -1,73 +1,82 @@
-"""Integration tests for auth endpoints."""
+"""Integration tests for JWT auth endpoints.
 
-import uuid
+These tests exercise the actual HTTP layer via TestClient using the seeded
+admin user (admin@mbilabs.io / change-me-on-first-login).
 
-import pytest
+Pre-conditions:
+  - DATABASE_URL and JWT_SECRET env vars are set.
+  - Admin user is seeded (run: uv run python scripts/seed_admin.py).
+  - In CI these are guaranteed by the workflow before pytest runs.
+
+Note: Tests inherit the database_url fixture from conftest.py to ensure
+proper test database isolation and connection management via testcontainers.
+"""
+
 from fastapi.testclient import TestClient
 
 from app.app import create_app
 
+ADMIN_EMAIL = "admin@mbilabs.io"
+ADMIN_PASSWORD = "change-me-on-first-login"
 
-@pytest.mark.asyncio
-async def test_register_and_login_and_me_flow() -> None:
-    """User can register, log in, and access /auth/me with a session cookie."""
-    app = create_app()
-    client = TestClient(app)
-    email = f"test-{uuid.uuid4().hex}@example.com"
-    password = "strong-password"
 
-    # Register
-    resp = client.post(
-        "/auth/register",
-        json={"email": email, "password": password},
-    )
+def test_login_valid_credentials_returns_token(database_url: str) -> None:
+    """Successful login with valid credentials returns access token."""
+    client = TestClient(create_app())
+    resp = client.post("/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
     assert resp.status_code == 200
     data = resp.json()
-    assert data["email"] == email
+    assert "access_token" in data
+    assert data["token_type"] == "bearer"
+    assert data["user"]["email"] == ADMIN_EMAIL
 
-    # Login
-    resp = client.post(
-        "/auth/login",
-        json={"email": email, "password": password},
-    )
+
+def test_login_sets_refresh_cookie(database_url: str) -> None:
+    """Successful login sets refresh token in HttpOnly cookie."""
+    client = TestClient(create_app())
+    resp = client.post("/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
     assert resp.status_code == 200
-    assert "session_id" in resp.cookies
+    assert "refresh_token" in resp.cookies
 
-    # Use cookie to call /auth/me
-    cookies = resp.cookies
-    resp = client.get("/auth/me", cookies=cookies)
+
+def test_login_wrong_password_returns_401(database_url: str) -> None:
+    """Login with wrong password returns 401 with error code."""
+    client = TestClient(create_app())
+    resp = client.post("/auth/login", json={"email": ADMIN_EMAIL, "password": "wrong"})
+    assert resp.status_code == 401
+    assert resp.json()["detail"]["error_code"] == "INVALID_CREDENTIALS"
+
+
+def test_login_unknown_email_returns_401(database_url: str) -> None:
+    """Login with unknown email returns 401."""
+    client = TestClient(create_app())
+    resp = client.post("/auth/login", json={"email": "nobody@example.com", "password": "any"})
+    assert resp.status_code == 401
+
+
+def test_me_with_valid_bearer_token_returns_user(database_url: str) -> None:
+    """GET /auth/me with valid Bearer token returns user info."""
+    client = TestClient(create_app())
+    login = client.post("/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
+    token = login.json()["access_token"]
+    resp = client.get("/auth/me", headers={"Authorization": f"Bearer {token}"})
     assert resp.status_code == 200
-    me_data = resp.json()
-    assert me_data["email"] == email
+    assert resp.json()["email"] == ADMIN_EMAIL
+    assert resp.json()["is_admin"] is True
 
 
-@pytest.mark.asyncio
-async def test_reset_changes_password() -> None:
-    """Password reset should allow logging in with the new password."""
-    app = create_app()
-    client = TestClient(app)
-    email = f"reset-{uuid.uuid4().hex}@example.com"
-    old_password = "old-password"
-    new_password = "new-password"
+def test_me_without_token_returns_401(database_url: str) -> None:
+    """GET /auth/me without authorization header returns 401."""
+    client = TestClient(create_app())
+    resp = client.get("/auth/me")
+    assert resp.status_code == 401
 
-    # Register user
-    resp = client.post(
-        "/auth/register",
-        json={"email": email, "password": old_password},
-    )
-    assert resp.status_code == 200
 
-    # Reset password
-    resp = client.post(
-        "/auth/reset",
-        json={"email": email, "password": new_password},
-    )
-    assert resp.status_code == 200
-
-    # Login with new password should succeed
-    resp = client.post(
-        "/auth/login",
-        json={"email": email, "password": new_password},
-    )
+def test_logout_with_valid_token_returns_ok(database_url: str) -> None:
+    """POST /auth/logout with valid Bearer token returns 200."""
+    client = TestClient(create_app())
+    login = client.post("/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
+    token = login.json()["access_token"]
+    resp = client.post("/auth/logout", headers={"Authorization": f"Bearer {token}"})
     assert resp.status_code == 200
 
