@@ -52,7 +52,15 @@ async def refresh(
             },
         )
     user = await get_user_by_id(db, user_id)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={
+                "error_code": "USER_NOT_FOUND",
+                "message": "User associated with token no longer exists",
+            },
+        )
     return TokenResponse(
         access_token=access_token,
-        user=UserResponse.model_validate(user) if user else None,
+        user=UserResponse.model_validate(user),
     )
