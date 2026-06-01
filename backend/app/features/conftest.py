@@ -24,11 +24,11 @@ def database_url():
     """Session-scoped: spins up Postgres+TimescaleDB, runs migrations, yields URL.
 
     Container is started once per test session and destroyed at teardown.
-    TimescaleDB extension is available via the ``timescale/timescaledb-ha:pg16``
+    TimescaleDB extension is available via the ``timescale/timescaledb:latest-pg16``
     image (extension must be created by the relevant Alembic migration).
     """
     postgres = PostgresContainer(
-        image="timescale/timescaledb-ha:pg16",
+        image="timescale/timescaledb:latest-pg16",
         dbname="oracle_test",
         username="test",
         password="test",

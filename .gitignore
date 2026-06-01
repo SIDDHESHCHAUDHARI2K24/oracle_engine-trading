@@ -7,6 +7,12 @@ graphify-out/wiki/
 graphify-out/converted/
 # Keep graphify-out/graph.json tracked (committed for team)
 
+# Agent / Tool configs (local only)
+.claude/
+.codex/
+.cursor/
+.opencode/
+
 # Python
 __pycache__/
 *.py[cod]

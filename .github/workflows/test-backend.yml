@@ -12,7 +12,7 @@ jobs:
 
     services:
       timescaledb:
-        image: timescale/timescaledb-ha:pg16-latest
+        image: timescale/timescaledb:latest-pg16
         env:
           POSTGRES_USER: mbi_user
           POSTGRES_PASSWORD: mbi_password
