@@ -1,0 +1,131 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      timescaledb:
+        image: timescale/timescaledb-ha:pg16-latest
+        env:
+          POSTGRES_USER: mbi_user
+          POSTGRES_PASSWORD: mbi_password
+          POSTGRES_DB: mbi
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install 3.12
+        working-directory: backend
+
+      - name: Install backend dependencies
+        run: uv sync --frozen
+        working-directory: backend
+
+      - name: Run migrations
+        env:
+          DATABASE_URL: postgresql+asyncpg://mbi_user:mbi_password@localhost:5433/mbi
+          JWT_SECRET: ci-e2e-secret-key
+          ENVIRONMENT: test
+        run: uv run alembic upgrade head
+        working-directory: backend
+
+      - name: Seed data
+        env:
+          DATABASE_URL: postgresql+asyncpg://mbi_user:mbi_password@localhost:5433/mbi
+          JWT_SECRET: ci-e2e-secret-key
+          ENVIRONMENT: test
+        run: |
+          uv run python scripts/seed_admin.py
+          uv run python scripts/seed_universes.py
+        working-directory: backend
+
+      - name: Start backend
+        env:
+          DATABASE_URL: postgresql+asyncpg://mbi_user:mbi_password@localhost:5433/mbi
+          JWT_SECRET: ci-e2e-secret-key
+          ENVIRONMENT: test
+          CORS_ALLOW_ORIGINS: '["http://localhost:5173"]'
+        run: |
+          nohup uv run uvicorn app.app:create_app --factory --host 0.0.0.0 --port 8000 &
+          echo $! > /tmp/backend.pid
+        working-directory: backend
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: frontend
+
+      - name: Build frontend
+        env:
+          VITE_API_BASE_URL: http://localhost:8000
+        run: pnpm build
+        working-directory: frontend
+
+      - name: Serve frontend
+        run: |
+          npx serve -s dist -l 5173 &
+          echo $! > /tmp/frontend.pid
+        working-directory: frontend
+
+      - name: Wait for backend /ready
+        run: |
+          echo "Waiting for backend..."
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:8000/ready; then
+              echo "Backend ready"
+              break
+            fi
+            sleep 2
+          done
+
+      - name: Install Playwright
+        run: pnpm install
+        working-directory: e2e
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+        working-directory: e2e
+
+      - name: Run E2E tests
+        env:
+          BASE_URL: http://localhost:5173
+          API_URL: http://localhost:8000
+        run: npx playwright test
+        working-directory: e2e
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: e2e/playwright-report/
+          retention-days: 7
