@@ -110,19 +110,21 @@ Under `features/auth/`:
 
 ```sql
 users(
-  id UUID PK, email TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL,
+  id UUID PK, email TEXT UNIQUE NOT NULL, hashed_password TEXT NOT NULL,
   full_name TEXT,
   is_admin BOOLEAN DEFAULT false,
-  email_verified_at TIMESTAMPTZ NULL,    -- reserved for v2
-  email_verification_token TEXT NULL,    -- reserved for v2
-  created_at, updated_at
+  created_at, updated_at, deleted_at TIMESTAMPTZ NULL
 )
+-- email_verified_at TIMESTAMPTZ NULL reserved for v2
+-- email_verification_token TEXT NULL reserved for v2
 
 sessions(
   id UUID PK, user_id FK,
   refresh_token_hash TEXT NOT NULL,
-  created_at, last_used_at, expires_at,
-  user_agent TEXT, ip INET
+  expires_at TIMESTAMPTZ NOT NULL,
+  last_used_at TIMESTAMPTZ NULL,
+  user_agent TEXT NULL, ip VARCHAR(50) NULL,
+  created_at, updated_at
 )
 -- index on refresh_token_hash for fast lookup
 ```
@@ -179,35 +181,37 @@ Under `features/universes/`:
 
 ```sql
 universes(
-  id UUID PK, user_id FK users.id NULL,   -- NULL = system-managed (S&P 500, Russell 1000, Russell 2000)
-  name TEXT NOT NULL, description TEXT NULL,
-  display_name TEXT NOT NULL,
+  id UUID PK,
+  name VARCHAR(100) NOT NULL, description TEXT NULL,
+  display_name VARCHAR(255) NOT NULL,
   is_system_managed BOOLEAN DEFAULT false,
   created_at, updated_at, deleted_at TIMESTAMPTZ NULL,
-  UNIQUE(user_id, name)
+  UNIQUE(name)
 )
+-- user_id FK users.id NULL reserved for multi-user v2
+-- user_id is intentionally deferred; v1 is single-admin.
 
 tickers(
   id UUID PK,
-  symbol TEXT UNIQUE NOT NULL,             -- "AAPL"
-  exchange TEXT,                            -- "NASDAQ"
-  asset_type ENUM('equity','etf'),          -- reserved: 'crypto'
-  is_active BOOLEAN DEFAULT true,
-  first_seen_at TIMESTAMPTZ, last_seen_at TIMESTAMPTZ,
-  metadata JSONB DEFAULT '{}',              -- sector, market cap snapshot, etc.
+  symbol VARCHAR(20) UNIQUE NOT NULL,       -- "AAPL"
+  name VARCHAR(255) NOT NULL,               -- company name
+  exchange VARCHAR(50) NULL,                -- "NASDAQ"
+  asset_type VARCHAR(20) DEFAULT 'equity',  -- 'equity'|'etf'; reserved: 'crypto'
+  active BOOLEAN DEFAULT true,
+  -- first_seen_at, last_seen_at, metadata JSONB reserved for S2 data ingestion
   created_at, updated_at
 )
 
 universe_memberships(
   id UUID PK,
   universe_id FK universes.id ON DELETE CASCADE,
-  ticker_id FK tickers.id,
+  ticker_id FK tickers.id ON DELETE CASCADE,
   added_at TIMESTAMPTZ NOT NULL,
   removed_at TIMESTAMPTZ NULL,              -- NULL = still active
-  added_by FK users.id NULL,
   UNIQUE(universe_id, ticker_id, added_at)
 )
--- index on (universe_id, removed_at) for "active members" queries
+-- added_by FK users.id NULL reserved for multi-user v2
+-- index on (universe_id) WHERE removed_at IS NULL for "active members" queries
 -- index on (ticker_id) for "which universes is this ticker in"
 ```
 

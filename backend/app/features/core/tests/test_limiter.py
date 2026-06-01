@@ -21,7 +21,9 @@ def test_rate_limit_429_uses_standard_error_envelope() -> None:
     for _ in range(10):
         client.post("/auth/login", json={"email": "x@example.com", "password": "wrong"})
 
-    resp = client.post("/auth/login", json={"email": "x@example.com", "password": "wrong"})
+    resp = client.post(
+        "/auth/login", json={"email": "x@example.com", "password": "wrong"}
+    )
     assert resp.status_code == 429
     data = resp.json()
     assert data["error_code"] == "RATE_LIMIT_EXCEEDED"

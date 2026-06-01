@@ -16,7 +16,10 @@ async def refresh(
     if not refresh_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail={"error_code": "NO_REFRESH_TOKEN", "message": "Refresh token missing"},
+            detail={
+                "error_code": "NO_REFRESH_TOKEN",
+                "message": "Refresh token missing",
+            },
         )
 
     result = await auth_service.rotate_refresh(db, refresh_token)

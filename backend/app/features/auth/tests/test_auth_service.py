@@ -21,6 +21,7 @@ _ph = PasswordHasher()
 
 # ─── Helper ────────────────────────────────────────────────────────────────
 
+
 async def _make_user(db: AsyncSession, email: str) -> User:
     """Insert a test user with password 'correct-password' and return it."""
     user = User(email=email, hashed_password=_ph.hash("correct-password"))
@@ -30,6 +31,7 @@ async def _make_user(db: AsyncSession, email: str) -> User:
 
 
 # ─── verify_password ────────────────────────────────────────────────────────
+
 
 def test_verify_password_correct_password_returns_true() -> None:
     hashed = _ph.hash("my-secret")
@@ -42,6 +44,7 @@ def test_verify_password_wrong_password_returns_false() -> None:
 
 
 # ─── JWT issuance + verification ───────────────────────────────────────────
+
 
 def test_issue_access_token_is_three_part_jwt() -> None:
     token = auth_service.issue_access_token(uuid.uuid4())
@@ -68,27 +71,37 @@ def test_verify_access_token_garbage_returns_none() -> None:
 
 # ─── authenticate ──────────────────────────────────────────────────────────
 
-async def test_authenticate_valid_credentials_returns_user(db_session: AsyncSession) -> None:
+
+async def test_authenticate_valid_credentials_returns_user(
+    db_session: AsyncSession,
+) -> None:
     user = await _make_user(db_session, "auth-valid@test.example")
     result = await auth_service.authenticate(db_session, user.email, "correct-password")
     assert result is not None
     assert result.id == user.id
 
 
-async def test_authenticate_wrong_password_returns_none(db_session: AsyncSession) -> None:
+async def test_authenticate_wrong_password_returns_none(
+    db_session: AsyncSession,
+) -> None:
     user = await _make_user(db_session, "auth-wrong@test.example")
     result = await auth_service.authenticate(db_session, user.email, "wrong-password")
     assert result is None
 
 
-async def test_authenticate_unknown_email_returns_none(db_session: AsyncSession) -> None:
+async def test_authenticate_unknown_email_returns_none(
+    db_session: AsyncSession,
+) -> None:
     result = await auth_service.authenticate(db_session, "nobody@test.example", "any")
     assert result is None
 
 
 # ─── issue_tokens ──────────────────────────────────────────────────────────
 
-async def test_issue_tokens_returns_valid_jwt_and_opaque_refresh(db_session: AsyncSession) -> None:
+
+async def test_issue_tokens_returns_valid_jwt_and_opaque_refresh(
+    db_session: AsyncSession,
+) -> None:
     user = await _make_user(db_session, "issue@test.example")
     access, refresh = await auth_service.issue_tokens(db_session, user.id)
     assert auth_service.verify_access_token(access) == user.id
@@ -96,6 +109,7 @@ async def test_issue_tokens_returns_valid_jwt_and_opaque_refresh(db_session: Asy
 
 
 # ─── rotate_refresh ────────────────────────────────────────────────────────
+
 
 async def test_rotate_refresh_returns_new_token_pair(db_session: AsyncSession) -> None:
     user = await _make_user(db_session, "rotate@test.example")
@@ -111,15 +125,20 @@ async def test_rotate_refresh_old_token_is_consumed(db_session: AsyncSession) ->
     user = await _make_user(db_session, "consume@test.example")
     _, refresh = await auth_service.issue_tokens(db_session, user.id)
     await auth_service.rotate_refresh(db_session, refresh)  # consume once
-    result = await auth_service.rotate_refresh(db_session, refresh)  # reuse -> must fail
+    result = await auth_service.rotate_refresh(
+        db_session, refresh
+    )  # reuse -> must fail
     assert result is None
 
 
-async def test_rotate_refresh_bogus_token_returns_none(db_session: AsyncSession) -> None:
+async def test_rotate_refresh_bogus_token_returns_none(
+    db_session: AsyncSession,
+) -> None:
     assert await auth_service.rotate_refresh(db_session, "not-a-real-token") is None
 
 
 # ─── revoke_refresh ────────────────────────────────────────────────────────
+
 
 async def test_revoke_refresh_invalidates_token(db_session: AsyncSession) -> None:
     user = await _make_user(db_session, "revoke@test.example")

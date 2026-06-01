@@ -6,7 +6,7 @@ Tables: universes, tickers, universe_memberships.
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, String, UniqueConstraint
+from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -18,6 +18,7 @@ class Universe(Base, UUIDPrimaryKey, Timestamped, SoftDeletable):
 
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     display_name: Mapped[str] = mapped_column(String(255), nullable=False)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
     is_system_managed: Mapped[bool] = mapped_column(
         Boolean, default=False, server_default="false"
     )
@@ -26,9 +27,7 @@ class Universe(Base, UUIDPrimaryKey, Timestamped, SoftDeletable):
         "UniverseMembership", back_populates="universe", cascade="all, delete-orphan"
     )
 
-    __table_args__ = (
-        UniqueConstraint("name", name="uq_universes_name"),
-    )
+    __table_args__ = (UniqueConstraint("name", name="uq_universes_name"),)
 
 
 class Ticker(Base, UUIDPrimaryKey, Timestamped):
@@ -56,9 +55,7 @@ class UniverseMembership(Base, UUIDPrimaryKey):
         ForeignKey("tickers.id", ondelete="CASCADE"),
         nullable=False,
     )
-    added_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False
-    )
+    added_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     removed_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
@@ -70,7 +67,9 @@ class UniverseMembership(Base, UUIDPrimaryKey):
 
     __table_args__ = (
         UniqueConstraint(
-            "universe_id", "ticker_id", "added_at",
+            "universe_id",
+            "ticker_id",
+            "added_at",
             name="uq_universe_memberships_universe_ticker_added",
         ),
     )

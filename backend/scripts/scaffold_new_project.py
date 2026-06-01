@@ -14,7 +14,6 @@ The script will:
 
 from __future__ import annotations
 
-import os
 import shutil
 from pathlib import Path
 
@@ -55,10 +54,11 @@ def main() -> None:
     print("Done.")
     print("Next steps:")
     print(f"  1) cd {target_dir}")
-    print("  2) Initialize git: git init && git add . && git commit -m \"Initial commit\"")
+    print(
+        '  2) Initialize git: git init && git add . && git commit -m "Initial commit"'
+    )
     print("  3) Create and configure your .env from .env.example")
 
 
 if __name__ == "__main__":
     main()
-

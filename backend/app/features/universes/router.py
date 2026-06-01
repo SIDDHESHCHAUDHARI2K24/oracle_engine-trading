@@ -34,6 +34,9 @@ async def get_universe(
     if detail is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"error_code": "UNIVERSE_NOT_FOUND", "message": f"Universe {universe_id} not found"},
+            detail={
+                "error_code": "UNIVERSE_NOT_FOUND",
+                "message": f"Universe {universe_id} not found",
+            },
         )
     return detail

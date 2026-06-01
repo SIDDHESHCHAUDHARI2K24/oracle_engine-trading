@@ -19,7 +19,9 @@ load_dotenv()
 
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "admin@mbilabs.io")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "change-me-on-first-login")
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://mbi_user:mbi_password@localhost:5433/mbi")
+DATABASE_URL = os.getenv(
+    "DATABASE_URL", "postgresql://mbi_user:mbi_password@localhost:5433/mbi"
+)
 
 ph = PasswordHasher()
 

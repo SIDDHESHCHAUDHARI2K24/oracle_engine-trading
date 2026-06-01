@@ -25,4 +25,3 @@ def test_alembic_env_imports() -> None:
     script_location = Path(config.get_main_option("script_location")).resolve()
     env_path = script_location / "env.py"
     assert env_path.exists()
-

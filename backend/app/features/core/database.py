@@ -7,7 +7,6 @@ dependency that yields and closes sessions.
 
 from collections.abc import AsyncGenerator
 
-from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.features.core.config import settings

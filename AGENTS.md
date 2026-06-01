@@ -15,11 +15,11 @@ MBI Labs Oracle Engine is a self-improving research-grade ML pipeline that:
 ## 2. Tech Stack
 
 ### Backend
-- Python 3.11+ | FastAPI 0.115.x | SQLAlchemy 2.0 async + asyncpg | PostgreSQL 16 + TimescaleDB
+- Python 3.12+ | FastAPI 0.115.x | SQLAlchemy 2.0 async + asyncpg | PostgreSQL 16 + TimescaleDB
 - PyTorch 2.2+ | pytorch-lightning 2.1.x+ | pytorch-forecasting 1.0.x+
 - TA-Lib 0.4.28+ (pandas-ta as fallback) | vectorbt 0.25.x | scipy 1.11.x+
 - Alembic 1.13.x (migrations) | uv (package mgmt) | ruff (lint/format)
-- Prefect 3 (orchestration) | loguru (logging) | tenacity (retries)
+- Prefect 3 (orchestration) | stdlib logging + JSON formatter | tenacity (retries)
 - pytest + pytest-asyncio + testcontainers (testing)
 
 ### Frontend
@@ -92,7 +92,7 @@ The graph is automatically rebuilt on every git commit (post-commit hook). For m
 
 - **TDD mandatory**: RED → GREEN → REFACTOR. Write test first, always.
 - **Evidence before claims**: Run the command, read the output, then make the claim.
-- **Loguru structured logging**: JSON to stdout. Required fields: `ts`, `level`, `request_id`, `event`. Never log secrets.
+- **Stdlib JSON logging**: `logging` module + `JsonFormatter` in `backend/app/features/core/observability/logging.py`. JSON to stdout. Required fields: `ts`, `level`, `event`, `request_id`, `service`. Never log secrets.
 - **Standard API error envelope**: `{error_code, message, details, request_id}`. Machine-readable codes: `UNIVERSE_NOT_FOUND`, `TICKER_NOT_FOUND`, etc.
 - **Soft-delete pattern**: `deleted_at TIMESTAMPTZ NULL`. Default queries filter `WHERE deleted_at IS NULL`. "Include deleted" toggle removes filter.
 - **Repository abstraction**: Per-feature `repository.py` centralizes data access. No raw SQL in services. Future cache decoration is one place.

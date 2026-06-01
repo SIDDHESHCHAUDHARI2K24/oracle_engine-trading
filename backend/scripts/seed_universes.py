@@ -31,9 +31,24 @@ UNIVERSES = [
 ]
 
 TICKERS = [
-    {"symbol": "AAPL", "name": "Apple Inc.", "exchange": "NASDAQ", "asset_type": "equity"},
-    {"symbol": "MSFT", "name": "Microsoft Corporation", "exchange": "NASDAQ", "asset_type": "equity"},
-    {"symbol": "NVDA", "name": "NVIDIA Corporation", "exchange": "NASDAQ", "asset_type": "equity"},
+    {
+        "symbol": "AAPL",
+        "name": "Apple Inc.",
+        "exchange": "NASDAQ",
+        "asset_type": "equity",
+    },
+    {
+        "symbol": "MSFT",
+        "name": "Microsoft Corporation",
+        "exchange": "NASDAQ",
+        "asset_type": "equity",
+    },
+    {
+        "symbol": "NVDA",
+        "name": "NVIDIA Corporation",
+        "exchange": "NASDAQ",
+        "asset_type": "equity",
+    },
 ]
 
 MEMBERSHIPS = [
@@ -80,7 +95,12 @@ async def upsert_ticker(session: AsyncSession, t: dict) -> str:
                 "UPDATE tickers SET name = :name, exchange = :exch, "
                 "asset_type = :atype, active = TRUE WHERE id = :id"
             ),
-            {"name": t["name"], "exch": t["exchange"], "atype": t["asset_type"], "id": row},
+            {
+                "name": t["name"],
+                "exch": t["exchange"],
+                "atype": t["asset_type"],
+                "id": row,
+            },
         )
         return str(row)
     result = await session.execute(
@@ -88,7 +108,12 @@ async def upsert_ticker(session: AsyncSession, t: dict) -> str:
             "INSERT INTO tickers (symbol, name, exchange, asset_type) "
             "VALUES (:symbol, :name, :exch, :atype) RETURNING id"
         ),
-        {"symbol": t["symbol"], "name": t["name"], "exch": t["exchange"], "atype": t["asset_type"]},
+        {
+            "symbol": t["symbol"],
+            "name": t["name"],
+            "exch": t["exchange"],
+            "atype": t["asset_type"],
+        },
     )
     return str(result.scalar_one())
 
@@ -119,7 +144,9 @@ async def seed() -> None:
         DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://"),
         echo=False,
     )
-    sessionmaker = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+    sessionmaker = async_sessionmaker(
+        engine, class_=AsyncSession, expire_on_commit=False
+    )
 
     async with sessionmaker() as session:
         universe_ids: dict[str, str] = {}

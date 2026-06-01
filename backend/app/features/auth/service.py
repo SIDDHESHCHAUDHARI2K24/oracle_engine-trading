@@ -64,7 +64,9 @@ async def issue_tokens(db: AsyncSession, user_id: uuid.UUID) -> tuple[str, str]:
     return access, refresh_raw
 
 
-async def rotate_refresh(db: AsyncSession, refresh_token: str) -> tuple[str, str] | None:
+async def rotate_refresh(
+    db: AsyncSession, refresh_token: str
+) -> tuple[str, str] | None:
     token_hash = _hash_token(refresh_token)
     session = await auth_repo.get_session_by_hash(db, token_hash)
     if session is None or session.expires_at < datetime.now(timezone.utc):

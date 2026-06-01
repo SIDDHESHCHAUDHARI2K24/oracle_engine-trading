@@ -57,7 +57,16 @@ graph TD
 **Parallelizable**: Auth track (T1 → T2) runs fully parallel to the Universe track (T3–T7). The Universes UI (T7) can start as soon as T4/T5 endpoints exist.
 
 ### Entry Criteria
-- S0 complete: `make dev` works, migrations clean, admin can log in (JWT), one universe renders, Full CI green.
+- S0 complete with reconciliation (2026-06-01):
+  - `make dev` works: backend (FastAPI + JWT auth), frontend (Vite + TS strict), MinIO.
+  - Migrations clean: initial schema (5 tables) + reconciliation migration (new columns on users, sessions, universes).
+  - Admin can log in (JWT + refresh cookie), S&P 500 universe renders in UI.
+  - Backend CI green (ruff + mypy + pytest + migration round-trip).
+  - Frontend CI green (ESLint + tsc --noEmit + vitest).
+  - E2E CI green (Playwright: login → see S&P 500 universe).
+  - Schema deviations reconciled: `users.full_name`, `sessions.last_used_at/user_agent/ip/created_at/updated_at`, `universes.description` added via migration `d871d570373e`.
+  - Dead legacy code removed: passlib session auth, broken register/reset endpoints.
+  - Feature docs updated: `auth/features.md`, `core/features.md`, `universes/features.md`.
 - Alpaca paper-trading account exists with API keys in `.env` (`ALPACA_API_KEY`, `ALPACA_SECRET_KEY`) — needed for ticker validation/sync.
 
 ### Exit Criteria
@@ -440,6 +449,70 @@ Inherited from `tech-stack-analysis.md` §4, plus S1-specific:
 - Stack validation: `tech-stack-analysis.md` (§3 Gap 4 constituent CSVs, Gap 10 short IDs, §4 Assumptions)
 - Previous stage: `development-plan-S0.md` (auth skeleton, universe read endpoint, FE scaffold this builds on)
 - Next stage: `development-plan-S2.md` (Data Ingestion — Block A1) — forthcoming
+
+### S1 Task Dependency Map
+
+This map is authoritative for coding agents. A task depends on all upstream tasks connected to it by directed edges.
+
+```mermaid
+graph TD
+    subgraph "Pre-requisites"
+        S0[s0_foundations]
+        MIG2[migration_reconcile_schema_s1]
+    end
+
+    S0 --> T1[P1.T1 Auth Backend]
+    S0 --> T3[P1.T3 Ticker Registry + Alpaca]
+
+    MIG2 --> T1
+    MIG2 --> T2
+
+    T1 --> T2[P1.T2 Auth Settings UI]
+
+    T3 --> T4[P1.T4 Universe CRUD Backend]
+    T4 --> T5[P1.T5 Membership + CSV]
+
+    T3 --> T6[P1.T6 ConstituentSource Index Seeding]
+    T5 --> T6
+
+    T4 --> T7[P1.T7 Universes UI]
+    T5 --> T7
+
+    T2 --> T8[P1.T8 Integration + E2E]
+    T6 --> T8
+    T7 --> T8
+
+    classDef prereq fill:#f9f0e0,stroke:#c09030
+    classDef auth fill:#e1f5e1,stroke:#2d8a2d
+    classDef universe fill:#e1ecf5,stroke:#2d5d8a
+    classDef integ fill:#f5e8e1,stroke:#8a5d2d
+    class S0,MIG2 prereq
+    class T1,T2 auth
+    class T3,T4,T5,T6,T7 universe
+    class T8 integ
+```
+
+| Task | ID | Dependencies | Can Start When | Blocks |
+|---|---|---|---|---|
+| Auth account management backend | T1 | S0, migration `d871d570373e` | Phase 1 complete | T2, P1.T1.S2-S4 |
+| Auth settings UI | T2 | T1 | T1 complete | T8 |
+| Ticker registry + Alpaca sync | T3 | S0 | Phase 1 complete | T4, T6 |
+| Universe CRUD backend | T4 | T3 | T3 complete | T5, T7 |
+| Membership (time-aware + CSV) | T5 | T4 | T4 complete | T6, T7 |
+| ConstituentSource index seeding | T6 | T3, T5 | T3+T5 complete | T8 |
+| Universes UI | T7 | T4, T5 | T4+T5 endpoints exist | T8 |
+| Integration + E2E | T8 | T2, T6, T7 | All feature tracks complete | (none) |
+
+**Parallel execution strategy**:
+- **Track A (Auth)**: T1 → T2 — runs fully parallel to universes track
+- **Track B (Universes Backend)**: T3 → T4 → T5 — sequential by necessity (each builds on prior)
+- **Track C (Index Seeding)**: T6 — starts after T3+T5
+- **Track D (Universes UI)**: T7 — starts after T4+T5 endpoints exist
+- **Final**: T8 — gates on T2+T6+T7
+
+Sub-tasks within each task are always sequential (TDD: tests first, then implementation, then endpoints).
+
+**Critical path**: S0 → T3 → T4 → T5 → T6 → T8 (ticker registry gates everything).
 
 ---
 

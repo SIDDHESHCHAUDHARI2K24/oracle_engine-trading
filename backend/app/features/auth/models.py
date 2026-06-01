@@ -18,14 +18,17 @@ class User(Base, UUIDPrimaryKey, Timestamped, SoftDeletable):
 
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     hashed_password: Mapped[str] = mapped_column(Text, nullable=False)
-    is_admin: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
+    full_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    is_admin: Mapped[bool] = mapped_column(
+        Boolean, default=False, server_default="false"
+    )
 
     sessions: Mapped[list["Session"]] = relationship(
         "Session", back_populates="user", cascade="all, delete-orphan"
     )
 
 
-class Session(Base, UUIDPrimaryKey):
+class Session(Base, UUIDPrimaryKey, Timestamped):
     __tablename__ = "sessions"
 
     user_id: Mapped[uuid.UUID] = mapped_column(
@@ -35,5 +38,10 @@ class Session(Base, UUIDPrimaryKey):
     expires_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False
     )
+    last_used_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    user_agent: Mapped[str | None] = mapped_column(Text, nullable=True)
+    ip: Mapped[str | None] = mapped_column(String(50), nullable=True)
 
     user: Mapped["User"] = relationship("User", back_populates="sessions")

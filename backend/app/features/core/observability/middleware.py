@@ -17,7 +17,9 @@ class RequestIdMiddleware(BaseHTTPMiddleware):
     """Assign a unique request_id per request and bind it to the logging context."""
 
     async def dispatch(self, request: Request, call_next: callable) -> Response:
-        request_id = request.headers.get("X-Request-ID") or f"req_{uuid.uuid4().hex[:12]}"
+        request_id = (
+            request.headers.get("X-Request-ID") or f"req_{uuid.uuid4().hex[:12]}"
+        )
         token = request_id_var.set(request_id)
         try:
             response = await call_next(request)

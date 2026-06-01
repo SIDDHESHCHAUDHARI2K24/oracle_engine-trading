@@ -170,7 +170,7 @@ These are documented departures from the source PDF, all explicitly approved dur
 
 | Layer | Technology | Version |
 |---|---|---|
-| Runtime | Python | 3.11+ |
+| Runtime | Python | 3.12+ |
 | Framework | FastAPI | 0.115.x |
 | ORM | SQLAlchemy 2.0 async | 2.0.x |
 | DB Driver | asyncpg | 0.30.x |
@@ -184,7 +184,7 @@ These are documented departures from the source PDF, all explicitly approved dur
 | Backtesting | vectorbt | 0.25.x |
 | Statistics | scipy | 1.11.x+ |
 | Retry | tenacity | 8.2.x+ |
-| Logging | loguru | 0.7.x+ |
+| Logging | stdlib logging + JsonFormatter | 3.12+ stdlib |
 | Auth | python-jose[cryptography] + argon2-cffi | latest |
 | Rate limiting | slowapi | latest |
 | CLI | typer | 0.12.x+ |
@@ -421,7 +421,7 @@ Per-ticker isolation: if AAPL fails 3 times, MSFT still proceeds. Failed tickers
 - Coverage alert: sustained drop below 80% → critical alert
 - Conviction-outcome correlation: Spearman > 0.2 sustained
 - Data freshness: alert if > 36 hours since last successful ingest
-- Alert routing: loguru + system_alerts table (Slack/email deferred)
+- Alert routing: stdlib logging + system_alerts table (Slack/email deferred)
 
 ### Feature 9: Orchestration (Prefect Flows)
 
@@ -454,7 +454,7 @@ Agents MUST be aware of these real friction points:
 8. **TanStack Query + tab visibility**: TQ pauses polling when tab hidden. Set `refetchIntervalInBackground: true` for training pages.
 9. **Pydantic v2 + SQLAlchemy 2.0**: Use `ConfigDict(from_attributes=True)`. NOT `orm_mode = True`.
 10. **TimescaleDB hypertable + ON CONFLICT**: Hypertables fully support upserts. Use for incremental ingests.
-11. **Loguru + uvicorn logging**: Intercept uvicorn's logger and route through loguru in `core/observability/logging.py`.
+11. **Stdlib logging + uvicorn logging**: Intercept uvicorn's logger and route through `JsonFormatter` in `core/observability/logging.py`.
 12. **Postgres NUMERIC precision**: `NUMERIC(18,8)` for prices/percentages. Don't accidentally cast to float — loses precision.
 13. **Statement timeout**: Set `statement_timeout = '30s'` on application connections. Long queries go in Prefect tasks.
 14. **Memory for full-universe training**: ~2 GB RAM for feature tensors. Manageable on 8–24 GB VRAM GPUs.

@@ -20,4 +20,3 @@ class TimestampedSchema(BaseSchema):
 
     created_at: datetime | None = None
     updated_at: datetime | None = None
-

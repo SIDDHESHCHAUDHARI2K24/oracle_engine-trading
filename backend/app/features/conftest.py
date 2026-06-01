@@ -56,7 +56,9 @@ async def db_session(database_url: str):
     transaction.  All writes are rolled back after the test completes so
     every test sees a clean database.
     """
-    async_url = database_url.replace("postgresql+psycopg2://", "postgresql+asyncpg://").replace("postgresql://", "postgresql+asyncpg://")
+    async_url = database_url.replace(
+        "postgresql+psycopg2://", "postgresql+asyncpg://"
+    ).replace("postgresql://", "postgresql+asyncpg://")
     engine = create_async_engine(async_url, echo=False)
 
     async with engine.connect() as connection:

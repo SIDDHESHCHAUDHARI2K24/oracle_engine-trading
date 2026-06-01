@@ -501,4 +501,73 @@ All inherited from `tech-stack-analysis.md` §4. S0-specific confirmations:
 
 ---
 
-## End of Stage S0 Plan
+---
+
+## Post-Implementation Reconciliation (2026-06-01)
+
+*This section documents deviations between the S0 plan and what was actually implemented. It serves as the handoff document between S0 completion and S1 start.*
+
+### Deviations from Plan
+
+| Deviation | Plan Specified | Actually Implemented | Impact |
+|---|---|---|---|
+| **Logging framework** | loguru (locked design decision) | stdlib logging with custom `JsonFormatter` | No functional impact; JSON contract (ts, level, event, request_id, service) preserved. loguru removed from dependencies. |
+| **Health endpoints** | `app/features/_health/` feature module with router + endpoints dir | Inline in `app/app.py` (no separate feature) | No functional impact. Health and ready endpoints work identically. |
+| **Package naming** | `backend/src/backend/` per design doc §13 | `app/` (boilerplate factory pattern retained) | Minor. Factory remains `app.app:create_app`. Feature modules under `app/features/`. |
+| **Artifact store location** | `core/services/artifact_store.py` under features | `app/core/services/artifact_store.py` (outside features) | Non-feature location. Protocol + LocalFS + S3Stub all implemented as planned. |
+| **Legacy auth code** | Extend boilerplate session-auth as refresh store | Two stacks existed: working JWT+argon2 (live) + broken passlib/session code (dead). | **Cleaned up**: Dead code removed (utils.py, register.py, reset.py, passlib dependency). Auth/features.md rewritten for JWT. |
+| **Auth features.md** | Document JWT-over-session reconciliation | Stale — described old passlib/session auth | **Fixed**: Rewritten to document actual JWT+argon2 implementation. |
+
+### Schema Deviations from Design Doc §2–§3
+
+| Table.Column | Design Doc | Actual Migration | Resolution |
+|---|---|---|---|
+| `users.password_hash` | Named `password_hash` | `hashed_password` | Accept as-is (docs updated) |
+| `users.full_name` | `full_name TEXT` | Missing | **Added** via migration `d871d570373e_reconcile_schema_s1` |
+| `users.email_verified_at` | Reserved for v2 | Missing | Deferred (not needed until multi-user v2) |
+| `users.email_verification_token` | Reserved for v2 | Missing | Deferred |
+| `sessions.created_at` | Present | Missing | **Added** via migration (Session now inherits Timestamped) |
+| `sessions.updated_at` | Not in design | Missing | **Added** via migration |
+| `sessions.last_used_at` | Present | Missing | **Added** via migration |
+| `sessions.user_agent` | Present | Missing | **Added** via migration |
+| `sessions.ip` | `ip INET` | Missing | **Added** as `VARCHAR(50)` (simpler, cross-platform) |
+| `universes.user_id` | FK to users, `UNIQUE(user_id, name)` | No user_id column; simple `UNIQUE(name)` | Deferred (multi-user not needed in v1; S1 uses admin-only) |
+| `universes.description` | `description TEXT NULL` | Missing | **Added** via migration |
+| `tickers.asset_type` | `ENUM('equity','etf')` | `VARCHAR(20) DEFAULT 'equity'` | Accept as-is (VARCHAR is more flexible for future types) |
+| `tickers.first_seen_at` | Present | Missing | Deferred (not needed until S2 data ingestion) |
+| `tickers.last_seen_at` | Present | Missing | Deferred |
+| `tickers.metadata JSONB` | `metadata JSONB DEFAULT '{}'` | Missing | Deferred |
+| `universe_memberships.added_by` | FK to users.id | Missing | Deferred (not needed until multi-user) |
+
+### CI Status
+
+| Gate | Status | Notes |
+|---|---|---|
+| Backend CI (ruff, mypy, pytest, migration round-trip) | ✅ Green | test-backend.yml |
+| Frontend CI (ESLint, tsc, vitest, build) | ✅ Green | test-frontend.yml |
+| E2E CI (Playwright: login → see universe) | ✅ Green | e2e.yml |
+| Pre-commit hooks | Not installed | `.pre-commit-config.yaml` exists but hooks not installed; deferred to S1 |
+
+### What Was Implemented (Complete)
+
+- ✅ Monorepo scaffold + root Makefile + docker-compose + `.env.example`
+- ✅ Backend: FastAPI factory, SQLAlchemy 2.0 async, alembic, Postgres+TimescaleDB
+- ✅ MinIO in Docker with named persistent volume
+- ✅ Alembic initial migration (5 tables + 2 custom indexes)
+- ✅ Auth: JWT login/logout/refresh/me + argon2 password hashing + rate limiting
+- ✅ Admin seed script (idempotent)
+- ✅ Universes: read list + detail endpoints (auth-gated), S&P 500 seed
+- ✅ Frontend: Vite+React+TS strict+Tailwind+shadcn, login page, universe list page
+- ✅ Health/readiness endpoints, request-ID middleware, structured JSON logging
+- ✅ Artifact store Protocol + LocalFilesystem + S3 stub
+- ✅ 30 unit/integration tests across auth, core, universes
+- ✅ 3 CI workflows + Playwright critical-path E2E test
+- ✅ Root README with setup runbook
+
+### What Was Deferred (Not Implemented in S0)
+
+- `app/features/_health/` feature module (endpoints are inline in app.py)
+- `features.md` for `_health/` (no separate feature to document)
+- Frontend `@` path alias in Vite/TS config (imports use relative paths)
+- `gen:api` TypeScript generation script in frontend package.json
+

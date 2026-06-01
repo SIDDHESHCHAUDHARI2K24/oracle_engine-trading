@@ -15,11 +15,11 @@ MBI Labs Oracle Engine is a self-improving research-grade ML pipeline that:
 ## 2. Tech Stack
 
 ### Backend
-- Python 3.11+ | FastAPI 0.115.x | SQLAlchemy 2.0 async + asyncpg | PostgreSQL 16 + TimescaleDB
+- Python 3.12+ | FastAPI 0.115.x | SQLAlchemy 2.0 async + asyncpg | PostgreSQL 16 + TimescaleDB
 - PyTorch 2.2+ | pytorch-lightning 2.1.x+ | pytorch-forecasting 1.0.x+
 - TA-Lib 0.4.28+ (pandas-ta as fallback) | vectorbt 0.25.x | scipy 1.11.x+
 - Alembic 1.13.x (migrations) | uv (package mgmt) | ruff (lint/format)
-- Prefect 3 (orchestration) | loguru (logging) | tenacity (retries)
+- Prefect 3 (orchestration) | stdlib logging + JSON formatter | tenacity (retries)
 - pytest + pytest-asyncio + testcontainers (testing)
 
 ### Frontend
@@ -90,7 +90,7 @@ The graph auto-rebuilds on every git commit. Manual rebuild: `graphify update .`
 
 - **TDD mandatory**: RED → GREEN → REFACTOR
 - **Evidence before claims**: Run it, read it, claim it
-- **Loguru structured logging**: JSON to stdout. Fields: `ts`, `level`, `request_id`, `event`. Never log secrets.
+- **Stdlib JSON logging**: `logging` module + `JsonFormatter` (`backend/app/features/core/observability/logging.py`). Fields: `ts`, `level`, `event`, `request_id`, `service`. Never log secrets.
 - **Standard API error envelope**: `{error_code, message, details, request_id}`
 - **Soft-delete pattern**: `deleted_at TIMESTAMPTZ NULL`. Default: `WHERE deleted_at IS NULL`
 - **Repository abstraction**: Per-feature `repository.py`. No raw SQL in services.

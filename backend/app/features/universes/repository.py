@@ -12,9 +12,7 @@ from app.features.universes.models import Ticker, Universe, UniverseMembership
 async def list_universes(db: AsyncSession) -> list[Universe]:
     """Return all non-deleted universes, ordered by name."""
     result = await db.execute(
-        select(Universe)
-        .where(Universe.deleted_at.is_(None))
-        .order_by(Universe.name)
+        select(Universe).where(Universe.deleted_at.is_(None)).order_by(Universe.name)
     )
     return list(result.scalars().all())
 
@@ -38,12 +36,16 @@ async def list_universes_with_counts(db: AsyncSession) -> list[tuple[Universe, i
     return [(row[0], int(row[1])) for row in result.all()]
 
 
-async def get_universe_by_id(db: AsyncSession, universe_id: uuid.UUID) -> Universe | None:
+async def get_universe_by_id(
+    db: AsyncSession, universe_id: uuid.UUID
+) -> Universe | None:
     """Return a non-deleted universe by id, with active memberships eager-loaded."""
     result = await db.execute(
         select(Universe)
         .where(Universe.id == universe_id, Universe.deleted_at.is_(None))
-        .options(selectinload(Universe.memberships).selectinload(UniverseMembership.ticker))
+        .options(
+            selectinload(Universe.memberships).selectinload(UniverseMembership.ticker)
+        )
     )
     return result.scalar_one_or_none()
 

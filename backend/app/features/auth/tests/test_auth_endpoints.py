@@ -21,7 +21,9 @@ _client = TestClient(create_app())
 
 
 def test_login_valid_credentials_returns_token() -> None:
-    resp = _client.post("/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
+    resp = _client.post(
+        "/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
+    )
     assert resp.status_code == 200
     data = resp.json()
     assert "access_token" in data
@@ -30,7 +32,9 @@ def test_login_valid_credentials_returns_token() -> None:
 
 
 def test_login_sets_refresh_cookie() -> None:
-    resp = _client.post("/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
+    resp = _client.post(
+        "/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
+    )
     assert resp.status_code == 200
     assert "refresh_token" in resp.cookies
 
@@ -42,12 +46,16 @@ def test_login_wrong_password_returns_401() -> None:
 
 
 def test_login_unknown_email_returns_401() -> None:
-    resp = _client.post("/auth/login", json={"email": "nobody@example.com", "password": "any"})
+    resp = _client.post(
+        "/auth/login", json={"email": "nobody@example.com", "password": "any"}
+    )
     assert resp.status_code == 401
 
 
 def test_me_with_valid_bearer_token_returns_user() -> None:
-    login = _client.post("/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
+    login = _client.post(
+        "/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
+    )
     token = login.json()["access_token"]
     resp = _client.get("/auth/me", headers={"Authorization": f"Bearer {token}"})
     assert resp.status_code == 200
@@ -61,7 +69,9 @@ def test_me_without_token_returns_401() -> None:
 
 
 def test_logout_with_valid_token_returns_ok() -> None:
-    login = _client.post("/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
+    login = _client.post(
+        "/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
+    )
     token = login.json()["access_token"]
     resp = _client.post("/auth/logout", headers={"Authorization": f"Bearer {token}"})
     assert resp.status_code == 200
