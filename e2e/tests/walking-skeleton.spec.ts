@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 
-const ADMIN_EMAIL = 'admin@mbi.local'
-const ADMIN_PASSWORD = 'AdminPass1!'
+const ADMIN_EMAIL = 'admin@mbilabs.io'
+const ADMIN_PASSWORD = 'change-me-on-first-login'
 const API_URL = process.env['API_URL'] ?? 'http://127.0.0.1:8000'
 
 test.describe('Walking Skeleton — S0 critical path', () => {
