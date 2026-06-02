@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 const ADMIN_EMAIL = 'admin@mbi.local'
 const ADMIN_PASSWORD = 'AdminPass1!'
-const API_URL = process.env['API_URL'] ?? 'http://localhost:8000'
+const API_URL = process.env['API_URL'] ?? 'http://127.0.0.1:8000'
 
 test.describe('Walking Skeleton — S0 critical path', () => {
   test.beforeAll(async ({ request }) => {

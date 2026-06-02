@@ -1,7 +1,7 @@
 import { useAuthStore } from '../features/auth/store'
 import type { ApiError } from './types'
 
-const API_BASE = import.meta.env['VITE_API_BASE_URL'] ?? 'http://localhost:8000'
+const API_BASE = import.meta.env['VITE_API_BASE_URL'] ?? 'http://127.0.0.1:8000'
 
 export class ApiRequestError extends Error {
   public readonly code: string

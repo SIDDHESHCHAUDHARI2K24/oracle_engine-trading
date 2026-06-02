@@ -65,7 +65,7 @@ jobs:
           DATABASE_URL: postgresql+asyncpg://mbi_user:mbi_password@localhost:5433/mbi
           JWT_SECRET: ci-e2e-secret-key
           ENVIRONMENT: test
-          CORS_ALLOW_ORIGINS: '["http://localhost:5173"]'
+          CORS_ALLOW_ORIGINS: '["http://127.0.0.1:5173"]'
         run: |
           nohup uv run uvicorn app.app:create_app --factory --host 0.0.0.0 --port 8000 &
           echo $! > /tmp/backend.pid
@@ -87,7 +87,7 @@ jobs:
 
       - name: Build frontend
         env:
-          VITE_API_BASE_URL: http://localhost:8000
+          VITE_API_BASE_URL: http://127.0.0.1:8000
         run: pnpm build
         working-directory: frontend
 
@@ -101,7 +101,7 @@ jobs:
         run: |
           echo "Waiting for backend..."
           for i in $(seq 1 30); do
-            if curl -sf http://localhost:8000/ready; then
+            if curl -sf http://127.0.0.1:8000/ready; then
               echo "Backend ready"
               break
             fi
@@ -118,8 +118,8 @@ jobs:
 
       - name: Run E2E tests
         env:
-          BASE_URL: http://localhost:5173
-          API_URL: http://localhost:8000
+          BASE_URL: http://127.0.0.1:5173
+          API_URL: http://127.0.0.1:8000
         run: npx playwright test
         working-directory: e2e
 
