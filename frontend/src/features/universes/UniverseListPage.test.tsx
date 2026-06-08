@@ -5,7 +5,7 @@ import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import { UniverseListPage } from './pages/UniverseListPage'
 
 vi.mock('./api/useUniverses', () => ({
-  useUniverses: (_includeDeleted?: boolean) => ({
+  useUniverses: () => ({
     data: {
       universes: [
         {

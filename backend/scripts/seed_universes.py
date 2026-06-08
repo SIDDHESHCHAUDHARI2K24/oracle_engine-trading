@@ -4,7 +4,6 @@ Idempotent — re-running reconciles memberships (adds new constituents,
 marks departed ones as removed, preserving history).
 """
 import asyncio
-import os
 import sys
 from pathlib import Path
 
@@ -12,7 +11,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "app"))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 
 async def seed_universes():

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useUniverses } from '../api/useUniverses'
 import { Button } from '../../../shared/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '../../../shared/components/ui/card'
+import { Card, CardContent } from '../../../shared/components/ui/card'
 import type { UniverseSummary } from '../../../core/types'
 
 function formatDate(dateStr: string | null): string {
