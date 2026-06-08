@@ -124,7 +124,64 @@ async def seed_universes():
                     else:
                         raise
 
-                result = await universes_service.add_members(db, universe.id, symbols)
+                result = await universes_service.add_members(
+                    db, universe.id, symbols
+                )
+
+                # If Alpaca validation is unavailable (no keys), all symbols
+                # are marked invalid.  Fall back to direct ticker insertion.
+                if (
+                    not result.added
+                    and result.invalid
+                    and not result.already_present
+                ):
+                    logger.info("  Alpaca unavailable — inserting tickers directly")
+                    from app.features.universes.models import (
+                        Ticker,
+                        UniverseMembership,
+                    )
+                    from datetime import datetime, timezone
+
+                    now = datetime.now(timezone.utc)
+                    added_syms: list[str] = []
+                    for symbol in symbols:
+                        from sqlalchemy import select as sa_select
+
+                        existing = (await db.execute(
+                            sa_select(Ticker).where(Ticker.symbol == symbol)
+                        )).scalar_one_or_none()
+                        if existing is None:
+                            ticker = Ticker(
+                                symbol=symbol,
+                                name=symbol,
+                                asset_type="equity",
+                            )
+                            db.add(ticker)
+                            await db.flush()
+                        else:
+                            ticker = existing
+                        # Check if already a member
+                        member_exists = (await db.execute(
+                            sa_select(UniverseMembership).where(
+                                UniverseMembership.universe_id == universe.id,
+                                UniverseMembership.ticker_id == ticker.id,
+                                UniverseMembership.removed_at.is_(None),
+                            )
+                        )).scalar_one_or_none()
+                        if member_exists is None:
+                            db.add(
+                                UniverseMembership(
+                                    universe_id=universe.id,
+                                    ticker_id=ticker.id,
+                                    added_at=now,
+                                )
+                            )
+                            added_syms.append(symbol)
+                    await db.flush()
+                    result = universes_service.AddResult(
+                        added=added_syms, already_present=[], invalid=[]
+                    )
+
                 logger.info(
                     f"  Added: {len(result.added)}, "
                     f"Already present: {len(result.already_present)}, "
