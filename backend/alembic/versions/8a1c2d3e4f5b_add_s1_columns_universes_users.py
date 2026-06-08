@@ -19,7 +19,9 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.add_column("universes", sa.Column("public_id", sa.String(length=20), nullable=True))
+    op.add_column(
+        "universes", sa.Column("public_id", sa.String(length=20), nullable=True)
+    )
     op.add_column(
         "universes",
         sa.Column("last_retrain_at", sa.DateTime(timezone=True), nullable=True),
