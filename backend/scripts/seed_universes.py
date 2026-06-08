@@ -124,17 +124,11 @@ async def seed_universes():
                     else:
                         raise
 
-                result = await universes_service.add_members(
-                    db, universe.id, symbols
-                )
+                result = await universes_service.add_members(db, universe.id, symbols)
 
                 # If Alpaca validation is unavailable (no keys), all symbols
                 # are marked invalid.  Fall back to direct ticker insertion.
-                if (
-                    not result.added
-                    and result.invalid
-                    and not result.already_present
-                ):
+                if not result.added and result.invalid and not result.already_present:
                     logger.info("  Alpaca unavailable — inserting tickers directly")
                     from app.features.universes.models import (
                         Ticker,
@@ -147,9 +141,11 @@ async def seed_universes():
                     for symbol in symbols:
                         from sqlalchemy import select as sa_select
 
-                        existing = (await db.execute(
-                            sa_select(Ticker).where(Ticker.symbol == symbol)
-                        )).scalar_one_or_none()
+                        existing = (
+                            await db.execute(
+                                sa_select(Ticker).where(Ticker.symbol == symbol)
+                            )
+                        ).scalar_one_or_none()
                         if existing is None:
                             ticker = Ticker(
                                 symbol=symbol,
@@ -161,13 +157,15 @@ async def seed_universes():
                         else:
                             ticker = existing
                         # Check if already a member
-                        member_exists = (await db.execute(
-                            sa_select(UniverseMembership).where(
-                                UniverseMembership.universe_id == universe.id,
-                                UniverseMembership.ticker_id == ticker.id,
-                                UniverseMembership.removed_at.is_(None),
+                        member_exists = (
+                            await db.execute(
+                                sa_select(UniverseMembership).where(
+                                    UniverseMembership.universe_id == universe.id,
+                                    UniverseMembership.ticker_id == ticker.id,
+                                    UniverseMembership.removed_at.is_(None),
+                                )
                             )
-                        )).scalar_one_or_none()
+                        ).scalar_one_or_none()
                         if member_exists is None:
                             db.add(
                                 UniverseMembership(
