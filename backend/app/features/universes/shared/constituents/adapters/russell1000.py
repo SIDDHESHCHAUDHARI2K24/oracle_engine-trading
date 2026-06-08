@@ -1,8 +1,10 @@
 """Russell 1000 constituent source — iShares IWB ETF holdings."""
+
 import io
 import csv
 import httpx
 from ..base import normalize_constituent_symbol
+
 
 class Russell1000Source:
     """Fetches Russell 1000 constituents from iShares IWB holdings."""

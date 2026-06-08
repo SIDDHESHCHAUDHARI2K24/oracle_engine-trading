@@ -3,6 +3,7 @@
 Idempotent — re-running reconciles memberships (adds new constituents,
 marks departed ones as removed, preserving history).
 """
+
 import asyncio
 import sys
 from pathlib import Path
@@ -15,13 +16,21 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 
 async def seed_universes():
-    from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+    from sqlalchemy.ext.asyncio import (
+        AsyncSession,
+        async_sessionmaker,
+        create_async_engine,
+    )
     from app.features.core.config import settings
     from app.features.universes import service as universes_service
     from app.features.universes import repository as universes_repo
     from app.features.universes.shared.constituents.adapters.sp500 import SP500Source
-    from app.features.universes.shared.constituents.adapters.russell1000 import Russell1000Source
-    from app.features.universes.shared.constituents.adapters.russell2000 import Russell2000Source
+    from app.features.universes.shared.constituents.adapters.russell1000 import (
+        Russell1000Source,
+    )
+    from app.features.universes.shared.constituents.adapters.russell2000 import (
+        Russell2000Source,
+    )
     import logging
 
     logging.basicConfig(level=logging.INFO)
@@ -32,7 +41,9 @@ async def seed_universes():
         url = url.replace("postgresql://", "postgresql+asyncpg://")
 
     engine = create_async_engine(url)
-    session_factory = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+    session_factory = async_sessionmaker(
+        engine, class_=AsyncSession, expire_on_commit=False
+    )
 
     indices = [
         ("sp500", "S&P 500", SP500Source()),
@@ -60,7 +71,9 @@ async def seed_universes():
                 logger.info(f"  Fetched {len(symbols)} constituents")
 
                 result = await universes_service.add_members(db, universe.id, symbols)
-                logger.info(f"  Added: {len(result.added)}, Already present: {len(result.already_present)}, Invalid: {len(result.invalid)}")
+                logger.info(
+                    f"  Added: {len(result.added)}, Already present: {len(result.already_present)}, Invalid: {len(result.invalid)}"
+                )
 
                 if result.invalid:
                     logger.warning(f"  Invalid symbols: {result.invalid[:10]}...")

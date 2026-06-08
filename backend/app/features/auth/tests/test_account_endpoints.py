@@ -24,7 +24,9 @@ async def client(database_url: str):
     ).replace("postgresql://", "postgresql+asyncpg://")
 
     engine = create_async_engine(async_url, echo=False, pool_pre_ping=True)
-    session_factory = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+    session_factory = async_sessionmaker(
+        engine, class_=AsyncSession, expire_on_commit=False
+    )
 
     async def override_get_db() -> AsyncGenerator[AsyncSession, None]:
         async with session_factory() as session:
@@ -34,6 +36,7 @@ async def client(database_url: str):
                 await session.close()
 
     from app.app import create_app
+
     app = create_app()
     app.dependency_overrides[get_async_session] = override_get_db
 

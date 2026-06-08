@@ -54,12 +54,16 @@ async def delete_session_by_hash(db: AsyncSession, token_hash: str) -> None:
     await db.commit()
 
 
-async def list_active_sessions_for_user(db: AsyncSession, user_id: uuid.UUID) -> list[Session]:
+async def list_active_sessions_for_user(
+    db: AsyncSession, user_id: uuid.UUID
+) -> list[Session]:
     result = await db.execute(
-        select(Session).where(
+        select(Session)
+        .where(
             Session.user_id == user_id,
             Session.expires_at > datetime.now(timezone.utc),
-        ).order_by(Session.created_at.desc())
+        )
+        .order_by(Session.created_at.desc())
     )
     return list(result.scalars().all())
 

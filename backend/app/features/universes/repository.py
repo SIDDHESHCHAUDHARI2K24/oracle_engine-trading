@@ -111,9 +111,7 @@ async def validate_and_upsert_tickers(
             invalid.append(symbol)
             continue
 
-        result = await db.execute(
-            select(Ticker).where(Ticker.symbol == normalized)
-        )
+        result = await db.execute(select(Ticker).where(Ticker.symbol == normalized))
         existing = result.scalar_one_or_none()
 
         if existing is not None:
@@ -184,7 +182,8 @@ async def get_members_at_date(
         .where(
             UniverseMembership.universe_id == universe_id,
             UniverseMembership.added_at <= at_date,
-            (UniverseMembership.removed_at.is_(None)) | (UniverseMembership.removed_at > at_date),
+            (UniverseMembership.removed_at.is_(None))
+            | (UniverseMembership.removed_at > at_date),
             Ticker.active.is_(True),
         )
         .order_by(Ticker.symbol)

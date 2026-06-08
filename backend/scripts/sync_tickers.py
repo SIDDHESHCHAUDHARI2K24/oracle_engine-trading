@@ -34,7 +34,9 @@ logger = logging.getLogger(__name__)
 cli = typer.Typer()
 
 
-async def _upsert_chunk(db: AsyncSession, symbols: list[str], asset_map: dict[str, AssetInfo]) -> tuple[int, int]:
+async def _upsert_chunk(
+    db: AsyncSession, symbols: list[str], asset_map: dict[str, AssetInfo]
+) -> tuple[int, int]:
     inserted = 0
     updated = 0
 
@@ -44,9 +46,7 @@ async def _upsert_chunk(db: AsyncSession, symbols: list[str], asset_map: dict[st
         if asset is None:
             continue
 
-        result = await db.execute(
-            select(Ticker).where(Ticker.symbol == normalized)
-        )
+        result = await db.execute(select(Ticker).where(Ticker.symbol == normalized))
         existing = result.scalar_one_or_none()
 
         if existing is not None:
@@ -74,7 +74,9 @@ async def _sync_all() -> None:
         DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://"),
         echo=False,
     )
-    sessionmaker = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+    sessionmaker = async_sessionmaker(
+        engine, class_=AsyncSession, expire_on_commit=False
+    )
 
     logger.info("Fetching Alpaca asset map...")
     asset_map = get_alpaca_asset_map()
@@ -100,7 +102,9 @@ async def _sync_all() -> None:
             )
 
         await session.commit()
-        logger.info("Sync complete: inserted=%d updated=%d", total_inserted, total_updated)
+        logger.info(
+            "Sync complete: inserted=%d updated=%d", total_inserted, total_updated
+        )
 
     await engine.dispose()
 

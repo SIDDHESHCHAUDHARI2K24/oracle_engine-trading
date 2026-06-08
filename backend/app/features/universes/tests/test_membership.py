@@ -12,9 +12,15 @@ from app.features.universes.models import Universe, Ticker, UniverseMembership
 from app.features.universes.shared.alpaca_assets import AssetInfo
 
 MOCK_ALPACA_MAP = {
-    "AAPL": AssetInfo(symbol="AAPL", exchange="NASDAQ", asset_type="equity", tradable=True),
-    "MSFT": AssetInfo(symbol="MSFT", exchange="NASDAQ", asset_type="equity", tradable=True),
-    "NVDA": AssetInfo(symbol="NVDA", exchange="NASDAQ", asset_type="equity", tradable=True),
+    "AAPL": AssetInfo(
+        symbol="AAPL", exchange="NASDAQ", asset_type="equity", tradable=True
+    ),
+    "MSFT": AssetInfo(
+        symbol="MSFT", exchange="NASDAQ", asset_type="equity", tradable=True
+    ),
+    "NVDA": AssetInfo(
+        symbol="NVDA", exchange="NASDAQ", asset_type="equity", tradable=True
+    ),
     "SPY": AssetInfo(symbol="SPY", exchange="ARCA", asset_type="etf", tradable=True),
 }
 
@@ -40,9 +46,7 @@ async def _insert_ticker(db, symbol="AAPL"):
 
 async def _membership_count(db, universe_id):
     result = await db.execute(
-        select(UniverseMembership).where(
-            UniverseMembership.universe_id == universe_id
-        )
+        select(UniverseMembership).where(UniverseMembership.universe_id == universe_id)
     )
     return len(result.scalars().all())
 
@@ -64,12 +68,16 @@ async def test_add_ticker_creates_membership(db_session, monkeypatch):
     assert len(result.invalid) == 0
 
     memberships = (
-        await db_session.execute(
-            select(UniverseMembership).where(
-                UniverseMembership.universe_id == universe.id
+        (
+            await db_session.execute(
+                select(UniverseMembership).where(
+                    UniverseMembership.universe_id == universe.id
+                )
             )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
     assert len(memberships) == 1
     assert memberships[0].added_at is not None
     assert memberships[0].removed_at is None
@@ -129,12 +137,17 @@ async def test_remove_member_sets_removed_at(db_session, monkeypatch):
     await universes_service.add_members(db_session, universe.id, ["AAPL"])
 
     memberships = (
-        await db_session.execute(
-            select(UniverseMembership).where(
-                UniverseMembership.universe_id == universe.id, UniverseMembership.removed_at.is_(None)
+        (
+            await db_session.execute(
+                select(UniverseMembership).where(
+                    UniverseMembership.universe_id == universe.id,
+                    UniverseMembership.removed_at.is_(None),
+                )
             )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
     ticker_id = memberships[0].ticker_id
 
     await universes_service.remove_member(db_session, universe.id, ticker_id)
@@ -178,12 +191,17 @@ async def test_readd_after_remove_creates_new_row(db_session, monkeypatch):
     assert "AAPL" in r1.added
 
     memberships = (
-        await db_session.execute(
-            select(UniverseMembership).where(
-                UniverseMembership.universe_id == universe.id, UniverseMembership.removed_at.is_(None)
+        (
+            await db_session.execute(
+                select(UniverseMembership).where(
+                    UniverseMembership.universe_id == universe.id,
+                    UniverseMembership.removed_at.is_(None),
+                )
             )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
     ticker_id = memberships[0].ticker_id
 
     await universes_service.remove_member(db_session, universe.id, ticker_id)
@@ -193,10 +211,16 @@ async def test_readd_after_remove_creates_new_row(db_session, monkeypatch):
     assert "AAPL" in r2.added
 
     all_rows = (
-        await db_session.execute(
-            select(UniverseMembership).where(UniverseMembership.universe_id == universe.id)
+        (
+            await db_session.execute(
+                select(UniverseMembership).where(
+                    UniverseMembership.universe_id == universe.id
+                )
+            )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
     assert len(all_rows) == 2
 
     active_rows = [r for r in all_rows if r.removed_at is None]
@@ -220,12 +244,17 @@ async def test_active_members_query(db_session, monkeypatch):
     assert symbols == {"AAPL", "MSFT"}
 
     results = (
-        await db_session.execute(
-            select(UniverseMembership).where(
-                UniverseMembership.universe_id == universe.id, UniverseMembership.removed_at.is_(None)
+        (
+            await db_session.execute(
+                select(UniverseMembership).where(
+                    UniverseMembership.universe_id == universe.id,
+                    UniverseMembership.removed_at.is_(None),
+                )
             )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
     ticker_id = results[0].ticker_id
     await universes_service.remove_member(db_session, universe.id, ticker_id)
     await db_session.flush()
@@ -248,7 +277,9 @@ async def test_point_in_time_snapshot_before_add(db_session, monkeypatch):
     before = datetime.now(timezone.utc) - timedelta(days=30)
     await universes_service.add_members(db_session, universe.id, ["AAPL"])
 
-    members = await universes_service.get_members(db_session, universe.id, at_date=before)
+    members = await universes_service.get_members(
+        db_session, universe.id, at_date=before
+    )
     assert len(members) == 0
 
 
@@ -268,17 +299,24 @@ async def test_point_in_time_snapshot_between_add_and_remove(db_session, monkeyp
     checkpoint = datetime.now(timezone.utc)
 
     results = (
-        await db_session.execute(
-            select(UniverseMembership).where(
-                UniverseMembership.universe_id == universe.id, UniverseMembership.removed_at.is_(None)
+        (
+            await db_session.execute(
+                select(UniverseMembership).where(
+                    UniverseMembership.universe_id == universe.id,
+                    UniverseMembership.removed_at.is_(None),
+                )
             )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
     ticker_id = results[0].ticker_id
     await universes_service.remove_member(db_session, universe.id, ticker_id)
     await db_session.flush()
 
-    members = await universes_service.get_members(db_session, universe.id, at_date=checkpoint)
+    members = await universes_service.get_members(
+        db_session, universe.id, at_date=checkpoint
+    )
     assert len(members) == 1
     assert members[0].symbol == "AAPL"
 
@@ -296,18 +334,25 @@ async def test_point_in_time_snapshot_after_remove(db_session, monkeypatch):
     await universes_service.add_members(db_session, universe.id, ["AAPL"])
 
     results = (
-        await db_session.execute(
-            select(UniverseMembership).where(
-                UniverseMembership.universe_id == universe.id, UniverseMembership.removed_at.is_(None)
+        (
+            await db_session.execute(
+                select(UniverseMembership).where(
+                    UniverseMembership.universe_id == universe.id,
+                    UniverseMembership.removed_at.is_(None),
+                )
             )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
     ticker_id = results[0].ticker_id
     await universes_service.remove_member(db_session, universe.id, ticker_id)
     await db_session.flush()
 
     after_remove = datetime.now(timezone.utc) + timedelta(hours=1)
-    members = await universes_service.get_members(db_session, universe.id, at_date=after_remove)
+    members = await universes_service.get_members(
+        db_session, universe.id, at_date=after_remove
+    )
     assert len(members) == 0
 
 

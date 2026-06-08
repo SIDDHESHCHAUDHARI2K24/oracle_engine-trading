@@ -21,9 +21,15 @@ from app.features.universes.shared.alpaca_assets import AssetInfo
 pytestmark = pytest.mark.integration
 
 MOCK_ALPACA_MAP = {
-    "AAPL": AssetInfo(symbol="AAPL", exchange="NASDAQ", asset_type="equity", tradable=True),
-    "MSFT": AssetInfo(symbol="MSFT", exchange="NASDAQ", asset_type="equity", tradable=True),
-    "NVDA": AssetInfo(symbol="NVDA", exchange="NASDAQ", asset_type="equity", tradable=True),
+    "AAPL": AssetInfo(
+        symbol="AAPL", exchange="NASDAQ", asset_type="equity", tradable=True
+    ),
+    "MSFT": AssetInfo(
+        symbol="MSFT", exchange="NASDAQ", asset_type="equity", tradable=True
+    ),
+    "NVDA": AssetInfo(
+        symbol="NVDA", exchange="NASDAQ", asset_type="equity", tradable=True
+    ),
 }
 
 
@@ -125,9 +131,7 @@ async def test_auth_account_management_flow(db_session, monkeypatch):
             )
         await db.flush()
 
-    monkeypatch.setattr(
-        auth_repo, "delete_all_sessions", safe_delete_all_sessions
-    )
+    monkeypatch.setattr(auth_repo, "delete_all_sessions", safe_delete_all_sessions)
 
     # 1. Create a test user
     user = User(
@@ -160,9 +164,7 @@ async def test_auth_account_management_flow(db_session, monkeypatch):
     assert auth_service.verify_password("new-secure-password456", user.hashed_password)
 
     # 5. Verify sibling sessions revoked (s2, s3 gone); s1 retained
-    result = await db_session.execute(
-        select(Session).where(Session.user_id == user.id)
-    )
+    result = await db_session.execute(select(Session).where(Session.user_id == user.id))
     all_sessions = result.scalars().all()
     session_ids = {s.id for s in all_sessions}
     assert len(all_sessions) == 1
@@ -171,15 +173,11 @@ async def test_auth_account_management_flow(db_session, monkeypatch):
     assert s3.id not in session_ids
 
     # 6. Verify old password fails
-    assert not auth_service.verify_password(
-        "initial-password123", user.hashed_password
-    )
+    assert not auth_service.verify_password("initial-password123", user.hashed_password)
 
     # 7. Logout everywhere
     await account_service.logout_everywhere(db_session, user.id)
 
-    result = await db_session.execute(
-        select(Session).where(Session.user_id == user.id)
-    )
+    result = await db_session.execute(select(Session).where(Session.user_id == user.id))
     remaining = result.scalars().all()
     assert len(remaining) == 0

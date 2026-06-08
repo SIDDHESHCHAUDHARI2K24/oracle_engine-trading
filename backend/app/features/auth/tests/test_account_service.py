@@ -72,9 +72,7 @@ async def test_change_password_revokes_sibling_sessions(
         current_session_id=s2.id,
     )
 
-    result = await db_session.execute(
-        select(Session).where(Session.user_id == user.id)
-    )
+    result = await db_session.execute(select(Session).where(Session.user_id == user.id))
     sessions = result.scalars().all()
     session_ids = {s.id for s in sessions}
 
@@ -150,9 +148,7 @@ async def test_logout_everywhere_deletes_all(db_session: AsyncSession) -> None:
 
     await account_service.logout_everywhere(db_session, user.id)
 
-    result = await db_session.execute(
-        select(Session).where(Session.user_id == user.id)
-    )
+    result = await db_session.execute(select(Session).where(Session.user_id == user.id))
     assert len(result.scalars().all()) == 0
 
 
@@ -168,9 +164,7 @@ async def test_logout_everywhere_keeps_current(db_session: AsyncSession) -> None
         db_session, user.id, keep_current_session_id=s1.id
     )
 
-    result = await db_session.execute(
-        select(Session).where(Session.user_id == user.id)
-    )
+    result = await db_session.execute(select(Session).where(Session.user_id == user.id))
     sessions = result.scalars().all()
     assert len(sessions) == 1
     assert sessions[0].id == s1.id

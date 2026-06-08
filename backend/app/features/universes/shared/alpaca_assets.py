@@ -47,7 +47,9 @@ def _fetch_alpaca_assets() -> dict[str, AssetInfo]:
         secret_key=settings.alpaca_secret_key,
         url_override=ALPACA_PAPER_URL,
     )
-    request = GetAssetsRequest(status=AssetStatus.ACTIVE, asset_class=AssetClass.US_EQUITY)
+    request = GetAssetsRequest(
+        status=AssetStatus.ACTIVE, asset_class=AssetClass.US_EQUITY
+    )
     raw = client.get_all_assets(request)
     result: dict[str, AssetInfo] = {}
     for asset in raw:

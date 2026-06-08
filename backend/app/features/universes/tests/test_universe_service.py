@@ -108,9 +108,7 @@ async def test_soft_delete_universe(db_session):
     assert deleted_universe is not None
     assert deleted_universe.deleted_at is not None
 
-    active_universe = await universes_repo.get_universe_by_id(
-        db_session, universe.id
-    )
+    active_universe = await universes_repo.get_universe_by_id(db_session, universe.id)
     assert active_universe is None
 
 
@@ -130,7 +128,9 @@ async def test_list_includes_deleted_with_flag(db_session):
     assert active.id in active_ids
     assert deleted.id not in active_ids
 
-    with_deleted = await universes_service.list_universes(db_session, include_deleted=True)
+    with_deleted = await universes_service.list_universes(
+        db_session, include_deleted=True
+    )
     all_ids = {u.id for u in with_deleted.universes}
     assert active.id in all_ids
     assert deleted.id in all_ids

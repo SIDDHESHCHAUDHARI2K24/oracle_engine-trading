@@ -51,9 +51,7 @@ async def get_universe(
 universes_router.post(
     "", response_model=UniverseDetail, status_code=status.HTTP_201_CREATED
 )(create_universe)
-universes_router.patch(
-    "/{universe_id}", response_model=UniverseDetail
-)(update_universe)
+universes_router.patch("/{universe_id}", response_model=UniverseDetail)(update_universe)
 universes_router.delete("/{universe_id}", status_code=status.HTTP_200_OK)(
     delete_universe
 )

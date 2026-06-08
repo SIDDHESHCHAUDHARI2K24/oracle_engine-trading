@@ -1,8 +1,10 @@
 """S&P 500 constituent source — scrapes Wikipedia."""
+
 import io
 import httpx
 import pandas as pd
 from ..base import normalize_constituent_symbol
+
 
 class SP500Source:
     """Fetches S&P 500 constituents from Wikipedia."""

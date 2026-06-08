@@ -42,6 +42,7 @@ def _reset_engine():
     global _async_engine, async_session_factory
     if _async_engine is not None:
         import asyncio
+
         try:
             loop = asyncio.get_running_loop()
         except RuntimeError:

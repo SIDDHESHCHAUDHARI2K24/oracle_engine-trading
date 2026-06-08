@@ -16,7 +16,10 @@ from app.features.universes.schemas import (
     UniverseListResponse,
     UniverseSummary,
 )
-from app.features.universes.shared.alpaca_assets import get_alpaca_asset_map, normalize_symbol
+from app.features.universes.shared.alpaca_assets import (
+    get_alpaca_asset_map,
+    normalize_symbol,
+)
 
 
 class SystemManagedUniverseError(ValueError):
@@ -32,7 +35,9 @@ def _generate_public_id() -> str:
 async def list_universes(
     db: AsyncSession, include_deleted: bool = False
 ) -> UniverseListResponse:
-    rows = await universes_repo.list_universes_with_counts(db, include_deleted=include_deleted)
+    rows = await universes_repo.list_universes_with_counts(
+        db, include_deleted=include_deleted
+    )
     summaries = [
         UniverseSummary(
             id=universe.id,
@@ -136,9 +141,7 @@ def _assert_universe_active(universe: Universe | None) -> Universe:
 async def add_members(
     db: AsyncSession, universe_id: uuid.UUID, symbols: list[str]
 ) -> AddResult:
-    _assert_universe_active(
-        await universes_repo.get_universe_by_id(db, universe_id)
-    )
+    _assert_universe_active(await universes_repo.get_universe_by_id(db, universe_id))
 
     alpaca_map = get_alpaca_asset_map()
 
@@ -193,9 +196,7 @@ async def add_members(
 async def remove_member(
     db: AsyncSession, universe_id: uuid.UUID, ticker_id: uuid.UUID
 ) -> None:
-    _assert_universe_active(
-        await universes_repo.get_universe_by_id(db, universe_id)
-    )
+    _assert_universe_active(await universes_repo.get_universe_by_id(db, universe_id))
     removed = await universes_repo.remove_membership(db, universe_id, ticker_id)
     if not removed:
         raise ValueError("Ticker is not an active member of this universe")

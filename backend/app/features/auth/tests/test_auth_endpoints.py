@@ -25,7 +25,9 @@ async def client(database_url: str):
     ).replace("postgresql://", "postgresql+asyncpg://")
 
     engine = create_async_engine(async_url, echo=False, pool_pre_ping=True)
-    session_factory = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+    session_factory = async_sessionmaker(
+        engine, class_=AsyncSession, expire_on_commit=False
+    )
 
     async def override_get_db() -> AsyncGenerator[AsyncSession, None]:
         async with session_factory() as session:
@@ -35,6 +37,7 @@ async def client(database_url: str):
                 await session.close()
 
     from app.app import create_app
+
     app = create_app()
     app.dependency_overrides[get_async_session] = override_get_db
 
@@ -90,7 +93,9 @@ async def test_me_with_valid_bearer_token_returns_user(client: AsyncClient) -> N
         "/api/v1/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
     )
     token = login.json()["access_token"]
-    resp = await client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {token}"})
+    resp = await client.get(
+        "/api/v1/auth/me", headers={"Authorization": f"Bearer {token}"}
+    )
     assert resp.status_code == 200
     assert resp.json()["email"] == ADMIN_EMAIL
     assert resp.json()["is_admin"] is True

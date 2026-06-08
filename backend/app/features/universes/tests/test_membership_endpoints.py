@@ -21,9 +21,15 @@ from app.features.universes.shared.alpaca_assets import AssetInfo
 pytestmark = pytest.mark.integration
 
 MOCK_ALPACA_MAP = {
-    "AAPL": AssetInfo(symbol="AAPL", exchange="NASDAQ", asset_type="equity", tradable=True),
-    "MSFT": AssetInfo(symbol="MSFT", exchange="NASDAQ", asset_type="equity", tradable=True),
-    "NVDA": AssetInfo(symbol="NVDA", exchange="NASDAQ", asset_type="equity", tradable=True),
+    "AAPL": AssetInfo(
+        symbol="AAPL", exchange="NASDAQ", asset_type="equity", tradable=True
+    ),
+    "MSFT": AssetInfo(
+        symbol="MSFT", exchange="NASDAQ", asset_type="equity", tradable=True
+    ),
+    "NVDA": AssetInfo(
+        symbol="NVDA", exchange="NASDAQ", asset_type="equity", tradable=True
+    ),
     "SPY": AssetInfo(symbol="SPY", exchange="ARCA", asset_type="etf", tradable=True),
 }
 
@@ -57,7 +63,9 @@ async def admin_client(db_session: AsyncSession):
 
 
 @pytest.mark.asyncio
-async def test_add_members_returns_breakdown(admin_client: AsyncClient, db_session: AsyncSession):
+async def test_add_members_returns_breakdown(
+    admin_client: AsyncClient, db_session: AsyncSession
+):
     universe = Universe(
         name="endpoint-test", display_name="Endpoint Test", public_id="uni_ep01"
     )
@@ -81,7 +89,9 @@ async def test_add_members_returns_breakdown(admin_client: AsyncClient, db_sessi
 
 
 @pytest.mark.asyncio
-async def test_remove_member_returns_200(admin_client: AsyncClient, db_session: AsyncSession):
+async def test_remove_member_returns_200(
+    admin_client: AsyncClient, db_session: AsyncSession
+):
     universe = Universe(
         name="remove-test", display_name="Remove Test", public_id="uni_rm01"
     )
@@ -118,10 +128,10 @@ async def test_remove_member_returns_200(admin_client: AsyncClient, db_session: 
 
 
 @pytest.mark.asyncio
-async def test_csv_import_adds_tickers(admin_client: AsyncClient, db_session: AsyncSession):
-    universe = Universe(
-        name="csv-test", display_name="CSV Test", public_id="uni_csv01"
-    )
+async def test_csv_import_adds_tickers(
+    admin_client: AsyncClient, db_session: AsyncSession
+):
+    universe = Universe(name="csv-test", display_name="CSV Test", public_id="uni_csv01")
     db_session.add(universe)
     await db_session.flush()
 

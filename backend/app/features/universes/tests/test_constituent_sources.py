@@ -1,4 +1,5 @@
 """Tests for constituent source adapters against saved fixtures."""
+
 import pytest
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
@@ -13,7 +14,10 @@ async def test_sp500_parse():
     with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
         mock_get.return_value.text = html_content
         mock_get.return_value.raise_for_status = lambda: None
-        from app.features.universes.shared.constituents.adapters.sp500 import SP500Source
+        from app.features.universes.shared.constituents.adapters.sp500 import (
+            SP500Source,
+        )
+
         source = SP500Source()
         symbols = await source.fetch_constituents()
     assert len(symbols) > 0
@@ -28,7 +32,10 @@ async def test_russell1000_parse():
     with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
         mock_get.return_value.text = csv_content
         mock_get.return_value.raise_for_status = lambda: None
-        from app.features.universes.shared.constituents.adapters.russell1000 import Russell1000Source
+        from app.features.universes.shared.constituents.adapters.russell1000 import (
+            Russell1000Source,
+        )
+
         source = Russell1000Source()
         symbols = await source.fetch_constituents()
     assert len(symbols) > 0
@@ -42,7 +49,10 @@ async def test_russell2000_parse():
     with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
         mock_get.return_value.text = csv_content
         mock_get.return_value.raise_for_status = lambda: None
-        from app.features.universes.shared.constituents.adapters.russell2000 import Russell2000Source
+        from app.features.universes.shared.constituents.adapters.russell2000 import (
+            Russell2000Source,
+        )
+
         source = Russell2000Source()
         symbols = await source.fetch_constituents()
     assert len(symbols) > 0
@@ -51,7 +61,10 @@ async def test_russell2000_parse():
 
 def test_normalize_constituent_symbol():
     """Symbol normalization: dots to dashes, uppercase."""
-    from app.features.universes.shared.constituents.base import normalize_constituent_symbol
+    from app.features.universes.shared.constituents.base import (
+        normalize_constituent_symbol,
+    )
+
     assert normalize_constituent_symbol("BRK.B") == "BRK-B"
     assert normalize_constituent_symbol(" aapl ") == "AAPL"
     assert normalize_constituent_symbol("BF.B") == "BF-B"

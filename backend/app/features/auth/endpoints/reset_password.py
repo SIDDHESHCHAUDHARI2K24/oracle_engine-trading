@@ -38,7 +38,11 @@ async def reset_password(
         )
 
     user = await auth_repo.get_user_by_email(db, body.email)
-    if user is None or user.reset_token_hash is None or user.reset_token_expires_at is None:
+    if (
+        user is None
+        or user.reset_token_hash is None
+        or user.reset_token_expires_at is None
+    ):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail={

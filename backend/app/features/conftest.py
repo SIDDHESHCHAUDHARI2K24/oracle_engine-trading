@@ -42,8 +42,10 @@ def database_url():
 
     # Clear settings cache and reset DB engine so create_app() picks up test DB
     from app.features.core.config import get_settings
+
     get_settings.cache_clear()
     from app.features.core.database import _reset_engine
+
     _reset_engine()
 
     alembic_cfg = AlembicConfig(str(BACKEND_DIR / "alembic.ini"))
@@ -61,6 +63,7 @@ def database_url():
 
     with SyncSessionLocal() as s:
         from sqlalchemy import text
+
         existing = s.execute(
             text("SELECT 1 FROM users WHERE email = :email"),
             {"email": "admin@mbilabs.io"},

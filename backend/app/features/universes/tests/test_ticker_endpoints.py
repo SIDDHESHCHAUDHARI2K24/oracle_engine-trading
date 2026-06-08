@@ -16,8 +16,12 @@ from app.features.universes.shared.alpaca_assets import AssetInfo
 pytestmark = pytest.mark.integration
 
 MOCK_ALPACA_MAP = {
-    "AAPL": AssetInfo(symbol="AAPL", exchange="NASDAQ", asset_type="equity", tradable=True),
-    "MSFT": AssetInfo(symbol="MSFT", exchange="NASDAQ", asset_type="equity", tradable=True),
+    "AAPL": AssetInfo(
+        symbol="AAPL", exchange="NASDAQ", asset_type="equity", tradable=True
+    ),
+    "MSFT": AssetInfo(
+        symbol="MSFT", exchange="NASDAQ", asset_type="equity", tradable=True
+    ),
     "SPY": AssetInfo(symbol="SPY", exchange="ARCA", asset_type="etf", tradable=True),
 }
 

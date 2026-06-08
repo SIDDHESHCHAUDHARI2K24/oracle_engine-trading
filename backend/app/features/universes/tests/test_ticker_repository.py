@@ -19,9 +19,7 @@ MOCK_ALPACA_MAP = {
     "NVDA": AssetInfo(
         symbol="NVDA", exchange="NASDAQ", asset_type="equity", tradable=True
     ),
-    "SPY": AssetInfo(
-        symbol="SPY", exchange="ARCA", asset_type="etf", tradable=True
-    ),
+    "SPY": AssetInfo(symbol="SPY", exchange="ARCA", asset_type="etf", tradable=True),
 }
 
 

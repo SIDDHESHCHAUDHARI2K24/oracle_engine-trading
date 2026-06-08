@@ -5,6 +5,7 @@ from typing import Protocol
 
 class ConstituentSource(Protocol):
     """Protocol for adapters that fetch index constituent symbols."""
+
     async def fetch_constituents(self) -> list[str]:
         """Return list of uppercase, normalized ticker symbols."""
         ...
