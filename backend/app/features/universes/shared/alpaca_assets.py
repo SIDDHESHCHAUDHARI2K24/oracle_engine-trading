@@ -39,6 +39,10 @@ def normalize_symbol(raw: str) -> str:
     stop=stop_after_attempt(3),
 )
 def _fetch_alpaca_assets() -> dict[str, AssetInfo]:
+    if not settings.alpaca_api_key or not settings.alpaca_secret_key:
+        logger.warning("Alpaca API keys not configured — returning empty asset map")
+        return {}
+
     from alpaca.trading.enums import AssetClass, AssetStatus
     from alpaca.trading.requests import GetAssetsRequest
 

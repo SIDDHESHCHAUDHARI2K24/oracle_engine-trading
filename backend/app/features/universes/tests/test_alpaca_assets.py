@@ -36,7 +36,11 @@ def test_get_alpaca_asset_map_returns_dict() -> None:
         _make_mock_asset("MSFT", "NASDAQ", True),
         _make_mock_asset("NVDA", "NASDAQ", True),
     ]
-    with patch.object(mod, "TradingClient") as mock_client_cls:
+    with (
+        patch.object(mod, "TradingClient") as mock_client_cls,
+        patch.object(mod.settings, "alpaca_api_key", "test-key"),
+        patch.object(mod.settings, "alpaca_secret_key", "test-secret"),
+    ):
         mock_client = MagicMock()
         mock_client.get_all_assets.return_value = mock_assets
         mock_client_cls.return_value = mock_client
@@ -61,7 +65,11 @@ def test_get_alpaca_asset_map_filters_tradable() -> None:
         _make_mock_asset("MSFT", "NASDAQ", True),
         _make_mock_asset("BADD", "NYSE", False),
     ]
-    with patch.object(mod, "TradingClient") as mock_client_cls:
+    with (
+        patch.object(mod, "TradingClient") as mock_client_cls,
+        patch.object(mod.settings, "alpaca_api_key", "test-key"),
+        patch.object(mod.settings, "alpaca_secret_key", "test-secret"),
+    ):
         mock_client = MagicMock()
         mock_client.get_all_assets.return_value = mock_assets
         mock_client_cls.return_value = mock_client
@@ -81,14 +89,22 @@ def test_get_alpaca_asset_map_caches() -> None:
     mock_assets = [
         _make_mock_asset("AAPL", "NASDAQ", True),
     ]
-    with patch.object(mod, "TradingClient") as mock_client_cls:
+    with (
+        patch.object(mod, "TradingClient") as mock_client_cls,
+        patch.object(mod.settings, "alpaca_api_key", "test-key"),
+        patch.object(mod.settings, "alpaca_secret_key", "test-secret"),
+    ):
         mock_client = MagicMock()
         mock_client.get_all_assets.return_value = mock_assets
         mock_client_cls.return_value = mock_client
 
         result1 = mod.get_alpaca_asset_map()
 
-    with patch.object(mod, "TradingClient") as mock_client_cls2:
+    with (
+        patch.object(mod, "TradingClient") as mock_client_cls2,
+        patch.object(mod.settings, "alpaca_api_key", "test-key"),
+        patch.object(mod.settings, "alpaca_secret_key", "test-secret"),
+    ):
         mock_client2 = MagicMock()
         mock_client2.get_all_assets.return_value = []
         mock_client_cls2.return_value = mock_client2

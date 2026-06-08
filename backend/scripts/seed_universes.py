@@ -2,6 +2,9 @@
 
 Idempotent — re-running reconciles memberships (adds new constituents,
 marks departed ones as removed, preserving history).
+
+When external sources (Wikipedia, iShares) are unavailable, falls back to
+hardcoded symbol lists so CI/E2E pipelines still have seeded universes.
 """
 
 import asyncio
@@ -13,6 +16,46 @@ from dotenv import load_dotenv
 load_dotenv()
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+# Hardcoded fallback symbols when external scraping is blocked (CI, etc.)
+FALLBACK_SYMBOLS: dict[str, list[str]] = {
+    "sp500": [
+        "AAPL",
+        "MSFT",
+        "NVDA",
+        "AMZN",
+        "GOOGL",
+        "META",
+        "TSLA",
+        "BRK-B",
+        "JPM",
+        "V",
+    ],
+    "russell1000": [
+        "AAPL",
+        "MSFT",
+        "NVDA",
+        "AMZN",
+        "GOOGL",
+        "META",
+        "TSLA",
+        "UNH",
+        "JNJ",
+        "V",
+    ],
+    "russell2000": [
+        "SMCI",
+        "ELF",
+        "FIX",
+        "CSWI",
+        "BMI",
+        "AIT",
+        "FN",
+        "SPSC",
+        "NXT",
+        "BCC",
+    ],
+}
 
 
 async def seed_universes():
@@ -67,12 +110,25 @@ async def seed_universes():
                         logger.warning(f"  Universe create failed: {e}")
                         continue
 
-                symbols = await source.fetch_constituents()
-                logger.info(f"  Fetched {len(symbols)} constituents")
+                try:
+                    symbols = await source.fetch_constituents()
+                    logger.info(f"  Fetched {len(symbols)} constituents from source")
+                except Exception as fetch_err:
+                    fallback = FALLBACK_SYMBOLS.get(slug, [])
+                    if fallback:
+                        logger.warning(
+                            f"  Source fetch failed ({fetch_err}), "
+                            f"using {len(fallback)} hardcoded fallback symbols"
+                        )
+                        symbols = fallback
+                    else:
+                        raise
 
                 result = await universes_service.add_members(db, universe.id, symbols)
                 logger.info(
-                    f"  Added: {len(result.added)}, Already present: {len(result.already_present)}, Invalid: {len(result.invalid)}"
+                    f"  Added: {len(result.added)}, "
+                    f"Already present: {len(result.already_present)}, "
+                    f"Invalid: {len(result.invalid)}"
                 )
 
                 if result.invalid:
