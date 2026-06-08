@@ -176,6 +176,7 @@ async def seed_universes():
                             )
                             added_syms.append(symbol)
                     await db.flush()
+                    await db.commit()
                     result = universes_service.AddResult(
                         added=added_syms, already_present=[], invalid=[]
                     )
@@ -188,6 +189,8 @@ async def seed_universes():
 
                 if result.invalid:
                     logger.warning(f"  Invalid symbols: {result.invalid[:10]}...")
+
+                await db.commit()
 
             except Exception as e:
                 logger.error(f"  Failed to seed {display_name}: {e}")
