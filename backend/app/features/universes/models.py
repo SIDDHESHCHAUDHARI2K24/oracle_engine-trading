@@ -22,6 +22,10 @@ class Universe(Base, UUIDPrimaryKey, Timestamped, SoftDeletable):
     is_system_managed: Mapped[bool] = mapped_column(
         Boolean, default=False, server_default="false"
     )
+    public_id: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    last_retrain_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     memberships: Mapped[list["UniverseMembership"]] = relationship(
         "UniverseMembership", back_populates="universe", cascade="all, delete-orphan"

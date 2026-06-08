@@ -19,10 +19,10 @@ def test_rate_limit_429_uses_standard_error_envelope() -> None:
 
     # Exhaust the 10/min limit
     for _ in range(10):
-        client.post("/auth/login", json={"email": "x@example.com", "password": "wrong"})
+        client.post("/api/v1/auth/login", json={"email": "x@example.com", "password": "wrong"})
 
     resp = client.post(
-        "/auth/login", json={"email": "x@example.com", "password": "wrong"}
+        "/api/v1/auth/login", json={"email": "x@example.com", "password": "wrong"}
     )
     assert resp.status_code == 429
     data = resp.json()

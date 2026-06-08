@@ -11,6 +11,11 @@ class LoginRequest(BaseModel):
     password: str
 
 
+class ChangePasswordRequest(BaseModel):
+    old_password: str
+    new_password: str
+
+
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
@@ -22,6 +27,7 @@ class UserResponse(BaseModel):
 
     id: UUID
     email: str
+    full_name: str | None = None
     is_admin: bool
     created_at: datetime
 
@@ -32,6 +38,10 @@ class SessionInfo(BaseModel):
     id: UUID
     created_at: datetime
     expires_at: datetime
+    last_used_at: datetime | None = None
+    user_agent: str | None = None
+    ip: str | None = None
+    is_current: bool = False
 
 
 TokenResponse.model_rebuild()

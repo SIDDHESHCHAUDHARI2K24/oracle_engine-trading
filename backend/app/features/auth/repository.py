@@ -4,6 +4,7 @@ Centralizes all database queries for users and sessions.
 """
 
 import uuid
+from datetime import datetime, timezone
 
 from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -53,9 +54,27 @@ async def delete_session_by_hash(db: AsyncSession, token_hash: str) -> None:
     await db.commit()
 
 
-async def delete_all_sessions(db: AsyncSession, user_id: uuid.UUID) -> None:
-    await db.execute(
-        text("DELETE FROM sessions WHERE user_id = :uid"),
-        {"uid": user_id},
+async def list_active_sessions_for_user(db: AsyncSession, user_id: uuid.UUID) -> list[Session]:
+    result = await db.execute(
+        select(Session).where(
+            Session.user_id == user_id,
+            Session.expires_at > datetime.now(timezone.utc),
+        ).order_by(Session.created_at.desc())
     )
+    return list(result.scalars().all())
+
+
+async def delete_all_sessions(
+    db: AsyncSession, user_id: uuid.UUID, exclude_id: uuid.UUID | None = None
+) -> None:
+    if exclude_id:
+        await db.execute(
+            text("DELETE FROM sessions WHERE user_id = :uid AND id != :exclude"),
+            {"uid": user_id, "exclude": exclude_id},
+        )
+    else:
+        await db.execute(
+            text("DELETE FROM sessions WHERE user_id = :uid"),
+            {"uid": user_id},
+        )
     await db.commit()

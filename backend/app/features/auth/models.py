@@ -22,6 +22,10 @@ class User(Base, UUIDPrimaryKey, Timestamped, SoftDeletable):
     is_admin: Mapped[bool] = mapped_column(
         Boolean, default=False, server_default="false"
     )
+    reset_token_hash: Mapped[str | None] = mapped_column(Text, nullable=True)
+    reset_token_expires_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     sessions: Mapped[list["Session"]] = relationship(
         "Session", back_populates="user", cascade="all, delete-orphan"

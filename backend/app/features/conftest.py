@@ -36,11 +36,49 @@ def database_url():
     postgres.start()
 
     sync_url = postgres.get_connection_url()
-    os.environ["DATABASE_URL"] = sync_url
+    # Convert to plain postgresql:// so database.py can convert it to postgresql+asyncpg://
+    plain_url = sync_url.replace("postgresql+psycopg2://", "postgresql://")
+    os.environ["DATABASE_URL"] = plain_url
+
+    # Clear settings cache and reset DB engine so create_app() picks up test DB
+    from app.features.core.config import get_settings
+    get_settings.cache_clear()
+    from app.features.core.database import _reset_engine
+    _reset_engine()
 
     alembic_cfg = AlembicConfig(str(BACKEND_DIR / "alembic.ini"))
     alembic_cfg.set_main_option("sqlalchemy.url", sync_url)
     command.upgrade(alembic_cfg, "head")
+
+    # Seed admin user in the test DB so endpoint integration tests work
+    from argon2 import PasswordHasher
+    from sqlalchemy import create_engine as create_sync_engine
+    from sqlalchemy.orm import sessionmaker as sync_sessionmaker
+
+    sync_engine = create_sync_engine(sync_url)
+    SyncSessionLocal = sync_sessionmaker(bind=sync_engine)
+    ph = PasswordHasher()
+
+    with SyncSessionLocal() as s:
+        from sqlalchemy import text
+        existing = s.execute(
+            text("SELECT 1 FROM users WHERE email = :email"),
+            {"email": "admin@mbilabs.io"},
+        ).first()
+        if existing is None:
+            s.execute(
+                text(
+                    "INSERT INTO users (email, hashed_password, is_admin, full_name) "
+                    "VALUES (:email, :pw, true, :name)"
+                ),
+                {
+                    "email": "admin@mbilabs.io",
+                    "pw": ph.hash("change-me-on-first-login"),
+                    "name": "Admin User",
+                },
+            )
+            s.commit()
+    sync_engine.dispose()
 
     yield sync_url
 

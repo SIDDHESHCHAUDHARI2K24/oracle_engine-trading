@@ -47,6 +47,10 @@ class Settings(BaseSettings):
     # Artifact store path
     artifact_store_path: str = "~/.mbi/artifacts"
 
+    # Alpaca Markets
+    alpaca_api_key: str = ""
+    alpaca_secret_key: str = ""
+
     # CORS
     cors_allow_origins: list[str] = ["http://localhost:5173"]
 

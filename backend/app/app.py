@@ -19,6 +19,7 @@ from app.features.core.database import get_async_session
 from app.features.core.limiter import limiter, rate_limit_exceeded_handler
 from app.features.core.observability.logging import configure_logging
 from app.features.core.observability.middleware import RequestIdMiddleware
+from app.features.universes.endpoints.ticker_sync import ticker_sync_router
 from app.features.universes.router import universes_router
 
 
@@ -65,5 +66,6 @@ def create_app() -> FastAPI:
 
     app.include_router(auth_router)
     app.include_router(universes_router)
+    app.include_router(ticker_sync_router)
 
     return app

@@ -15,7 +15,7 @@ export function useLogin(): UseMutationResult<TokenResponse, Error, LoginCredent
 
   return useMutation({
     mutationFn: (creds: LoginCredentials) =>
-      apiClient.post<TokenResponse>('/auth/login', creds),
+      apiClient.post<TokenResponse>('/api/v1/auth/login', creds),
     onSuccess: (data) => {
       setAuth(data.access_token, data.user)
       void navigate('/universes')

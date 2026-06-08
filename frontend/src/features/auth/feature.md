@@ -1,8 +1,8 @@
 # Auth Feature (Frontend)
 
-The `auth` feature handles user authentication: the login form, JWT access
-token storage in memory, silent refresh via HttpOnly cookie, and the
-`ProtectedRoute` guard that gates all authenticated pages.
+The `auth` feature handles user authentication: login form, JWT access token
+storage in memory, silent refresh via HttpOnly cookie, `ProtectedRoute` guard,
+account settings page, and session management.
 
 ## Responsibilities
 
@@ -14,6 +14,29 @@ token storage in memory, silent refresh via HttpOnly cookie, and the
 - Expose `apiClient` to all features; it reads the access token from the
   Zustand store and injects it as an `Authorization: Bearer` header.
 - Handle `401` responses globally: clear auth state and redirect to `/login`.
+- Provide `AccountSettingsPage` at `/settings/account` with change-password
+  form, session list, and logout-everywhere action.
+
+## Pages
+
+### `LoginPage` (`/login`)
+
+- `react-hook-form` + Zod schema (`loginSchema`): valid email + non-empty password.
+- shadcn `Card` centred on a full-height grey background.
+- Field errors shown inline with `role="alert"` and `aria-describedby`.
+- API-level errors shown as a single red paragraph above the submit button.
+- Submit button disabled with "Signing in…" while mutation is pending.
+- Calls `useLogin` mutation hook; navigation lives in `onSuccess`, not the component.
+
+### `AccountSettingsPage` (`/settings/account`)
+
+- **Change password form**: RHF + Zod, `new_password` min 12 chars. Calls
+  `POST /api/v1/auth/change-password`. Shows success/error toast.
+- **Sessions table**: polls `GET /api/v1/auth/sessions` every 60s via
+  TanStack Query `refetchInterval: 60_000`. Columns: created_at, expires_at,
+  user_agent, ip, "this device" badge (when `is_current === true`).
+- **Log out everywhere**: button with shadcn `AlertDialog` confirm. Calls
+  `POST /api/v1/auth/logout-everywhere`, clears auth store, redirects to `/login`.
 
 ## Files
 
@@ -44,28 +67,27 @@ TanStack Query `useMutation` hook:
 - The hook is the single call site for login; `LoginPage` never touches
   `apiClient` directly.
 
-### `pages/LoginPage.tsx`
+### `api/useSessions.ts`
 
-React component rendered at `/login`:
+TanStack Query `useQuery` hook:
 
-- Uses `react-hook-form` + Zod schema (`loginSchema`) for validation.
-- Zod rules: `email` must be a valid email address; `password` must be
-  non-empty.
-- Renders a shadcn `Card` centred on a full-height grey background.
-- Field errors are shown inline with `role="alert"` and `aria-describedby`
-  for accessibility.
-- API-level errors (wrong credentials, server error) are shown as a single
-  red paragraph above the submit button.
-- Submit button is disabled and shows "Signing in…" while the mutation is
-  pending.
-- No redirect logic in the component — that lives in `useLogin.onSuccess`.
+- Query key: `['auth', 'sessions']`
+- Query fn: `apiClient.get('/api/v1/auth/sessions')`
+- `refetchInterval: 60_000` for near-real-time polling.
+- Returns `list[SessionInfo]`.
+
+### `api/useLogoutEverywhere.ts`
+
+TanStack Query `useMutation`:
+
+- `mutationFn`: `POST /api/v1/auth/logout-everywhere`
+- `onSuccess`: clears auth store, redirects to `/login`.
 
 ### `core/auth-context.tsx` (shared infrastructure, owned by core)
 
 `ProtectedRoute` component:
 
 ```typescript
-// Redirects to /login if accessToken is null
 export function ProtectedRoute({ children }: { children: ReactNode }): JSX.Element
 ```
 
@@ -75,10 +97,11 @@ if absent, otherwise renders `{children}` inside a fragment.
 ## Route wiring (`App.tsx`)
 
 ```
-/login       → LoginPage (unprotected)
-/universes   → UniverseListPage wrapped in ProtectedRoute
-/            → Navigate to /universes (triggers ProtectedRoute → /login if unauthenticated)
-*            → Navigate to /universes
+/login            → LoginPage (unprotected)
+/universes        → UniverseListPage wrapped in ProtectedRoute
+/settings/account → AccountSettingsPage wrapped in ProtectedRoute
+/                 → Navigate to /universes
+*                 → Navigate to /universes
 ```
 
 ## Types (`core/types.ts`)
@@ -89,6 +112,7 @@ type UserId = string & { readonly __brand: 'UserId' }
 interface UserResponse {
   id: UserId
   email: string
+  full_name: string | null
   is_admin: boolean
   created_at: string
 }
@@ -97,6 +121,16 @@ interface TokenResponse {
   access_token: string
   token_type: string
   user: UserResponse
+}
+
+interface SessionInfo {
+  id: string
+  created_at: string
+  expires_at: string
+  last_used_at: string | null
+  user_agent: string | null
+  ip: string | null
+  is_current: boolean
 }
 ```
 
@@ -111,13 +145,11 @@ interface TokenResponse {
   cookie for a new access token without requiring re-login.
 - `credentials: 'include'` is set on every `fetch` call in `apiClient` so
   the refresh cookie is sent automatically.
+- Password change requires 12-character minimum, enforced by both Zod and backend.
 
 ## Backlog / Future Enhancements
 
 - Implement silent token refresh: intercept `401`, call `POST /auth/refresh`,
   retry the original request, and only redirect to `/login` if refresh also
   fails.
-- Add `useLogout` mutation hook that calls `POST /auth/logout` and clears the
-  Zustand store.
-- Add Account Settings page for password change.
-- Add session list page (`GET /auth/sessions`) and "log out everywhere" action.
+- Add `useLogout` mutation hook for single-session logout (currently backend-only).
