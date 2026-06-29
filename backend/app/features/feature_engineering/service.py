@@ -2,9 +2,18 @@
 
 Orchestrates the full Block A2 + A3 pipeline for one or many tickers:
   technical engine → macro merge → target generation → scaler → sanitize → persist.
+
+Supports two modes:
+  - Full recompute: runs on entire OHLCV history for every ticker.
+  - Incremental (trailing-window-seeded): finds latest persisted date,
+    loads 252 trading days of seed data via the trading calendar (NOT naive
+    row counts), runs the pipeline on seed+new data, and persists only new
+    rows.  This prevents silent indicator corruption from a too-short seed
+    window.
 """
 
 import logging
+import uuid as _uuid
 from datetime import date
 from typing import Any
 
@@ -18,6 +27,7 @@ from app.features.feature_engineering.alignment.macro_merger import MacroMerger
 from app.features.feature_engineering.repository import (
     bulk_upsert_feature_matrix,
     bulk_upsert_normalization_stats,
+    get_latest_feature_date,
 )
 from app.features.feature_engineering.shared.feature_schema import (
     FEATURE_SCHEMA_VERSION,
@@ -35,6 +45,7 @@ from app.features.feature_engineering.tensor_prep.target_generator import (
 )
 from app.features.feature_engineering.models import FeatureMatrix
 from app.features.universes.models import Ticker
+from app.features.data_ingestion.shared.trading_calendar import last_n_trading_days
 
 logger = logging.getLogger(__name__)
 
@@ -146,6 +157,93 @@ class FeatureOrchestrator:
             "stats_upserted": total_stats,
             "errors": errors,
             "tickers_processed": len(ticker_ids),
+        }
+
+    async def process_tickers_incremental(
+        self,
+        session: AsyncSession,
+        ticker_ids: list[Any],
+        load_ohlcv_range,  # callable(ticker_id, start_date, end_date) -> DataFrame
+        macro_df: pd.DataFrame,
+        seed_trading_days: int = 252,
+    ) -> dict:
+        """Incremental: seed trailing window via trading calendar, write only new rows.
+
+        The seed window is computed using the NYSE trading calendar
+        (last_n_trading_days), NOT naive row counts. This is the key
+        protection against silent indicator corruption (R2).
+
+        Args:
+            session: Async DB session for persistence.
+            ticker_ids: Ticker identifiers.
+            load_ohlcv_range: Async callable(ticker_id, start, end) → DataFrame.
+            macro_df: Shared macro DataFrame (read-only).
+            seed_trading_days: Size of trailing seed window in trading days.
+        """
+        from app.features.feature_engineering.repository import (
+            delete_feature_rows_for_ticker,
+        )
+
+        total_features = 0
+        total_stats = 0
+        errors: list[str] = []
+        processed = 0
+
+        for ticker_id in ticker_ids:
+            tid_str = str(ticker_id)
+            try:
+                latest = await get_latest_feature_date(session, _uuid.UUID(tid_str))
+
+                if latest is None:
+                    start_date = date(2010, 1, 1)
+                else:
+                    seed_dates = last_n_trading_days(seed_trading_days, latest)
+                    if seed_dates:
+                        start_date = seed_dates[0]
+                    else:
+                        start_date = latest
+
+                end_date = date.today()
+                ohlcv_df = await load_ohlcv_range(ticker_id, start_date, end_date)
+
+                if ohlcv_df is None or ohlcv_df.empty:
+                    continue
+
+                feature_rows, stats_rows, error = self._process_single_ticker(
+                    tid_str, ohlcv_df, macro_df.copy()
+                )
+                if error:
+                    errors.append(error)
+                    continue
+
+                if latest is not None:
+                    from_date = latest + pd.Timedelta(days=1)
+                    if isinstance(from_date, pd.Timestamp):
+                        from_date = from_date.date()
+                    await delete_feature_rows_for_ticker(
+                        session, _uuid.UUID(tid_str), from_date
+                    )
+
+                total_features += await bulk_upsert_feature_matrix(
+                    session, feature_rows
+                )
+                total_stats += await bulk_upsert_normalization_stats(
+                    session, stats_rows
+                )
+                processed += 1
+
+            except Exception as e:
+                logger.error(f"Incremental failed for ticker {tid_str}: {e}")
+                errors.append(str(e))
+
+        await session.commit()
+
+        return {
+            "mode": "incremental",
+            "features_upserted": total_features,
+            "stats_upserted": total_stats,
+            "errors": errors,
+            "tickers_processed": processed,
         }
 
 

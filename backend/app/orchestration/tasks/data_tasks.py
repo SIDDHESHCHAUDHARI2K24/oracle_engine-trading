@@ -72,10 +72,27 @@ async def fill_gaps(
 async def compute_features(
     ticker_map: dict | None = None,
 ) -> dict:
-    """Compute features for active tickers (incremental — trailing-window-seeded)."""
+    """Compute features incrementally — trailing-window-seeded via trading calendar.
+
+    Loads the last 252 trading days of OHLCV per ticker as the seed window
+    (using the NYSE trading calendar, NOT naive row counts), runs the full
+    pipeline, and persists only new rows.
+    """
     logger = get_run_logger()
 
+    import uuid as _uuid
+    from datetime import date as _date
+
+    import pandas as pd
+
     from app.features.core.database import async_session_factory
+    from app.features.data_ingestion.repository import (
+        get_bars_in_range as _get_bars,
+    )
+    from app.features.data_ingestion.models import (
+        OHLCVBar,
+        MacroObservation,
+    )
     from app.features.feature_engineering.service import (
         FeatureOrchestrator,
         get_active_tickers,
@@ -83,9 +100,62 @@ async def compute_features(
 
     async with async_session_factory() as session:
         tickers = await get_active_tickers(session)
+        ticker_ids = [_uuid.UUID(t["id"]) for t in tickers]
         logger.info(f"Computing features for {len(tickers)} tickers...")
 
-    orch = FeatureOrchestrator(n_jobs=-1)
+        # ── Load macro DataFrame (read-only, shared across all tickers) ──
+        from sqlalchemy import select
+        from app.features.feature_engineering.shared.feature_schema import macro_names
 
-    logger.info("Feature computation queued")
-    return {"tickers_processed": len(tickers), "status": "queued"}
+        macro_stmt = select(
+            MacroObservation.series_name,
+            MacroObservation.observed_date,
+            MacroObservation.value,
+        ).where(
+            MacroObservation.series_name.in_(macro_names()),
+        ).order_by(MacroObservation.observed_date)
+        macro_result = await session.execute(macro_stmt)
+        macro_rows = macro_result.fetchall()
+
+        macro_df = pd.DataFrame()
+        if macro_rows:
+            macro_dict: dict[str, dict] = {}
+            for series_name, obs_date, value in macro_rows:
+                if series_name not in macro_dict:
+                    macro_dict[series_name] = {}
+                macro_dict[series_name][obs_date] = float(value)
+            macro_df = pd.DataFrame(macro_dict).sort_index()
+            macro_df = macro_df.ffill()
+
+        # ── OHLCV loader (called inside orchestrator for each ticker) ──
+        async def load_ohlcv_range(
+            ticker_id, start_date, end_date
+        ) -> pd.DataFrame:
+            bars = await _get_bars(session, ticker_id, start_date, end_date)
+            if not bars:
+                return pd.DataFrame()
+            records = []
+            for bar in bars:
+                records.append({
+                    "bar_date": bar.bar_date,
+                    "open": float(bar.open),
+                    "high": float(bar.high),
+                    "low": float(bar.low),
+                    "close": float(bar.close),
+                    "volume": int(bar.volume),
+                })
+            df = pd.DataFrame(records)
+            if not df.empty:
+                df = df.set_index("bar_date").sort_index()
+            return df
+
+        orch = FeatureOrchestrator(n_jobs=-1)
+        result = await orch.process_tickers_incremental(
+            session=session,
+            ticker_ids=ticker_ids,
+            load_ohlcv_range=load_ohlcv_range,
+            macro_df=macro_df,
+            seed_trading_days=252,
+        )
+        logger.info(f"Feature computation result: {result}")
+        return result
