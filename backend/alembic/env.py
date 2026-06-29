@@ -35,6 +35,8 @@ if database_url:
 from app.features.core.base import Base  # noqa: E402
 import app.features.auth.models  # noqa: E402, F401
 import app.features.universes.models  # noqa: E402, F401
+import app.features.data_ingestion.models  # noqa: E402, F401
+import app.features.feature_engineering.models  # noqa: E402, F401
 
 target_metadata = Base.metadata
 
