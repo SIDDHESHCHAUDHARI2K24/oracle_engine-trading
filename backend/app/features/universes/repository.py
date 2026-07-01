@@ -201,3 +201,33 @@ async def get_active_memberships(
         )
     )
     return list(result.scalars().all())
+
+
+async def get_active_ticker_symbol_map(
+    db: AsyncSession, universe_name: str | None = None
+) -> dict[str, uuid.UUID]:
+    """Return all active tickers as {symbol: ticker_id}, optionally scoped.
+
+    Used by the data ingestion backfill and daily flow to determine
+    which tickers to fetch data for.
+    """
+    stmt = (
+        select(Ticker.symbol, Ticker.id)
+        .select_from(Ticker)
+        .join(UniverseMembership, UniverseMembership.ticker_id == Ticker.id)
+        .where(
+            UniverseMembership.removed_at.is_(None),
+            Ticker.active.is_(True),
+        )
+        .distinct()
+    )
+
+    if universe_name:
+        stmt = stmt.join(Universe, Universe.id == UniverseMembership.universe_id)
+        stmt = stmt.where(
+            Universe.name == universe_name,
+            Universe.deleted_at.is_(None),
+        )
+
+    result = await db.execute(stmt)
+    return {row[0]: row[1] for row in result.fetchall()}

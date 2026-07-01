@@ -4,6 +4,12 @@ import { AccountSettingsPage } from './features/auth/pages/AccountSettingsPage'
 import { UniverseListPage } from './features/universes/pages/UniverseListPage'
 import { UniverseDetailPage } from './features/universes/pages/UniverseDetailPage'
 import { UniverseFormPage } from './features/universes/pages/UniverseFormPage'
+import { MonitoringPage } from './features/monitoring/pages/MonitoringPage'
+import { InboxPage } from './features/conviction_tickets/pages/InboxPage'
+import { DetailPage as TicketDetailPage } from './features/conviction_tickets/pages/DetailPage'
+import { HistoryPage } from './features/conviction_tickets/pages/HistoryPage'
+import { ExplorerPage as BacktestExplorerPage } from './features/backtesting/pages/ExplorerPage'
+import { TickerDetailPage } from './features/backtesting/pages/TickerDetailPage'
 import { ProtectedRoute } from './core/auth-context'
 
 export default function App(): JSX.Element {
@@ -47,6 +53,54 @@ export default function App(): JSX.Element {
         element={
           <ProtectedRoute>
             <UniverseListPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/monitoring"
+        element={
+          <ProtectedRoute>
+            <MonitoringPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/tickets"
+        element={
+          <ProtectedRoute>
+            <InboxPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/tickets/history"
+        element={
+          <ProtectedRoute>
+            <HistoryPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/tickets/:id"
+        element={
+          <ProtectedRoute>
+            <TicketDetailPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/backtests/:universeId"
+        element={
+          <ProtectedRoute>
+            <BacktestExplorerPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/backtests/:universeId/:tickerId"
+        element={
+          <ProtectedRoute>
+            <TickerDetailPage />
           </ProtectedRoute>
         }
       />

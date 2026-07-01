@@ -76,3 +76,99 @@ export interface ApiError {
   readonly details?: Record<string, unknown>
   readonly request_id?: string
 }
+
+// Data Ingestion / Monitoring
+
+export interface IngestRunResponse {
+  readonly id: string
+  readonly triggered_by: string
+  readonly triggered_at: string
+  readonly completed_at: string | null
+  readonly status: string
+  readonly ohlcv_rows_inserted: number
+  readonly macro_rows_inserted: number
+  readonly failed_tickers: string[] | null
+  readonly stale_macro: boolean
+  readonly error_summary: string | null
+}
+
+export interface IngestionStatusResponse {
+  readonly latest_run: IngestRunResponse | null
+  readonly per_universe_freshness: readonly Record<string, unknown>[]
+}
+
+export interface IngestionTriggerResponse {
+  readonly message: string
+  readonly run_id: string | null
+  readonly prefect_run_id: string | null
+}
+
+export interface ConvictionTicket {
+  readonly id: string
+  readonly ticker_id: string
+  readonly universe_id: string
+  readonly inference_date: string
+  readonly horizon: string
+  readonly direction: string
+  readonly predicted_return: number
+  readonly conviction_score: number
+  readonly conformal_lower: number
+  readonly conformal_upper: number
+  readonly backtest_passes: number
+  readonly backtest_pass_strategies: readonly string[]
+  readonly status: string
+  readonly resolution_date: string
+  readonly actual_return: number | null
+  readonly outcome: string | null
+  readonly user_notes: string | null
+  readonly created_at: string | null
+  readonly updated_at: string | null
+}
+
+export interface TicketListResponse {
+  readonly tickets: readonly ConvictionTicket[]
+  readonly total: number
+}
+
+export interface TicketActionResponse {
+  readonly message: string
+  readonly ticket: ConvictionTicket
+}
+
+export interface BacktestRunInfo {
+  readonly id: string
+  readonly status: string
+  readonly backtest_period_start: string
+  readonly backtest_period_end: string
+}
+
+export interface TickerPassEntry {
+  readonly ticker_id: string
+  readonly symbol: string
+  readonly passes: number
+  readonly strategies: { readonly [key: string]: boolean }
+}
+
+export interface UniversePassSummary {
+  readonly universe_id: string
+  readonly run: BacktestRunInfo | null
+  readonly tickers: readonly TickerPassEntry[]
+}
+
+export interface StrategyMetrics {
+  readonly strategy_name: string
+  readonly sharpe_ratio: number | null
+  readonly max_drawdown: number | null
+  readonly total_return: number | null
+  readonly win_rate: number | null
+  readonly profit_factor: number | null
+  readonly total_trades: number | null
+  readonly passed: boolean
+  readonly equity_curve: readonly { readonly date: string; readonly value: number }[] | null
+}
+
+export interface TickerBacktestDetail {
+  readonly ticker_id: string
+  readonly symbol: string
+  readonly strategies: readonly StrategyMetrics[]
+}

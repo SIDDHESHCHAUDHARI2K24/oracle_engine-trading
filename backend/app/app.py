@@ -21,7 +21,10 @@ from app.features.core.observability.logging import configure_logging
 from app.features.core.observability.middleware import RequestIdMiddleware
 from app.features.data_ingestion.router import router as data_ingestion_router
 from app.features.feature_engineering.router import router as feature_engineering_router
+from app.features.backtesting.router import router as backtesting_router
+from app.features.ml_models.router import router as ml_models_router
 from app.features.universes.endpoints.ticker_sync import ticker_sync_router
+from app.features.conviction_tickets.router import router as conviction_tickets_router
 from app.features.universes.router import universes_router
 
 
@@ -71,5 +74,8 @@ def create_app() -> FastAPI:
     app.include_router(ticker_sync_router)
     app.include_router(data_ingestion_router)
     app.include_router(feature_engineering_router)
+    app.include_router(backtesting_router)
+    app.include_router(ml_models_router)
+    app.include_router(conviction_tickets_router)
 
     return app

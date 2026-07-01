@@ -37,6 +37,9 @@ import app.features.auth.models  # noqa: E402, F401
 import app.features.universes.models  # noqa: E402, F401
 import app.features.data_ingestion.models  # noqa: E402, F401
 import app.features.feature_engineering.models  # noqa: E402, F401
+import app.features.ml_models.models  # noqa: E402, F401
+import app.features.backtesting.models  # noqa: E402, F401
+import app.features.conviction_tickets.models  # noqa: E402, F401
 
 target_metadata = Base.metadata
 

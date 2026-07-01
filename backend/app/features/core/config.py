@@ -51,6 +51,9 @@ class Settings(BaseSettings):
     alpaca_api_key: str = ""
     alpaca_secret_key: str = ""
 
+    # FRED (Federal Reserve Economic Data)
+    fred_api_key: str = ""
+
     # CORS
     cors_allow_origins: list[str] = ["http://localhost:5173"]
 

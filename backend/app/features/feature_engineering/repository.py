@@ -47,7 +47,7 @@ async def bulk_upsert_feature_matrix(
     for col in FeatureMatrix.__table__.columns:
         col_name = str(col.name)
         if col_name not in ("ticker_id", "bar_date", "feature_schema_version"):
-            update_cols[col_name] = stmt.excluded.c[col_name]
+            update_cols[col_name] = getattr(stmt.excluded, col_name)
 
     stmt = stmt.on_conflict_do_update(
         index_elements=["ticker_id", "bar_date", "feature_schema_version"],

@@ -11,6 +11,10 @@ import asyncio
 
 
 from app.orchestration.flows.daily_data_refresh import daily_data_refresh_flow
+from app.orchestration.flows.daily_inference import daily_inference_flow
+from app.orchestration.flows.outcome_resolution import outcome_resolution_flow
+from app.orchestration.flows.weekly_backtest import weekly_backtest_flow
+from app.orchestration.flows.weekly_retrain import weekly_retrain_flow
 
 
 def deploy_daily_refresh():
@@ -23,8 +27,52 @@ def deploy_daily_refresh():
     )
 
 
+def deploy_daily_inference():
+    """Deploy the daily inference flow, weekdays at 5:30pm ET."""
+    daily_inference_flow.serve(
+        name="daily-inference",
+        cron="30 17 * * 1-5",
+        timezone="America/New_York",
+        description="Daily inference across all active universes post-feature-compute",
+    )
+
+
+def deploy_weekly_backtest():
+    """Deploy the weekly backtest flow, Sundays at 4am ET."""
+    weekly_backtest_flow.serve(
+        name="weekly-backtest",
+        cron="0 4 * * 0",
+        timezone="America/New_York",
+        description="Weekly backtest of all 4 strategies per universe (Sundays 4am ET)",
+    )
+
+
+def deploy_outcome_resolution():
+    """Deploy the outcome resolution flow, weekdays at 5pm ET."""
+    outcome_resolution_flow.serve(
+        name="outcome-resolution",
+        cron="0 17 * * 1-5",
+        timezone="America/New_York",
+        description="Resolve conviction tickets whose horizon ended today",
+    )
+
+
+def deploy_weekly_retrain():
+    """Deploy the weekly retrain flow, Sundays at 6am ET."""
+    weekly_retrain_flow.serve(
+        name="weekly-retrain",
+        cron="0 6 * * 0",
+        timezone="America/New_York",
+        description="Weekly retrain + champion/challenger promotion for all active universes",
+    )
+
+
 async def main():
     deploy_daily_refresh()
+    deploy_daily_inference()
+    deploy_outcome_resolution()
+    deploy_weekly_backtest()
+    deploy_weekly_retrain()
     print("Deployments registered. Keeping process alive for serve...")
     await asyncio.Event().wait()
 

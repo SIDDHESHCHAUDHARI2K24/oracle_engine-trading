@@ -4,7 +4,7 @@ Tables: feature_matrix (TimescaleDB hypertable), normalization_stats (TimescaleD
 """
 
 import uuid
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from decimal import Decimal
 
 from sqlalchemy import (
@@ -82,7 +82,7 @@ class FeatureMatrix(Base):
     )
     computed_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(datetime.timezone.utc),
+        default=lambda: datetime.now(timezone.utc),
     )
 
     __table_args__ = (

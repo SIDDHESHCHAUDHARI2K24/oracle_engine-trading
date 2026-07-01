@@ -1,7 +1,7 @@
 {
   "C:\\Projects\\Oracle Engine - Trading\\backend\\alembic\\env.py": {
-    "mtime": 1780890840.0701249,
-    "hash": "60c33f51a5ea46032439ae63a4040d25"
+    "mtime": 1782712428.930101,
+    "hash": "450dc38a3c3a5f54118e989612be9bda"
   },
   "C:\\Projects\\Oracle Engine - Trading\\backend\\alembic\\tests\\test_alembic_config.py": {
     "mtime": 1780357002.062126,
@@ -23,6 +23,14 @@
     "mtime": 1780890935.6893651,
     "hash": "e81b3095aa1ce175f863265fa63923ae"
   },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\alembic\\versions\\a0b1c2d3e4f5_add_feature_engineering_tables.py": {
+    "mtime": 1782697779.5991423,
+    "hash": "9e532f9f7241c94e30c403bdc5fadff2"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\alembic\\versions\\b1c2d3e4f5a6_add_ml_model_tables.py": {
+    "mtime": 1782717683.4187343,
+    "hash": "8ab00fcef3b03a1849a52b92e3e626e7"
+  },
   "C:\\Projects\\Oracle Engine - Trading\\backend\\alembic\\versions\\d871d570373e_reconcile_schema_s1.py": {
     "mtime": 1780357002.0636477,
     "hash": "bd07f4d63f72ea6cdfd3ffcb19e7d827"
@@ -32,8 +40,8 @@
     "hash": "4d7e3724ab0a59baa5253afc66e46a9c"
   },
   "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\app.py": {
-    "mtime": 1780891396.1467576,
-    "hash": "2eb358a78082d16db8198f21216604af"
+    "mtime": 1782720375.8958483,
+    "hash": "0a47f76b4afa35d2ffb0e11eafdea2bd"
   },
   "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\__init__.py": {
     "mtime": 1780357002.0686734,
@@ -46,6 +54,10 @@
   "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\core\\services\\artifact_store.py": {
     "mtime": 1780308238.3986137,
     "hash": "273e57f8227d0599aa1b29422bd24db9"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\core\\services\\torch_device.py": {
+    "mtime": 1782708326.663176,
+    "hash": "0a6fc6bd39e9b1bfa5b624c4f857f722"
   },
   "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\core\\services\\__init__.py": {
     "mtime": 1780308227.2397437,
@@ -220,8 +232,8 @@
     "hash": "0b9ebbae3fa4cc5f00e02dbe95fbf15d"
   },
   "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\data_ingestion\\models.py": {
-    "mtime": 1780890827.8349824,
-    "hash": "610531a72c45375689a29b34ecc2e811"
+    "mtime": 1782718127.027206,
+    "hash": "c70a17b9d52df49fd5ea5ed641238d9b"
   },
   "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\data_ingestion\\repository.py": {
     "mtime": 1780891628.2182512,
@@ -289,6 +301,290 @@
   },
   "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\data_ingestion\\tests\\__init__.py": {
     "mtime": 1780890809.149844,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\dependencies.py": {
+    "mtime": 1782698151.0647478,
+    "hash": "daf978d906876f22ad12225a55325427"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\models.py": {
+    "mtime": 1782718106.4623828,
+    "hash": "f070ceb1cc327c32e8887f25440fcdac"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\repository.py": {
+    "mtime": 1782717933.1267445,
+    "hash": "3fd5abaa14cd8f31dd3b9d444a9ff7ed"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\router.py": {
+    "mtime": 1782698304.4331255,
+    "hash": "4ce895f25a1822b5f83dcc8fa451f484"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\schemas.py": {
+    "mtime": 1782698146.2520044,
+    "hash": "d5f82fe8bb5814910b87a813b6f3ec6e"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\service.py": {
+    "mtime": 1782699107.069694,
+    "hash": "c583e0a8c9c7da82c79ed3cf05144b01"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\__init__.py": {
+    "mtime": 1782697660.1188152,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\alignment\\macro_merger.py": {
+    "mtime": 1782697948.9034348,
+    "hash": "b979940f0bde08beb729e0dced577922"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\alignment\\__init__.py": {
+    "mtime": 1782697919.9678707,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\alignment\\tests\\test_macro_merger.py": {
+    "mtime": 1782697930.806844,
+    "hash": "0cf1905b5eabb796688067d17559f3ba"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\alignment\\tests\\__init__.py": {
+    "mtime": 1782697920.469161,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\endpoints\\inspect.py": {
+    "mtime": 1782698298.453714,
+    "hash": "e08d30cb5bcf86eac1db32bbe2b6adee"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\endpoints\\trigger.py": {
+    "mtime": 1782698293.7753036,
+    "hash": "3a2db0c63143600700ef12e388676f37"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\endpoints\\__init__.py": {
+    "mtime": 1782698152.4839716,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\shared\\feature_schema.py": {
+    "mtime": 1782697723.842856,
+    "hash": "79b9c548b7fdb21e82e01ea8520271cc"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\shared\\__init__.py": {
+    "mtime": 1782697660.541533,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\shared\\tests\\test_feature_schema.py": {
+    "mtime": 1782697673.5009186,
+    "hash": "62ff28e4437e07332b5a002b284ae805"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\shared\\tests\\__init__.py": {
+    "mtime": 1782697661.0054948,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\technical\\base.py": {
+    "mtime": 1782697834.1221774,
+    "hash": "b4aea6d43347f429ff718c49be041e0d"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\technical\\equity_engineer.py": {
+    "mtime": 1782697885.2215986,
+    "hash": "de23917db640b7e3f4b4d969ca10c6c5"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\technical\\__init__.py": {
+    "mtime": 1782697830.3221245,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\technical\\tests\\test_equity_engineer.py": {
+    "mtime": 1782697856.0475805,
+    "hash": "d3f5c393832bd35376781f0185222176"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\technical\\tests\\__init__.py": {
+    "mtime": 1782697830.8475728,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\tensor_prep\\dataset.py": {
+    "mtime": 1782698221.4280646,
+    "hash": "50707bad9445a5ced9f6feb1f6d3b121"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\tensor_prep\\feature_scaler.py": {
+    "mtime": 1782698071.809963,
+    "hash": "2e842686925e276655b54872fe145a4f"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\tensor_prep\\target_generator.py": {
+    "mtime": 1782698001.5441422,
+    "hash": "ad0bf45c1ba74c8868fb2d8e86e82da2"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\tensor_prep\\tests\\test_dataset.py": {
+    "mtime": 1782698193.310915,
+    "hash": "344b41cf0651ad9a1b0f5a0452e2e8b3"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\tensor_prep\\tests\\test_feature_scaler.py": {
+    "mtime": 1782698045.986311,
+    "hash": "3985958d611d514cfd21ce12b476a3e5"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\tensor_prep\\tests\\test_target_generator.py": {
+    "mtime": 1782697984.2373328,
+    "hash": "4236a45dcd167eed018cc0fe6261f4e2"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\artifact_service.py": {
+    "mtime": 1782718615.0161836,
+    "hash": "fc1b63e5d9af74c321d39e4184e98b93"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\dependencies.py": {
+    "mtime": 1782720347.5487964,
+    "hash": "ba176409aba3b11b7459d5d7101ef56f"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\inference_service.py": {
+    "mtime": 1782732264.529309,
+    "hash": "a323e9195ca373950b7305062b08fe67"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\models.py": {
+    "mtime": 1782730077.1775815,
+    "hash": "1c838dc8820f4a9ba7acef00268c0df8"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\promotion.py": {
+    "mtime": 1782718470.2743824,
+    "hash": "ca474f580d7eceb224b20e2e1f44cd74"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\repository.py": {
+    "mtime": 1782718048.0974731,
+    "hash": "8bff248b9c908e2ee856f6998b94f178"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\router.py": {
+    "mtime": 1782720346.53307,
+    "hash": "cdf12d46737fb5b6e4d0c405cefbbfbc"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\schemas.py": {
+    "mtime": 1782709112.4694033,
+    "hash": "e6cad58d7223d2e0c9af490a7bae2c4b"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\service.py": {
+    "mtime": 1782792926.3957882,
+    "hash": "2384b96567fafffca279c08c1b8c2851"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\__init__.py": {
+    "mtime": 1782706733.0442333,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\conformal\\calibrator.py": {
+    "mtime": 1782714216.874134,
+    "hash": "376e7ed8b092072bc4a37180a4985b14"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\conformal\\coverage_tracker.py": {
+    "mtime": 1782732072.6794543,
+    "hash": "0941d24a91b58752732b16511d885cd1"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\conformal\\__init__.py": {
+    "mtime": 1782706733.0422177,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\conformal\\tests\\test_calibrator.py": {
+    "mtime": 1782714365.446923,
+    "hash": "2471affa0cc84a49fc6420576370db9e"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\conformal\\tests\\__init__.py": {
+    "mtime": 1782714217.5162556,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\endpoints\\model_health.py": {
+    "mtime": 1782720409.7881422,
+    "hash": "f99ca08622439868ae66371c7c648544"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\endpoints\\__init__.py": {
+    "mtime": 1782706733.1856232,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\ensemble\\blender.py": {
+    "mtime": 1782714333.7536738,
+    "hash": "f6976f703bbb9d67c9f14c4f6e8a6b0d"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\ensemble\\orchestrator.py": {
+    "mtime": 1782729640.4863298,
+    "hash": "fd9768f93583efcaf4730849622eb971"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\ensemble\\scoring.py": {
+    "mtime": 1782715071.6374705,
+    "hash": "3dd603f975715b1880de1b4fd0501818"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\ensemble\\__init__.py": {
+    "mtime": 1782706733.043232,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\ensemble\\tests\\test_blender.py": {
+    "mtime": 1782714357.3582463,
+    "hash": "ab869bdc3f95993c2dffd665bba348a1"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\ensemble\\tests\\test_orchestrator.py": {
+    "mtime": 1782778332.4891798,
+    "hash": "daf433c075ab2d981e1106ddc14ce666"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\ensemble\\tests\\__init__.py": {
+    "mtime": 1782714334.4299107,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\lstm\\architecture.py": {
+    "mtime": 1782714208.9678884,
+    "hash": "024ab090b186c2f1d3be1df86fbfc814"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\lstm\\trainer.py": {
+    "mtime": 1782715471.5454552,
+    "hash": "c4bf1473466f0211b7cd47713340432f"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\lstm\\__init__.py": {
+    "mtime": 1782706733.0422177,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\lstm\\tests\\test_architecture.py": {
+    "mtime": 1782714237.258893,
+    "hash": "965b15b535c56e2d4266bb8d54915fec"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\lstm\\tests\\test_lstm_trainer.py": {
+    "mtime": 1782715489.029701,
+    "hash": "39b64c844c16d835644d469b7fb7a921"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\lstm\\tests\\__init__.py": {
+    "mtime": 1782715214.1333911,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\shared\\base.py": {
+    "mtime": 1782708326.670515,
+    "hash": "02d1dcac34dda6bd5d349e7b7610d628"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\shared\\walk_forward.py": {
+    "mtime": 1782709112.470402,
+    "hash": "bbcee29c43901b12ce1dd20951e68526"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\shared\\__init__.py": {
+    "mtime": 1782706733.043232,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\shared\\tests\\test_walk_forward.py": {
+    "mtime": 1782732188.5761755,
+    "hash": "b7d68ef3359f56a936ff2981ae9a2811"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\tests\\test_inference.py": {
+    "mtime": 1782718112.0573049,
+    "hash": "b742ad0f5d035bc7a6522d41b54cec2d"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\tests\\test_integration.py": {
+    "mtime": 1782798201.1828713,
+    "hash": "2e4c85f79ac9db6d70fd06ccd187a5a7"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\tests\\test_training_pipeline.py": {
+    "mtime": 1782718664.351885,
+    "hash": "f702f64233ea93e64340fcbbdb894c86"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\tft\\architecture.py": {
+    "mtime": 1782721524.432267,
+    "hash": "050c31b0bbf06360e317f2377da4d7ad"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\tft\\data_adapter.py": {
+    "mtime": 1782719243.4843788,
+    "hash": "bb1ac5a27718e6ffaec5b3992bee0cba"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\tft\\__init__.py": {
+    "mtime": 1782706733.0422177,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\tft\\tests\\test_data_adapter.py": {
+    "mtime": 1782719838.6319618,
+    "hash": "3f58a024ab4ff703be227002574768be"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\tft\\tests\\__init__.py": {
+    "mtime": 1782715167.9903781,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\universes\\models.py": {
@@ -416,28 +712,40 @@
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\orchestration\\deployments.py": {
-    "mtime": 1780891617.3819995,
-    "hash": "eb34915d03b5dde1fd95995d1a3a8365"
+    "mtime": 1782719272.8175282,
+    "hash": "5535000964e4e15eff4910b4b866d6ed"
   },
   "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\orchestration\\__init__.py": {
     "mtime": 1780891290.885925,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\orchestration\\flows\\daily_data_refresh.py": {
-    "mtime": 1780891308.47815,
-    "hash": "b8591a6c772a46cfef10763c497a3587"
+    "mtime": 1782698274.4757097,
+    "hash": "f4a2514a7164e344096abb880f18d1f6"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\orchestration\\flows\\daily_inference.py": {
+    "mtime": 1782719293.1674626,
+    "hash": "f60c2be09321253cba11928321260291"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\orchestration\\flows\\weekly_retrain.py": {
+    "mtime": 1782719292.2596145,
+    "hash": "ba530dba33f1697355a494cc4b4621ba"
   },
   "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\orchestration\\flows\\__init__.py": {
     "mtime": 1780891291.4028158,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\orchestration\\tasks\\data_tasks.py": {
-    "mtime": 1780891617.3810005,
-    "hash": "6bab76989430f5dad2720e2fe8d8f14c"
+    "mtime": 1782699136.1379397,
+    "hash": "a706d67d63bac309c74141e7010dd42b"
   },
   "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\orchestration\\tasks\\__init__.py": {
     "mtime": 1780891291.9561017,
     "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\scripts\\feature_backfill.py": {
+    "mtime": 1782699157.1812909,
+    "hash": "63ae234aaaa83b2bd8d805d052f91368"
   },
   "C:\\Projects\\Oracle Engine - Trading\\backend\\scripts\\initial_backfill.py": {
     "mtime": 1782695661.2063763,
@@ -466,6 +774,18 @@
   "C:\\Projects\\Oracle Engine - Trading\\backend\\src\\backend\\__init__.py": {
     "mtime": 1780305495.202212,
     "hash": "ce53a6e2d3152295bad0a3f5e8c4706b"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\tests\\lookahead_audit\\test_incremental_identity.py": {
+    "mtime": 1782699190.7360377,
+    "hash": "5747be7d933d1f7c6c08544f609be693"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\tests\\lookahead_audit\\test_lookahead.py": {
+    "mtime": 1782699018.0612972,
+    "hash": "10d7ca56bc00fa9e736807dd42142081"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\tests\\lookahead_audit\\__init__.py": {
+    "mtime": 1782698358.7141194,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "C:\\Projects\\Oracle Engine - Trading\\e2e\\playwright.config.ts": {
     "mtime": 1780348401.7154627,
@@ -691,6 +1011,14 @@
     "mtime": 1780891419.7156148,
     "hash": "ae62941ffd0539fd793cee1a1dbaebee"
   },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\feature_engineering\\features.md": {
+    "mtime": 1782698369.5494776,
+    "hash": "0184c98b3c691e7029a1738ef39b6df0"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\ml_models\\features.md": {
+    "mtime": 1782732112.6486022,
+    "hash": "744b1ca62e16b144df2a3f42e2e07c38"
+  },
   "C:\\Projects\\Oracle Engine - Trading\\backend\\app\\features\\universes\\features.md": {
     "mtime": 1780374485.7100966,
     "hash": "9f02e456591d05c6cd239e7e0817301e"
@@ -710,6 +1038,18 @@
   "C:\\Projects\\Oracle Engine - Trading\\docs\\plans\\2026-06-28-stage-s3-feature-engineering.md": {
     "mtime": 1782697560.784382,
     "hash": "840cf72b1abf26f31708f793cd7eee08"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\docs\\plans\\2026-06-28-stage-s4-ml-models.md": {
+    "mtime": 1782703948.5323308,
+    "hash": "03a84fb29bc45ea4ebd43bf508a42627"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\docs\\post-development_docs\\S3\\S3-post-development-summary.md": {
+    "mtime": 1782700037.194368,
+    "hash": "8bb7a3a4dcd50b3cefaaca6aba6c614b"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\docs\\post-development_docs\\S4\\S4-post-development-summary.md": {
+    "mtime": 1782859101.6701417,
+    "hash": "11aef8d610067ff05e102f964e5c5da2"
   },
   "C:\\Projects\\Oracle Engine - Trading\\docs\\runbooks\\cold-start-ingestion.md": {
     "mtime": 1780891435.125053,
@@ -742,6 +1082,14 @@
   "C:\\Projects\\Oracle Engine - Trading\\features-to-develop\\development-plan-S3.md": {
     "mtime": 1782696394.584376,
     "hash": "2da25f6876eed14e8501952ab44839a6"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\features-to-develop\\development-plan-S4.md": {
+    "mtime": 1782700129.9876149,
+    "hash": "ba2ebc687cee00ada7ba19e9f733679d"
+  },
+  "C:\\Projects\\Oracle Engine - Trading\\features-to-develop\\development-plan-S5.md": {
+    "mtime": 1782781001.595235,
+    "hash": "f2ad4613f3ae2023c003bf0b45b0ae5c"
   },
   "C:\\Projects\\Oracle Engine - Trading\\frontend\\index.html": {
     "mtime": 1780348296.9794796,
