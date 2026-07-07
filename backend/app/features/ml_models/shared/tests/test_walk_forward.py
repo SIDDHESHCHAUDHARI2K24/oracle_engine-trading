@@ -6,7 +6,9 @@ import pytest
 
 _WF_PATH = Path(__file__).resolve().parent.parent / "walk_forward.py"
 _spec = importlib.util.spec_from_file_location("walk_forward", _WF_PATH)
+assert _spec is not None
 _wf = importlib.util.module_from_spec(_spec)
+assert _spec.loader is not None  # type: ignore[union-attr]
 _spec.loader.exec_module(_wf)
 create_walk_forward_split = _wf.create_walk_forward_split
 slide_window_forward = _wf.slide_window_forward

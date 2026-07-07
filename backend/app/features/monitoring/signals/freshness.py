@@ -42,7 +42,7 @@ async def compute_freshness(
     hours_since = (now - last_completed).total_seconds() / 3600
     stale = hours_since > max_hours_stale
 
-    result_data = {
+    result_data: dict[str, object] = {
         "last_successful_ingest": last_completed.isoformat(),
         "hours_since": round(hours_since, 2),
         "stale": stale,
@@ -102,7 +102,7 @@ async def compute_pipeline_success(
 
     trigger = success_rate < success_threshold
 
-    result_data = {
+    result_data: dict[str, object] = {
         "total_runs": total,
         "succeeded_runs": succeeded,
         "success_rate": round(success_rate, 4),
@@ -110,7 +110,7 @@ async def compute_pipeline_success(
         "trigger_alert": trigger,
     }
 
-    if trigger and alert_service is not None:
+    if trigger and alert_service is not None and session is not None:
         await alert_service.raise_alert(
             session,
             severity="warning",

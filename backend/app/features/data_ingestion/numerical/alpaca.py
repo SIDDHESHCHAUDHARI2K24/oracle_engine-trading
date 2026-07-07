@@ -64,13 +64,13 @@ class AlpacaFetcher(DataFetcher):
                 timeframe=TimeFrame(1, TimeFrameUnit.Day),
                 start=pd.Timestamp(start_date).to_pydatetime(),
                 end=pd.Timestamp(end_date).to_pydatetime(),
-                adjustment="all",
+                adjustment="all",  # type: ignore[arg-type]
             )
             bars = client.get_stock_bars(request_params)
         except Exception as e:
             raise FetcherError(self.source_name, symbols, original_error=e) from e
 
-        return self._unpack_bars(bars, symbols)
+        return self._unpack_bars(bars, symbols)  # type: ignore[arg-type]
 
     def _unpack_bars(self, bars: dict, symbols: list[str]) -> dict[str, pd.DataFrame]:
         results: dict[str, pd.DataFrame] = {}

@@ -78,11 +78,11 @@ class ArtifactLifecycleService:
             )
             .with_for_update()
         )
-        current_champion = current_champion.scalar_one_or_none()
+        current_champion = current_champion.scalar_one_or_none()  # type: ignore[assignment]
 
         if current_champion is not None:
-            current_champion.is_active = False
-            current_champion.archived_at = datetime.now(timezone.utc)
+            current_champion.is_active = False  # type: ignore[attr-defined]
+            current_champion.archived_at = datetime.now(timezone.utc)  # type: ignore[attr-defined]
             await session.flush()
 
         artifact.is_active = True
@@ -135,7 +135,7 @@ class ArtifactLifecycleService:
             .values(archived_at=datetime.now(timezone.utc))
         )
         await session.flush()
-        return result.rowcount
+        return result.rowcount  # type: ignore[attr-defined,union-attr]
 
     async def get_active_artifacts(
         self,

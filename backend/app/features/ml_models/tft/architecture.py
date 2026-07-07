@@ -157,7 +157,7 @@ class TemporalFusionQuadArray(BaseMathEngine):
             "forward() is not the primary interface."
         )
 
-    def train_model(
+    def train_model(  # type: ignore[override]
         self,
         train_loaders: dict[str, DataLoader] | None = None,
         val_loaders: dict[str, DataLoader] | None = None,
@@ -262,4 +262,4 @@ class TemporalFusionQuadArray(BaseMathEngine):
                     output = wrapper(data_device)
                     results[horizon] = _extract_numpy(output)
 
-        return results
+        return results  # type: ignore[return-value]

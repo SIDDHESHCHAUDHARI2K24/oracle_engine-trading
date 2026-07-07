@@ -63,7 +63,7 @@ async def fill_gaps(
     from app.features.core.database import async_session_factory
 
     async with async_session_factory() as session:
-        gaps = await detect_gaps_batch(session, ticker_added_map)
+        gaps = await detect_gaps_batch(session, ticker_added_map)  # type: ignore[arg-type]
         logger.info("Detected %d tickers with gaps", len(gaps))
         return gaps
 

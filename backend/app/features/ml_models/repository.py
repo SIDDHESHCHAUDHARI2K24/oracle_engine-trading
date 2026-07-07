@@ -166,7 +166,7 @@ async def upsert_predictions(
                 Prediction.inference_date == p["inference_date"],
             )
         )
-        existing = existing.scalar_one_or_none()
+        existing = existing.scalar_one_or_none()  # type: ignore[assignment]
         if existing is not None:
             for col in (
                 "pred_t1",

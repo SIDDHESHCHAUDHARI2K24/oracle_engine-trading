@@ -3,6 +3,7 @@ from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import Generator
 
 import numpy as np
 import pytest
@@ -76,7 +77,7 @@ async def _insert_feature_rows(session, ticker_ids: list[uuid.UUID]) -> None:
 
 class TestE2EIntegration:
     @pytest.fixture
-    def artifact_store(self) -> LocalArtifactStore:
+    def artifact_store(self) -> Generator[LocalArtifactStore, None, None]:
         with TemporaryDirectory() as tmpdir:
             yield LocalArtifactStore(root=Path(tmpdir) / "artifacts")
 

@@ -127,7 +127,7 @@ async def get_latest_metrics_for_ticker(
     )
     if universe_id is not None:
         sub = sub.where(BacktestRun.universe_id == universe_id)
-    sub = sub.order_by(BacktestRun.created_at.desc()).limit(1).scalar_subquery()
+    sub = sub.order_by(BacktestRun.created_at.desc()).limit(1).scalar_subquery()  # type: ignore[assignment]
 
     stmt = select(BacktestMetrics).where(BacktestMetrics.backtest_run_id == sub)
     result = await session.execute(stmt)

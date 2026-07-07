@@ -38,7 +38,7 @@ async def detect_gaps(
         Sorted list of missing trading dates.
     """
     all_expected = expected_bars(added_at, through)
-    present = await get_present_bar_dates(session, ticker_id)
+    present = await get_present_bar_dates(session, ticker_id)  # type: ignore[arg-type]
     gaps = sorted(all_expected - present)
 
     if max_lookback_days > 0 and len(gaps) > max_lookback_days:

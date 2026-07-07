@@ -46,7 +46,7 @@ class BacktestOrchestrator:
 
     async def _find_spy_ticker(self, session: AsyncSession) -> uuid.UUID | None:
         stmt = select(Ticker.id).where(
-            Ticker.symbol == "SPY", Ticker.deleted_at.is_(None)
+            Ticker.symbol == "SPY", Ticker.deleted_at.is_(None)  # type: ignore[attr-defined]
         )
         result = await session.execute(stmt)
         row = result.first()
@@ -117,7 +117,7 @@ class BacktestOrchestrator:
         period_end: date,
         triggered_by: str = "on_demand",
     ) -> BacktestRun:
-        stmt = select(Ticker).where(Ticker.id == ticker_id, Ticker.deleted_at.is_(None))
+        stmt = select(Ticker).where(Ticker.id == ticker_id, Ticker.deleted_at.is_(None))  # type: ignore[attr-defined]
         result = await session.execute(stmt)
         ticker = result.scalar_one_or_none()
         if ticker is None:
@@ -197,20 +197,20 @@ class BacktestOrchestrator:
 
             try:
                 entries, exits = strategy.generate_signals(df)
-                result = self.metrics.run(df["close"], entries, exits)
+                result = self.metrics.run(df["close"], entries, exits)  # type: ignore[assignment]
 
                 metrics_records.append(
                     {
                         "backtest_run_id": run_id,
                         "ticker_id": ticker.id,
                         "strategy_name": strategy_name,
-                        "sharpe_ratio": result["sharpe_ratio"],
-                        "max_drawdown": result["max_drawdown"],
-                        "total_return": result["total_return"],
-                        "win_rate": result["win_rate"],
-                        "profit_factor": result["profit_factor"],
-                        "total_trades": result["total_trades"],
-                        "equity_curve": result["equity_curve"],
+                        "sharpe_ratio": result["sharpe_ratio"],  # type: ignore[index]
+                        "max_drawdown": result["max_drawdown"],  # type: ignore[index]
+                        "total_return": result["total_return"],  # type: ignore[index]
+                        "win_rate": result["win_rate"],  # type: ignore[index]
+                        "profit_factor": result["profit_factor"],  # type: ignore[index]
+                        "total_trades": result["total_trades"],  # type: ignore[index]
+                        "equity_curve": result["equity_curve"],  # type: ignore[index]
                     }
                 )
             except Exception as e:

@@ -127,9 +127,9 @@ async def delete_feature_rows_for_ticker(
     from_date: date | None = None,
 ) -> int:
     """Delete feature matrix rows for a ticker, optionally from a date."""
-    stmt = FeatureMatrix.__table__.delete().where(FeatureMatrix.ticker_id == ticker_id)
+    stmt = FeatureMatrix.__table__.delete().where(FeatureMatrix.ticker_id == ticker_id)  # type: ignore[attr-defined]
     if from_date is not None:
         stmt = stmt.where(FeatureMatrix.bar_date >= from_date)
-    result = await session.execute(stmt)
+    result = await session.execute(stmt)  # type: ignore[assignment]
     await session.flush()
-    return result.rowcount
+    return result.rowcount  # type: ignore[attr-defined,union-attr]

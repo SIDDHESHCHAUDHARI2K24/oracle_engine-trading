@@ -72,7 +72,7 @@ async def get_universe_backtest(
             universe_id=universe_id,
             run=run_response,
             tickers=[
-                {
+                {  # type: ignore[misc]
                     "ticker_id": uuid.UUID(t["ticker_id"]),
                     "symbol": t["symbol"],
                     "passes": t["passes"],
@@ -128,5 +128,5 @@ async def get_ticker_backtest_detail(
     ]
 
     return TickerBacktestDetail(
-        ticker_id=ticker_id, symbol=symbol, strategies=strategies
+        ticker_id=ticker_id, symbol=symbol, strategies=strategies  # type: ignore[arg-type]
     )

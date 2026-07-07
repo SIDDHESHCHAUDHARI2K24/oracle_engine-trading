@@ -23,7 +23,7 @@ async def get_recent_runs(
         async with get_client() as client:
             runs = await client.read_flow_runs(
                 limit=limit,
-                sort="-created",
+                sort="-created",  # type: ignore[arg-type]
             )
             result = []
             for run in runs:

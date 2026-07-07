@@ -246,6 +246,6 @@ async def get_active_tickers(session: AsyncSession) -> list[dict]:
     """Return all active tickers with their IDs."""
     from app.features.universes.models import Ticker
 
-    stmt = select(Ticker.id, Ticker.symbol).where(Ticker.deleted_at.is_(None))
+    stmt = select(Ticker.id, Ticker.symbol).where(Ticker.deleted_at.is_(None))  # type: ignore[attr-defined]
     result = await session.execute(stmt)
     return [{"id": str(row[0]), "symbol": row[1]} for row in result.fetchall()]

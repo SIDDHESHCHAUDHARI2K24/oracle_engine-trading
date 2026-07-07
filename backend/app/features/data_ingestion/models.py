@@ -4,6 +4,8 @@ Tables: ohlcv_bars (TimescaleDB hypertable), macro_observations (TimescaleDB hyp
 ingest_runs (plain table).
 """
 
+from __future__ import annotations
+
 import uuid
 from datetime import date, datetime, timezone
 from decimal import Decimal

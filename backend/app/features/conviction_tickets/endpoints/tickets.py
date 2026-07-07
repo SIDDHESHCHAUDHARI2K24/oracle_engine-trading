@@ -42,7 +42,7 @@ async def list_tickets(
     if min_passes is not None:
         tickets = [t for t in tickets if t.backtest_passes >= min_passes]
 
-    return TicketListResponse(tickets=tickets, total=len(tickets))
+    return TicketListResponse(tickets=tickets, total=len(tickets))  # type: ignore[arg-type]
 
 
 @router.get("/{ticket_id}", response_model=ConvictionTicketResponse)

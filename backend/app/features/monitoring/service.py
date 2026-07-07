@@ -31,7 +31,7 @@ class AlertService:
             updated = await monitoring_repo.update_alert_context(
                 session, existing.id, context or {}
             )
-            return updated
+            return updated  # type: ignore[return-value]
 
         alert = await monitoring_repo.create_alert(
             session, severity, code, message, universe_id, context
