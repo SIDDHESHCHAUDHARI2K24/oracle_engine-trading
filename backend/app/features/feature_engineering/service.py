@@ -30,10 +30,7 @@ from app.features.feature_engineering.repository import (
     get_latest_feature_date,
 )
 from app.features.feature_engineering.shared.feature_schema import (
-    FEATURE_SCHEMA_VERSION,
-    burn_in_days,
     input_feature_names,
-    max_target_horizon,
     target_names,
 )
 from app.features.feature_engineering.technical.equity_engineer import (
@@ -43,8 +40,6 @@ from app.features.feature_engineering.tensor_prep.feature_scaler import FeatureS
 from app.features.feature_engineering.tensor_prep.target_generator import (
     TargetGenerator,
 )
-from app.features.feature_engineering.models import FeatureMatrix
-from app.features.universes.models import Ticker
 from app.features.data_ingestion.shared.trading_calendar import last_n_trading_days
 
 logger = logging.getLogger(__name__)

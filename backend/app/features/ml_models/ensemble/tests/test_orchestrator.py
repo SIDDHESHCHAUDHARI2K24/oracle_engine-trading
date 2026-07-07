@@ -7,8 +7,6 @@ shape propagation, conviction bounds) can be verified without real models.
 import numpy as np
 import pytest
 
-from unittest.mock import Mock
-
 
 N_SAMPLES = 10
 N_HORIZONS = 4

@@ -5,7 +5,6 @@ Verifies the 31-dim contract: counts, categories, ordering, and helper accessors
 
 from app.features.feature_engineering.shared.feature_schema import (
     FEATURE_SCHEMA_VERSION,
-    FeatureSpec,
     input_feature_names,
     target_names,
     raw_names,

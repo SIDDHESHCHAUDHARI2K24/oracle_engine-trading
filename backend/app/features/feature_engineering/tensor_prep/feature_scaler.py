@@ -52,7 +52,6 @@ class FeatureScaler:
         stats: list[dict] = []
 
         feature_cols = [c for c in input_feature_names() if c in df.columns]
-        target_cols = [c for c in target_names() if c in df.columns]
 
         for col in feature_cols:
             series = df[col].astype(float)

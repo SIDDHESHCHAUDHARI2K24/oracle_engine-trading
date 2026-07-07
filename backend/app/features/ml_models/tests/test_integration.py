@@ -17,7 +17,7 @@ from app.features.feature_engineering.shared.feature_schema import (
 from app.features.ml_models import repository as ml_repo
 from app.features.ml_models.artifact_service import ArtifactLifecycleService
 from app.features.ml_models.inference_service import run_inference
-from app.features.ml_models.models import ModelArtifact, Prediction, TrainingRun
+from app.features.ml_models.models import ModelArtifact, Prediction
 from app.features.ml_models.promotion import promote_challenger
 from app.features.ml_models.service import train_universe
 from app.features.universes.models import Ticker, Universe, UniverseMembership

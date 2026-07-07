@@ -102,7 +102,6 @@ class TestFeatureScalerLookaheadSafety:
         window = 252
         col = "returns_1d"
         manual_mean = df[col].iloc[t - window + 1 : t + 1].mean()
-        manual_std = df[col].iloc[t - window + 1 : t + 1].std()
 
         stat_row = stats_df[
             (stats_df["bar_date"] == df.index[t])

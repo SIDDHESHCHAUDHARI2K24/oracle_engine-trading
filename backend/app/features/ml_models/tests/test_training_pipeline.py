@@ -6,7 +6,6 @@ from tempfile import TemporaryDirectory
 
 import numpy as np
 import pytest
-from sqlalchemy import text
 
 from app.core.services.artifact_store import LocalArtifactStore
 from app.features.feature_engineering.models import FeatureMatrix

@@ -93,8 +93,6 @@ class TestBuildTFTDataset:
         df = _make_synthetic_df(["AAPL", "MSFT"], n_days=300)
         ds = self.build_tft_dataset(df, target_column="target_t1")
 
-        import torch
-
         groups = ds.data["groups"].flatten().numpy()
         times = ds.data["time"].numpy()
         unique_groups = int(ds.data["groups"].max().item()) + 1
@@ -160,7 +158,6 @@ class TestBuildTFTDataset:
         df = _make_synthetic_df(["AAPL"], n_days=400)
         base_date = df["bar_date"].min()
         mid_date = base_date + pd.offsets.BDay(200)
-        end_date = df["bar_date"].max()
 
         train_df = df[df["bar_date"] < mid_date]
         val_df = df[df["bar_date"] >= mid_date]

@@ -144,7 +144,6 @@ class TestLookaheadAudit:
     def test_scaler_only_all_rows_no_future_leakage(self):
         """All rows in scaler output must be invariant."""
         df = make_ohlcv(600, seed=77)
-        macro = make_macro_df(df.index)
 
         t = 450
         partial = df.iloc[:t].copy()

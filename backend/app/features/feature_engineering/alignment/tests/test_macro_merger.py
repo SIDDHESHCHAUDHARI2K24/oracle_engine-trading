@@ -73,7 +73,6 @@ class TestMacroMerger:
         """After forward-fill, CPI should be constant between monthly releases."""
         merger = self.MacroMerger()
         result = merger.merge(self.equity.copy(), self.macro.copy())
-        cpi_after_first = result["cpi"].dropna()
         feb_values = result.loc["2024-02-01":"2024-02-28", "cpi"]
         assert feb_values.nunique() == 1
 

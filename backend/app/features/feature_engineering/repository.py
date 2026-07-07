@@ -6,9 +6,8 @@ into TimescaleDB hypertables.
 
 import uuid
 from datetime import date, datetime, timezone
-from decimal import Decimal
 
-from sqlalchemy import func, select, text
+from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 

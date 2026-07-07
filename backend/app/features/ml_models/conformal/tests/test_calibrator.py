@@ -139,7 +139,6 @@ class TestConformalCalibratorCoverage:
         """EPS division guard: zero/near-zero r_hat handled without error."""
         from app.features.ml_models.conformal.calibrator import (
             ConformalCalibrator,
-            ResidualPredictor,
         )
 
         calibrator = ConformalCalibrator(alpha=0.10)

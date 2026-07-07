@@ -1,6 +1,6 @@
 """POST /api/v1/feature_engineering/trigger — on-demand feature recompute."""
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.features.core.database import get_async_session

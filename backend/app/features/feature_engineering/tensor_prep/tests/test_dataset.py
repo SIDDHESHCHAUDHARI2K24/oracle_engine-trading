@@ -64,7 +64,6 @@ class TestTimeSeriesDataset:
         """Windows must never span two tickers' data."""
         all_rows = self.rows_a + self.rows_b
         ds = self.TimeSeriesDataset(all_rows, ticker_id="TICKER-A", lookback=252)
-        ticker_a_dates = {r["bar_date"] for r in self.rows_a}
         for idx in range(len(ds)):
             X, _ = ds[idx]
             assert idx < len(ds)

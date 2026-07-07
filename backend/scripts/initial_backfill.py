@@ -22,7 +22,7 @@ load_dotenv()
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import typer
+import typer  # noqa: E402
 
 app = typer.Typer()
 

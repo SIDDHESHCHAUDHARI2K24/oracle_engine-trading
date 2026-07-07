@@ -7,7 +7,7 @@ The 31-dim contract: 5 raw + 19 technical + 7 macro = 31 input features.
 Plus 4 continuous-return targets: T+1, T+5, T+10, T+15.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 
 FEATURE_SCHEMA_VERSION = "v1.0"

@@ -1,6 +1,4 @@
-from datetime import date, datetime
-
-import numpy as np
+from datetime import date
 
 
 def create_walk_forward_split(

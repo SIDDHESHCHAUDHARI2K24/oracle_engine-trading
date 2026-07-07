@@ -14,7 +14,6 @@ correctly captures the same seed data whether seeing 550 or 600 rows.
 
 import numpy as np
 import pandas as pd
-import pytest
 
 from app.features.feature_engineering.alignment.macro_merger import MacroMerger
 from app.features.feature_engineering.shared.feature_schema import (
