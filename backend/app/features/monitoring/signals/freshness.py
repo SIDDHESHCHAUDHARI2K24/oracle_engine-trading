@@ -110,9 +110,9 @@ async def compute_pipeline_success(
         "trigger_alert": trigger,
     }
 
-    if trigger and alert_service is not None and session is not None:
+    if trigger and alert_service is not None:
         await alert_service.raise_alert(
-            session,
+            session,  # type: ignore[arg-type]
             severity="warning",
             code="PIPELINE_SUCCESS_LOW",
             message=f"Pipeline success rate {success_rate:.1%} below {success_threshold:.0%} threshold ({succeeded}/{total} runs in last {lookback_hours}h)",
