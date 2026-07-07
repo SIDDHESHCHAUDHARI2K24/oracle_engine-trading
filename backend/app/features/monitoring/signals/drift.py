@@ -45,9 +45,7 @@ class FeatureDriftSignal:
         if training_run is None or not training_run.model_metadata:
             return
 
-        training_distribution = training_run.model_metadata.get(
-            "feature_distribution"
-        )
+        training_distribution = training_run.model_metadata.get("feature_distribution")
         if training_distribution is None:
             return
 

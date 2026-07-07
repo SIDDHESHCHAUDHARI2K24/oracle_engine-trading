@@ -134,7 +134,9 @@ class TestE2EIntegration:
 
         assert result.status == "completed", f"Training failed: {result.error}"
         assert result.training_run_id != uuid.UUID(int=0)
-        assert len(result.artifact_ids) >= 2, f"Expected >=2 artifacts, got {len(result.artifact_ids)}"
+        assert len(result.artifact_ids) >= 2, (
+            f"Expected >=2 artifacts, got {len(result.artifact_ids)}"
+        )
         assert "overall_mse" in result.validation_metrics
 
         run = await ml_repo.get_training_run(db_session, result.training_run_id)
@@ -219,7 +221,9 @@ class TestE2EIntegration:
         )
 
         count = await db_session.scalar(
-            select(func.count()).select_from(Prediction).where(
+            select(func.count())
+            .select_from(Prediction)
+            .where(
                 Prediction.universe_id == universe.id,
                 Prediction.inference_date == inference_date,
             )
@@ -231,9 +235,9 @@ class TestE2EIntegration:
             db_session, universe.id, limit=10
         )
         assert len(training_history) >= 1
-        assert any(
-            r.id == result.training_run_id for r in training_history
-        ), "Training run not found in history"
+        assert any(r.id == result.training_run_id for r in training_history), (
+            "Training run not found in history"
+        )
 
         latest_run = await ml_repo.get_latest_training_run(db_session, universe.id)
         assert latest_run is not None

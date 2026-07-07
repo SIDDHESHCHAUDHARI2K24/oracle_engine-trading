@@ -99,8 +99,7 @@ class TestLSTMTrainer:
             f"but {epochs_run} epochs were run"
         )
         assert epochs_run >= 11, (
-            f"Need at least patience+1 epochs for ES to trigger, "
-            f"got {epochs_run}"
+            f"Need at least patience+1 epochs for ES to trigger, got {epochs_run}"
         )
 
     def test_early_stopping_restores_best_weights(self, loaders) -> None:
@@ -155,9 +154,7 @@ class TestLSTMTrainer:
 
         initial_lr = lrs[0]
         min_lr = min(lrs)
-        assert min_lr < initial_lr, (
-            f"LR never reduced: all values = {set(lrs)}"
-        )
+        assert min_lr < initial_lr, f"LR never reduced: all values = {set(lrs)}"
 
     # ── walk-forward / sequential access ───────────────────────────────
 

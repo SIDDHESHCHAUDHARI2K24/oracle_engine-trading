@@ -33,7 +33,9 @@ class SlackNotifier:
             return True
         except Exception:
             logger.warning(
-                "Slack notification failed (severity=%s, code=%s)", severity, code,
+                "Slack notification failed (severity=%s, code=%s)",
+                severity,
+                code,
                 exc_info=True,
             )
             return False

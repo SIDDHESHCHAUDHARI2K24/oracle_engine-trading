@@ -40,11 +40,19 @@ class TestEnsembleOrchestrator:
         self.EnsembleOrchestrator = EnsembleOrchestrator
 
         rng = np.random.default_rng(42)
-        self.lstm = rng.standard_normal((N_SAMPLES, N_HORIZONS)).astype(np.float64) * 0.02
+        self.lstm = (
+            rng.standard_normal((N_SAMPLES, N_HORIZONS)).astype(np.float64) * 0.02
+        )
         self.tft = {
-            "q10": (rng.standard_normal((N_SAMPLES, N_HORIZONS)) * 0.015 - 0.01).astype(np.float64),
-            "q50": (rng.standard_normal((N_SAMPLES, N_HORIZONS)) * 0.01 + 0.005).astype(np.float64),
-            "q90": (rng.standard_normal((N_SAMPLES, N_HORIZONS)) * 0.015 + 0.02).astype(np.float64),
+            "q10": (rng.standard_normal((N_SAMPLES, N_HORIZONS)) * 0.015 - 0.01).astype(
+                np.float64
+            ),
+            "q50": (rng.standard_normal((N_SAMPLES, N_HORIZONS)) * 0.01 + 0.005).astype(
+                np.float64
+            ),
+            "q90": (rng.standard_normal((N_SAMPLES, N_HORIZONS)) * 0.015 + 0.02).astype(
+                np.float64
+            ),
         }
         self.features = rng.standard_normal((N_SAMPLES, N_FEATURES)).astype(np.float64)
 
@@ -55,7 +63,9 @@ class TestEnsembleOrchestrator:
         )
 
     def test_predict_returns_all_20_fields(self):
-        result = self.orchestrator.predict(self.lstm.copy(), self.tft.copy(), self.features.copy())
+        result = self.orchestrator.predict(
+            self.lstm.copy(), self.tft.copy(), self.features.copy()
+        )
 
         assert len(result) == 20, f"Expected 20 fields, got {len(result)}"
 
@@ -71,7 +81,9 @@ class TestEnsembleOrchestrator:
         assert "tft_q90" in result
 
     def test_conviction_scores_in_zero_one_hundred(self):
-        result = self.orchestrator.predict(self.lstm.copy(), self.tft.copy(), self.features.copy())
+        result = self.orchestrator.predict(
+            self.lstm.copy(), self.tft.copy(), self.features.copy()
+        )
 
         for label in HORIZON_LABELS:
             scores = result[f"conviction_{label}"]
@@ -79,13 +91,17 @@ class TestEnsembleOrchestrator:
             assert np.all(scores <= 100.0), f"conviction_{label} above 100"
 
     def test_conviction_scores_are_finite(self):
-        result = self.orchestrator.predict(self.lstm.copy(), self.tft.copy(), self.features.copy())
+        result = self.orchestrator.predict(
+            self.lstm.copy(), self.tft.copy(), self.features.copy()
+        )
 
         for label in HORIZON_LABELS:
             assert np.all(np.isfinite(result[f"conviction_{label}"]))
 
     def test_raw_component_arrays_match_inputs(self):
-        result = self.orchestrator.predict(self.lstm.copy(), self.tft.copy(), self.features.copy())
+        result = self.orchestrator.predict(
+            self.lstm.copy(), self.tft.copy(), self.features.copy()
+        )
 
         assert result["lstm_outputs"].shape == (N_SAMPLES, N_HORIZONS)
         assert result["tft_q10"].shape == (N_SAMPLES, N_HORIZONS)
@@ -98,7 +114,9 @@ class TestEnsembleOrchestrator:
         np.testing.assert_array_equal(result["tft_q90"], self.tft["q90"])
 
     def test_pred_outputs_have_correct_shape(self):
-        result = self.orchestrator.predict(self.lstm.copy(), self.tft.copy(), self.features.copy())
+        result = self.orchestrator.predict(
+            self.lstm.copy(), self.tft.copy(), self.features.copy()
+        )
 
         for label in HORIZON_LABELS:
             assert result[f"pred_{label}"].shape == (N_SAMPLES,)
@@ -107,7 +125,9 @@ class TestEnsembleOrchestrator:
             assert result[f"conviction_{label}"].shape == (N_SAMPLES,)
 
     def test_pred_lo_less_equal_pred_hi(self):
-        result = self.orchestrator.predict(self.lstm.copy(), self.tft.copy(), self.features.copy())
+        result = self.orchestrator.predict(
+            self.lstm.copy(), self.tft.copy(), self.features.copy()
+        )
 
         for label in HORIZON_LABELS:
             lo = result[f"pred_lo_{label}"]
@@ -115,7 +135,9 @@ class TestEnsembleOrchestrator:
             assert np.all(lo <= hi), f"pred_lo_{label} > pred_hi_{label}"
 
     def test_blender_calibrator_scorer_work_together(self):
-        result = self.orchestrator.predict(self.lstm.copy(), self.tft.copy(), self.features.copy())
+        result = self.orchestrator.predict(
+            self.lstm.copy(), self.tft.copy(), self.features.copy()
+        )
 
         for label in HORIZON_LABELS:
             pred = result[f"pred_{label}"]
@@ -146,21 +168,32 @@ class TestEnsembleOrchestrator:
 
         narrow_lstm = np.zeros((N_SAMPLES, N_HORIZONS), dtype=np.float64)
         narrow_tft = {
-            "q10": rng.standard_normal((N_SAMPLES, N_HORIZONS)).astype(np.float64) * 0.01,
-            "q50": rng.standard_normal((N_SAMPLES, N_HORIZONS)).astype(np.float64) * 0.01,
-            "q90": rng.standard_normal((N_SAMPLES, N_HORIZONS)).astype(np.float64) * 0.01 + 0.0001,
+            "q10": rng.standard_normal((N_SAMPLES, N_HORIZONS)).astype(np.float64)
+            * 0.01,
+            "q50": rng.standard_normal((N_SAMPLES, N_HORIZONS)).astype(np.float64)
+            * 0.01,
+            "q90": rng.standard_normal((N_SAMPLES, N_HORIZONS)).astype(np.float64)
+            * 0.01
+            + 0.0001,
         }
 
-        result = self.orchestrator.predict(narrow_lstm, narrow_tft, self.features.copy())
+        result = self.orchestrator.predict(
+            narrow_lstm, narrow_tft, self.features.copy()
+        )
         for label in HORIZON_LABELS:
             scores = result[f"conviction_{label}"]
             assert np.all(scores >= 0.0) and np.all(scores <= 100.0)
 
         wide_lstm = np.ones((N_SAMPLES, N_HORIZONS), dtype=np.float64) * 0.05
         wide_tft = {
-            "q10": rng.standard_normal((N_SAMPLES, N_HORIZONS)).astype(np.float64) * 0.001 - 0.05,
-            "q50": rng.standard_normal((N_SAMPLES, N_HORIZONS)).astype(np.float64) * 0.001,
-            "q90": rng.standard_normal((N_SAMPLES, N_HORIZONS)).astype(np.float64) * 0.001 + 0.05,
+            "q10": rng.standard_normal((N_SAMPLES, N_HORIZONS)).astype(np.float64)
+            * 0.001
+            - 0.05,
+            "q50": rng.standard_normal((N_SAMPLES, N_HORIZONS)).astype(np.float64)
+            * 0.001,
+            "q90": rng.standard_normal((N_SAMPLES, N_HORIZONS)).astype(np.float64)
+            * 0.001
+            + 0.05,
         }
 
         result = self.orchestrator.predict(wide_lstm, wide_tft, self.features.copy())

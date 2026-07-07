@@ -50,9 +50,7 @@ async def _add_membership(
     db_session, universe_id: uuid.UUID, ticker_id: uuid.UUID
 ) -> UniverseMembership:
     now = datetime.now(timezone.utc)
-    mem = UniverseMembership(
-        universe_id=universe_id, ticker_id=ticker_id, added_at=now
-    )
+    mem = UniverseMembership(universe_id=universe_id, ticker_id=ticker_id, added_at=now)
     db_session.add(mem)
     await db_session.flush()
     return mem
@@ -179,7 +177,9 @@ class TestRunInference:
         assert r2.num_predictions_written == 0
 
         count = await db_session.scalar(
-            select(func.count()).select_from(Prediction).where(
+            select(func.count())
+            .select_from(Prediction)
+            .where(
                 Prediction.universe_id == uni.id,
                 Prediction.inference_date == inference_date,
             )
@@ -223,7 +223,9 @@ class TestRunInference:
         await _insert_features(db_session, t.id, 260, inference_date)
 
         tr_id = uuid.uuid4()
-        lstm_aid = await _setup_lstm_artifact(db_session, store, uni.id, uni.name, tr_id)
+        lstm_aid = await _setup_lstm_artifact(
+            db_session, store, uni.id, uni.name, tr_id
+        )
 
         result = await run_inference(uni.id, inference_date, db_session, store)
 
@@ -262,9 +264,7 @@ class TestRunInference:
         uni = await _create_universe(db_session, "inf_test_empty")
 
         with pytest.raises(ValueError, match="No active artifacts"):
-            await run_inference(
-                uni.id, date(2024, 12, 31), db_session, store
-            )
+            await run_inference(uni.id, date(2024, 12, 31), db_session, store)
 
     async def test_tft_arrays_zero_when_skipped(self, db_session):
         inference_date = date(2024, 12, 31)

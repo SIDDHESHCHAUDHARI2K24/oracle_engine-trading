@@ -21,6 +21,7 @@ class TestTargetGenerator:
         from app.features.feature_engineering.tensor_prep.target_generator import (
             TargetGenerator,
         )
+
         self.TargetGenerator = TargetGenerator
         self.close = make_close_series(100)
 

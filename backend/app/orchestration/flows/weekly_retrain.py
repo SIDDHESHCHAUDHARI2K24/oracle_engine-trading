@@ -95,7 +95,6 @@ async def retrain_universe(universe_id: uuid.UUID) -> dict:
             }
 
 
-
 @flow(name="weekly_retrain", log_prints=True)
 async def weekly_retrain_flow() -> dict:
     """Weekly retrain scheduled Sundays ~6am ET.

@@ -10,7 +10,9 @@ Usage:
 import asyncio
 
 
-from app.orchestration.flows.conformal_coverage_check import conformal_coverage_check_flow
+from app.orchestration.flows.conformal_coverage_check import (
+    conformal_coverage_check_flow,
+)
 from app.orchestration.flows.artifact_retention import artifact_retention_flow
 from app.orchestration.flows.daily_data_refresh import daily_data_refresh_flow
 from app.orchestration.flows.daily_inference import daily_inference_flow

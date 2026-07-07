@@ -80,7 +80,9 @@ def upgrade() -> None:
             server_default=sa.text("NOW()"),
         ),
         sa.PrimaryKeyConstraint(
-            "ticker_id", "bar_date", "feature_schema_version",
+            "ticker_id",
+            "bar_date",
+            "feature_schema_version",
             name="pk_feature_matrix",
         ),
     )
@@ -98,7 +100,9 @@ def upgrade() -> None:
         sa.Column("rolling_mean", sa.Numeric(18, 8), nullable=False),
         sa.Column("rolling_std", sa.Numeric(18, 8), nullable=False),
         sa.PrimaryKeyConstraint(
-            "ticker_id", "bar_date", "feature_name",
+            "ticker_id",
+            "bar_date",
+            "feature_name",
             name="pk_normalization_stats",
         ),
     )
@@ -120,9 +124,7 @@ def upgrade() -> None:
     op.execute(
         "SELECT create_hypertable('normalization_stats', 'bar_date', if_not_exists => TRUE);"
     )
-    op.execute(
-        "SELECT set_chunk_time_interval('feature_matrix', INTERVAL '1 month');"
-    )
+    op.execute("SELECT set_chunk_time_interval('feature_matrix', INTERVAL '1 month');")
     op.execute(
         "SELECT set_chunk_time_interval('normalization_stats', INTERVAL '1 month');"
     )

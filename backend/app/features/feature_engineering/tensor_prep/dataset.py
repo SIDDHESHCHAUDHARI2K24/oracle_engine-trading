@@ -76,14 +76,18 @@ class TimeSeriesDataset(Dataset):
                 if pd.isna(targets).any():
                     continue
 
-            self.windows.append({
-                "features": torch.tensor(feature_array[start:end], dtype=torch.float32),
-                "targets": (
-                    torch.tensor(target_array[i], dtype=torch.float32)
-                    if target_array is not None
-                    else torch.zeros(N_TARGETS, dtype=torch.float32)
-                ),
-            })
+            self.windows.append(
+                {
+                    "features": torch.tensor(
+                        feature_array[start:end], dtype=torch.float32
+                    ),
+                    "targets": (
+                        torch.tensor(target_array[i], dtype=torch.float32)
+                        if target_array is not None
+                        else torch.zeros(N_TARGETS, dtype=torch.float32)
+                    ),
+                }
+            )
 
     def __len__(self) -> int:
         return len(self.windows)

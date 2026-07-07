@@ -26,7 +26,9 @@ class DataPipelineAlert(DataPipelineError):
 class FetcherError(DataPipelineError):
     """Raised when a single fetcher fails after exhausting retries."""
 
-    def __init__(self, source: str, symbols: list[str], original_error: Exception | None = None):
+    def __init__(
+        self, source: str, symbols: list[str], original_error: Exception | None = None
+    ):
         self.source = source
         self.symbols = symbols
         self.original_error = original_error

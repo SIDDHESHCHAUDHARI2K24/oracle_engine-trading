@@ -42,6 +42,7 @@ class TestEquityFeatureEngineer:
         from app.features.feature_engineering.technical.equity_engineer import (
             EquityFeatureEngineer,
         )
+
         self.EquityFeatureEngineer = EquityFeatureEngineer
         self.df = make_ohlcv_fixture(300)
 
@@ -64,9 +65,7 @@ class TestEquityFeatureEngineer:
         engineer = self.EquityFeatureEngineer()
         result = engineer.generate_features(self.df.copy())
         for col in ["open", "high", "low", "close", "volume"]:
-            pd.testing.assert_series_equal(
-                result[col], self.df[col], check_names=False
-            )
+            pd.testing.assert_series_equal(result[col], self.df[col], check_names=False)
 
     def test_row_count_preserved(self):
         engineer = self.EquityFeatureEngineer()

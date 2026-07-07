@@ -39,7 +39,9 @@ class OHLCVBar(Base):
     high: Mapped[Decimal] = mapped_column(Numeric(18, 6), nullable=False)
     low: Mapped[Decimal] = mapped_column(Numeric(18, 6), nullable=False)
     close: Mapped[Decimal] = mapped_column(Numeric(18, 6), nullable=False)
-    adjusted_close: Mapped[Decimal | None] = mapped_column(Numeric(18, 6), nullable=True)
+    adjusted_close: Mapped[Decimal | None] = mapped_column(
+        Numeric(18, 6), nullable=True
+    )
     volume: Mapped[int] = mapped_column(BigInteger, nullable=False)
     source: Mapped[str] = mapped_column(String(32), nullable=False)
     ingest_run_id: Mapped[uuid.UUID | None] = mapped_column(
@@ -89,7 +91,9 @@ class MacroObservation(Base):
     )
 
     __table_args__ = (
-        PrimaryKeyConstraint("series_name", "observed_date", name="pk_macro_observations"),
+        PrimaryKeyConstraint(
+            "series_name", "observed_date", name="pk_macro_observations"
+        ),
     )
 
 
@@ -114,9 +118,7 @@ class IngestRun(Base, UUIDPrimaryKey):
     macro_rows_inserted: Mapped[int] = mapped_column(
         Integer, default=0, server_default="0"
     )
-    failed_tickers: Mapped[list[str] | None] = mapped_column(
-        ARRAY(Text), nullable=True
-    )
+    failed_tickers: Mapped[list[str] | None] = mapped_column(ARRAY(Text), nullable=True)
     stale_macro: Mapped[bool] = mapped_column(
         Boolean, default=False, server_default="false"
     )

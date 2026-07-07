@@ -58,10 +58,7 @@ async def get_tickets_inbox(
     limit: int = 100,
     offset: int = 0,
 ) -> list[ConvictionTicket]:
-    stmt = (
-        select(ConvictionTicket)
-        .where(ConvictionTicket.status == status)
-    )
+    stmt = select(ConvictionTicket).where(ConvictionTicket.status == status)
     if universe_id is not None:
         stmt = stmt.where(ConvictionTicket.universe_id == universe_id)
     stmt = stmt.order_by(ConvictionTicket.conviction_score.desc())

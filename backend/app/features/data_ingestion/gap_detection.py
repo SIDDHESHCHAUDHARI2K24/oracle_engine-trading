@@ -44,14 +44,14 @@ async def detect_gaps(
     if max_lookback_days > 0 and len(gaps) > max_lookback_days:
         logger.info(
             "Ticker %s has %d gaps, capping lookback to %d days",
-            ticker_id, len(gaps), max_lookback_days,
+            ticker_id,
+            len(gaps),
+            max_lookback_days,
         )
         today = through or date.today()
         from .shared.trading_calendar import last_n_trading_days
 
-        recent_trading_days = set(
-            last_n_trading_days(max_lookback_days, today)
-        )
+        recent_trading_days = set(last_n_trading_days(max_lookback_days, today))
         gaps = sorted(set(gaps) & recent_trading_days)
 
     return gaps

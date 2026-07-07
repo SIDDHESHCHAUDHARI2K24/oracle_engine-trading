@@ -64,9 +64,7 @@ async def _create_prefect_db():
     finally:
         await conn.close()
 
-    prefect_url = (
-        f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{target_db}"
-    )
+    prefect_url = f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{target_db}"
     print()
     print("Add this to your .env file:")
     print(f"PREFECT_DATABASE_URL={prefect_url}")

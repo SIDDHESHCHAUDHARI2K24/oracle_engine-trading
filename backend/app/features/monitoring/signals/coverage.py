@@ -48,7 +48,9 @@ class CoverageSignal:
                 for ticket in tickets:
                     if (
                         ticket.actual_return is not None
-                        and ticket.conformal_lower <= ticket.actual_return <= ticket.conformal_upper
+                        and ticket.conformal_lower
+                        <= ticket.actual_return
+                        <= ticket.conformal_upper
                     ):
                         covered += 1
 

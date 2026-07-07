@@ -38,7 +38,8 @@ class AlpacaFetcher(DataFetcher):
             return {}
         if not settings.alpaca_api_key or not settings.alpaca_secret_key:
             raise FetcherError(
-                self.source_name, symbols,
+                self.source_name,
+                symbols,
                 original_error=ValueError("Alpaca API keys not configured"),
             )
 
@@ -71,9 +72,7 @@ class AlpacaFetcher(DataFetcher):
 
         return self._unpack_bars(bars, symbols)
 
-    def _unpack_bars(
-        self, bars: dict, symbols: list[str]
-    ) -> dict[str, pd.DataFrame]:
+    def _unpack_bars(self, bars: dict, symbols: list[str]) -> dict[str, pd.DataFrame]:
         results: dict[str, pd.DataFrame] = {}
 
         for symbol in symbols:

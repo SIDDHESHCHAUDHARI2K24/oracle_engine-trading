@@ -34,6 +34,7 @@ class TestFeatureScalerLookaheadSafety:
         from app.features.feature_engineering.tensor_prep.feature_scaler import (
             FeatureScaler,
         )
+
         self.FeatureScaler = FeatureScaler
         self.df = make_feature_df(400)
 
@@ -49,7 +50,9 @@ class TestFeatureScalerLookaheadSafety:
         for col in input_feature_names():
             after_burn = result[col].dropna()
             if len(after_burn) > 0:
-                assert not np.array_equal(after_burn.values, self.df[col].loc[after_burn.index].values)
+                assert not np.array_equal(
+                    after_burn.values, self.df[col].loc[after_burn.index].values
+                )
 
     def test_targets_passthrough_untouched(self):
         scaler = self.FeatureScaler()
@@ -79,7 +82,10 @@ class TestFeatureScalerLookaheadSafety:
                 f_val = full_result[col].iloc[t]
                 if pd.isna(p_val) and pd.isna(f_val):
                     continue
-                assert p_val == pytest.approx(f_val, rel=1e-8) or abs(p_val - f_val) < 1e-10, (
+                assert (
+                    p_val == pytest.approx(f_val, rel=1e-8)
+                    or abs(p_val - f_val) < 1e-10
+                ), (
                     f"Lookahead leakage in {col} at row {t}: "
                     f"partial={p_val}, full={f_val}"
                 )
@@ -104,8 +110,7 @@ class TestFeatureScalerLookaheadSafety:
         manual_mean = df[col].iloc[t - window + 1 : t + 1].mean()
 
         stat_row = stats_df[
-            (stats_df["bar_date"] == df.index[t])
-            & (stats_df["feature_name"] == col)
+            (stats_df["bar_date"] == df.index[t]) & (stats_df["feature_name"] == col)
         ]
         if not stat_row.empty:
             assert abs(float(stat_row["rolling_mean"].iloc[0]) - manual_mean) < 0.01
@@ -122,7 +127,9 @@ class TestFeatureScalerLookaheadSafety:
         result_b, stats_b = scaler.fit_transform("TICKER-B", df_b.copy())
 
         t = 300
-        if not pd.isna(result_a["returns_1d"].iloc[t]) and not pd.isna(result_b["returns_1d"].iloc[t]):
+        if not pd.isna(result_a["returns_1d"].iloc[t]) and not pd.isna(
+            result_b["returns_1d"].iloc[t]
+        ):
             assert result_a["returns_1d"].iloc[t] != result_b["returns_1d"].iloc[t]
 
     def test_zero_std_feature_handled_no_inf(self):

@@ -4,7 +4,6 @@ from app.features.backtesting.shared.metrics_engine import MetricsEngine
 
 
 class TestMetricsEngine:
-
     def test_profitable_fixture_positive_metrics(self):
         """Known-profitable signal produces positive Sharpe, positive total_return."""
         dates = pd.date_range("2020-01-01", periods=50, freq="B")

@@ -27,15 +27,22 @@ async def get_recent_runs(
             )
             result = []
             for run in runs:
-                if hasattr(run, "deployment_name") and run.deployment_name != deployment_name:
+                if (
+                    hasattr(run, "deployment_name")
+                    and run.deployment_name != deployment_name
+                ):
                     continue
-                result.append({
-                    "id": str(run.id),
-                    "name": run.name,
-                    "state": str(run.state_type) if run.state else "unknown",
-                    "start_time": run.start_time.isoformat() if run.start_time else None,
-                    "end_time": run.end_time.isoformat() if run.end_time else None,
-                })
+                result.append(
+                    {
+                        "id": str(run.id),
+                        "name": run.name,
+                        "state": str(run.state_type) if run.state else "unknown",
+                        "start_time": run.start_time.isoformat()
+                        if run.start_time
+                        else None,
+                        "end_time": run.end_time.isoformat() if run.end_time else None,
+                    }
+                )
             return result
     except Exception:
         return []

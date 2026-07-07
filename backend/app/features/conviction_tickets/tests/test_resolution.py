@@ -105,22 +105,25 @@ async def test_resolution_wins_when_price_goes_up(db_session):
     await _seed_inference_run(db_session, inf_run_id, universe_id, inf_date)
     await _seed_ohlcv_bar(db_session, ticker_id, inf_date, 100.0)
     await _seed_ohlcv_bar(db_session, ticker_id, res_date, 110.0)
-    await _seed_ticket(db_session, {
-        "inference_run_id": inf_run_id,
-        "ticker_id": ticker_id,
-        "universe_id": universe_id,
-        "inference_date": inf_date,
-        "horizon": "T5",
-        "direction": "LONG",
-        "predicted_return": 0.02,
-        "conviction_score": 80.0,
-        "conformal_lower": 0.01,
-        "conformal_upper": 0.04,
-        "backtest_passes": 3,
-        "backtest_pass_strategies": ["mac"],
-        "status": "REVIEWED",
-        "resolution_date": res_date,
-    })
+    await _seed_ticket(
+        db_session,
+        {
+            "inference_run_id": inf_run_id,
+            "ticker_id": ticker_id,
+            "universe_id": universe_id,
+            "inference_date": inf_date,
+            "horizon": "T5",
+            "direction": "LONG",
+            "predicted_return": 0.02,
+            "conviction_score": 80.0,
+            "conformal_lower": 0.01,
+            "conformal_upper": 0.04,
+            "backtest_passes": 3,
+            "backtest_pass_strategies": ["mac"],
+            "status": "REVIEWED",
+            "resolution_date": res_date,
+        },
+    )
     await db_session.flush()
 
     result = await resolve_tickets(db_session, as_of_date=res_date)
@@ -155,22 +158,25 @@ async def test_resolution_losses_when_price_goes_down(db_session):
     await _seed_inference_run(db_session, inf_run_id, universe_id, inf_date)
     await _seed_ohlcv_bar(db_session, ticker_id, inf_date, 100.0)
     await _seed_ohlcv_bar(db_session, ticker_id, res_date, 95.0)
-    await _seed_ticket(db_session, {
-        "inference_run_id": inf_run_id,
-        "ticker_id": ticker_id,
-        "universe_id": universe_id,
-        "inference_date": inf_date,
-        "horizon": "T5",
-        "direction": "LONG",
-        "predicted_return": 0.02,
-        "conviction_score": 80.0,
-        "conformal_lower": 0.01,
-        "conformal_upper": 0.04,
-        "backtest_passes": 3,
-        "backtest_pass_strategies": ["mac"],
-        "status": "ACTIONED",
-        "resolution_date": res_date,
-    })
+    await _seed_ticket(
+        db_session,
+        {
+            "inference_run_id": inf_run_id,
+            "ticker_id": ticker_id,
+            "universe_id": universe_id,
+            "inference_date": inf_date,
+            "horizon": "T5",
+            "direction": "LONG",
+            "predicted_return": 0.02,
+            "conviction_score": 80.0,
+            "conformal_lower": 0.01,
+            "conformal_upper": 0.04,
+            "backtest_passes": 3,
+            "backtest_pass_strategies": ["mac"],
+            "status": "ACTIONED",
+            "resolution_date": res_date,
+        },
+    )
     await db_session.flush()
 
     result = await resolve_tickets(db_session, as_of_date=res_date)
@@ -204,22 +210,25 @@ async def test_resolution_flat_for_tiny_move(db_session):
     await _seed_inference_run(db_session, inf_run_id, universe_id, inf_date)
     await _seed_ohlcv_bar(db_session, ticker_id, inf_date, 100.0)
     await _seed_ohlcv_bar(db_session, ticker_id, res_date, 100.05)
-    await _seed_ticket(db_session, {
-        "inference_run_id": inf_run_id,
-        "ticker_id": ticker_id,
-        "universe_id": universe_id,
-        "inference_date": inf_date,
-        "horizon": "T5",
-        "direction": "LONG",
-        "predicted_return": 0.001,
-        "conviction_score": 70.0,
-        "conformal_lower": 0.001,
-        "conformal_upper": 0.003,
-        "backtest_passes": 2,
-        "backtest_pass_strategies": ["mac"],
-        "status": "REVIEWED",
-        "resolution_date": res_date,
-    })
+    await _seed_ticket(
+        db_session,
+        {
+            "inference_run_id": inf_run_id,
+            "ticker_id": ticker_id,
+            "universe_id": universe_id,
+            "inference_date": inf_date,
+            "horizon": "T5",
+            "direction": "LONG",
+            "predicted_return": 0.001,
+            "conviction_score": 70.0,
+            "conformal_lower": 0.001,
+            "conformal_upper": 0.003,
+            "backtest_passes": 2,
+            "backtest_pass_strategies": ["mac"],
+            "status": "REVIEWED",
+            "resolution_date": res_date,
+        },
+    )
     await db_session.flush()
 
     result = await resolve_tickets(db_session, as_of_date=res_date)
@@ -252,22 +261,25 @@ async def test_resolution_idempotent(db_session):
     await _seed_inference_run(db_session, inf_run_id, universe_id, inf_date)
     await _seed_ohlcv_bar(db_session, ticker_id, inf_date, 100.0)
     await _seed_ohlcv_bar(db_session, ticker_id, res_date, 110.0)
-    await _seed_ticket(db_session, {
-        "inference_run_id": inf_run_id,
-        "ticker_id": ticker_id,
-        "universe_id": universe_id,
-        "inference_date": inf_date,
-        "horizon": "T5",
-        "direction": "LONG",
-        "predicted_return": 0.02,
-        "conviction_score": 80.0,
-        "conformal_lower": 0.01,
-        "conformal_upper": 0.04,
-        "backtest_passes": 3,
-        "backtest_pass_strategies": ["mac"],
-        "status": "REVIEWED",
-        "resolution_date": res_date,
-    })
+    await _seed_ticket(
+        db_session,
+        {
+            "inference_run_id": inf_run_id,
+            "ticker_id": ticker_id,
+            "universe_id": universe_id,
+            "inference_date": inf_date,
+            "horizon": "T5",
+            "direction": "LONG",
+            "predicted_return": 0.02,
+            "conviction_score": 80.0,
+            "conformal_lower": 0.01,
+            "conformal_upper": 0.04,
+            "backtest_passes": 3,
+            "backtest_pass_strategies": ["mac"],
+            "status": "REVIEWED",
+            "resolution_date": res_date,
+        },
+    )
     await db_session.flush()
 
     r1 = await resolve_tickets(db_session, as_of_date=res_date)
@@ -301,22 +313,25 @@ async def test_missing_resolution_bar_deferred(db_session):
     await _seed_ticker(db_session, ticker_id, "DEFER")
     await _seed_inference_run(db_session, inf_run_id, universe_id, inf_date)
     await _seed_ohlcv_bar(db_session, ticker_id, inf_date, 100.0)
-    await _seed_ticket(db_session, {
-        "inference_run_id": inf_run_id,
-        "ticker_id": ticker_id,
-        "universe_id": universe_id,
-        "inference_date": inf_date,
-        "horizon": "T5",
-        "direction": "LONG",
-        "predicted_return": 0.02,
-        "conviction_score": 80.0,
-        "conformal_lower": 0.01,
-        "conformal_upper": 0.04,
-        "backtest_passes": 3,
-        "backtest_pass_strategies": ["mac"],
-        "status": "REVIEWED",
-        "resolution_date": res_date,
-    })
+    await _seed_ticket(
+        db_session,
+        {
+            "inference_run_id": inf_run_id,
+            "ticker_id": ticker_id,
+            "universe_id": universe_id,
+            "inference_date": inf_date,
+            "horizon": "T5",
+            "direction": "LONG",
+            "predicted_return": 0.02,
+            "conviction_score": 80.0,
+            "conformal_lower": 0.01,
+            "conformal_upper": 0.04,
+            "backtest_passes": 3,
+            "backtest_pass_strategies": ["mac"],
+            "status": "REVIEWED",
+            "resolution_date": res_date,
+        },
+    )
     await db_session.flush()
 
     result = await resolve_tickets(db_session, as_of_date=res_date)
@@ -343,22 +358,25 @@ async def test_tradable_expires_not_resolved(db_session):
     await _seed_inference_run(db_session, inf_run_id, universe_id, inf_date)
     await _seed_ohlcv_bar(db_session, ticker_id, inf_date, 100.0)
     await _seed_ohlcv_bar(db_session, ticker_id, res_date, 105.0)
-    await _seed_ticket(db_session, {
-        "inference_run_id": inf_run_id,
-        "ticker_id": ticker_id,
-        "universe_id": universe_id,
-        "inference_date": inf_date,
-        "horizon": "T5",
-        "direction": "LONG",
-        "predicted_return": 0.02,
-        "conviction_score": 80.0,
-        "conformal_lower": 0.01,
-        "conformal_upper": 0.04,
-        "backtest_passes": 3,
-        "backtest_pass_strategies": ["mac"],
-        "status": "TRADABLE",
-        "resolution_date": res_date,
-    })
+    await _seed_ticket(
+        db_session,
+        {
+            "inference_run_id": inf_run_id,
+            "ticker_id": ticker_id,
+            "universe_id": universe_id,
+            "inference_date": inf_date,
+            "horizon": "T5",
+            "direction": "LONG",
+            "predicted_return": 0.02,
+            "conviction_score": 80.0,
+            "conformal_lower": 0.01,
+            "conformal_upper": 0.04,
+            "backtest_passes": 3,
+            "backtest_pass_strategies": ["mac"],
+            "status": "TRADABLE",
+            "resolution_date": res_date,
+        },
+    )
     await db_session.flush()
 
     result = await resolve_tickets(db_session, as_of_date=res_date)

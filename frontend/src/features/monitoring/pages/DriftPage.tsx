@@ -113,8 +113,8 @@ export function DriftPage(): JSX.Element {
                       width={130}
                     />
                     <Tooltip
-                      formatter={(value: number) => value.toFixed(4)}
-                      labelFormatter={(label: string) => `Feature: ${label}`}
+                      formatter={(value) => [(value as number).toFixed(4)]}
+                      labelFormatter={(label) => `Feature: ${label as string}`}
                     />
                     <Bar dataKey="kl_divergence" radius={[0, 4, 4, 0]}>
                       {[...driftData.features]

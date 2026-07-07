@@ -90,7 +90,6 @@ async def backtest_universe(universe_id: uuid.UUID, universe_name: str) -> dict:
             }
 
 
-
 @flow(name="weekly_backtest", log_prints=True)
 async def weekly_backtest_flow() -> dict:
     """Weekly backtest scheduled Sundays 4am ET.

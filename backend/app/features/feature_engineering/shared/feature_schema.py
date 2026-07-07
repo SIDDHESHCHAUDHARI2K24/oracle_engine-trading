@@ -62,12 +62,20 @@ TECHNICAL_FEATURES: list[FeatureSpec] = [
     FeatureSpec("bb_lower", FeatureCategory.TECHNICAL, "NUMERIC(18,6)", "pandas", 20),
     FeatureSpec("bb_width", FeatureCategory.TECHNICAL, "NUMERIC(18,8)", "pandas", 20),
     FeatureSpec("atr_14", FeatureCategory.TECHNICAL, "NUMERIC(18,6)", "pandas", 14),
-    FeatureSpec("volatility_20d", FeatureCategory.TECHNICAL, "NUMERIC(18,8)", "pandas", 20),
-    FeatureSpec("volume_z_score", FeatureCategory.TECHNICAL, "NUMERIC(18,8)", "pandas", 20),
+    FeatureSpec(
+        "volatility_20d", FeatureCategory.TECHNICAL, "NUMERIC(18,8)", "pandas", 20
+    ),
+    FeatureSpec(
+        "volume_z_score", FeatureCategory.TECHNICAL, "NUMERIC(18,8)", "pandas", 20
+    ),
     FeatureSpec("sma_50", FeatureCategory.TECHNICAL, "NUMERIC(18,6)", "pandas", 50),
     FeatureSpec("sma_200", FeatureCategory.TECHNICAL, "NUMERIC(18,6)", "pandas", 200),
-    FeatureSpec("price_to_sma50", FeatureCategory.TECHNICAL, "NUMERIC(18,8)", "pandas", 50),
-    FeatureSpec("price_to_sma200", FeatureCategory.TECHNICAL, "NUMERIC(18,8)", "pandas", 200),
+    FeatureSpec(
+        "price_to_sma50", FeatureCategory.TECHNICAL, "NUMERIC(18,8)", "pandas", 50
+    ),
+    FeatureSpec(
+        "price_to_sma200", FeatureCategory.TECHNICAL, "NUMERIC(18,8)", "pandas", 200
+    ),
 ]
 
 MACRO_FEATURES: list[FeatureSpec] = [

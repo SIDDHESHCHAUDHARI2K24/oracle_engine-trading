@@ -95,21 +95,42 @@ class TestComputeAllDrift:
         training_dist = make_training_distribution("open", baseline)
 
         mock_training_run = MagicMock()
-        mock_training_run.model_metadata = {
-            "feature_distribution": training_dist
-        }
+        mock_training_run.model_metadata = {"feature_distribution": training_dist}
         mock_training_run.id = training_run_id
 
         shifted = rng.normal(5, 1, 500)
         feature_names = [
-            "open", "high", "low", "close", "volume",
-            "returns_1d", "returns_5d", "returns_10d", "returns_20d",
-            "rsi_14", "macd", "macd_signal", "macd_hist",
-            "bb_upper", "bb_middle", "bb_lower", "bb_width",
-            "atr_14", "volatility_20d", "volume_z_score",
-            "sma_50", "sma_200", "price_to_sma50", "price_to_sma200",
-            "fed_funds_rate", "cpi", "unemployment", "gdp",
-            "yield_spread_10y_2y", "vix", "high_yield_spread",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "returns_1d",
+            "returns_5d",
+            "returns_10d",
+            "returns_20d",
+            "rsi_14",
+            "macd",
+            "macd_signal",
+            "macd_hist",
+            "bb_upper",
+            "bb_middle",
+            "bb_lower",
+            "bb_width",
+            "atr_14",
+            "volatility_20d",
+            "volume_z_score",
+            "sma_50",
+            "sma_200",
+            "price_to_sma50",
+            "price_to_sma200",
+            "fed_funds_rate",
+            "cpi",
+            "unemployment",
+            "gdp",
+            "yield_spread_10y_2y",
+            "vix",
+            "high_yield_spread",
         ]
 
         feature_rows = []
@@ -126,12 +147,15 @@ class TestComputeAllDrift:
         mock_session = AsyncMock()
         mock_session.execute.return_value = mock_result
 
-        with patch(
-            "app.features.monitoring.signals.drift.get_latest_training_run",
-            return_value=mock_training_run,
-        ), patch(
-            "app.features.monitoring.signals.drift.AlertService",
-        ) as mock_alert_cls:
+        with (
+            patch(
+                "app.features.monitoring.signals.drift.get_latest_training_run",
+                return_value=mock_training_run,
+            ),
+            patch(
+                "app.features.monitoring.signals.drift.AlertService",
+            ) as mock_alert_cls,
+        ):
             mock_alert_instance = mock_alert_cls.return_value
             mock_alert_instance.raise_alert = AsyncMock()
 

@@ -10,7 +10,11 @@ from prefect import flow
 from prefect.logging import get_run_logger
 
 from app.features.monitoring.service import AlertService
-from app.orchestration.tasks.data_tasks import compute_features, fill_gaps, ingest_universe
+from app.orchestration.tasks.data_tasks import (
+    compute_features,
+    fill_gaps,
+    ingest_universe,
+)
 
 
 @flow(name="daily_data_refresh", log_prints=True)

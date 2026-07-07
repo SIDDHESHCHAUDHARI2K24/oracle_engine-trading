@@ -28,7 +28,9 @@ class LossCurveSignal:
         metadata = dict(training_run.model_metadata or {})
         metadata["signal_loss_curve"] = {
             "overfitting_detected": is_overfitting,
-            "last_train_losses": train_losses[-5:] if len(train_losses) >= 5 else train_losses,
+            "last_train_losses": train_losses[-5:]
+            if len(train_losses) >= 5
+            else train_losses,
             "last_val_losses": val_losses[-5:] if len(val_losses) >= 5 else val_losses,
         }
         training_run.model_metadata = metadata

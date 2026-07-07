@@ -53,21 +53,35 @@ class FeatureMatrix(Base):
     bb_lower: Mapped[Decimal | None] = mapped_column(Numeric(18, 6), nullable=True)
     bb_width: Mapped[Decimal | None] = mapped_column(Numeric(18, 8), nullable=True)
     atr_14: Mapped[Decimal | None] = mapped_column(Numeric(18, 6), nullable=True)
-    volatility_20d: Mapped[Decimal | None] = mapped_column(Numeric(18, 8), nullable=True)
-    volume_z_score: Mapped[Decimal | None] = mapped_column(Numeric(18, 8), nullable=True)
+    volatility_20d: Mapped[Decimal | None] = mapped_column(
+        Numeric(18, 8), nullable=True
+    )
+    volume_z_score: Mapped[Decimal | None] = mapped_column(
+        Numeric(18, 8), nullable=True
+    )
     sma_50: Mapped[Decimal | None] = mapped_column(Numeric(18, 6), nullable=True)
     sma_200: Mapped[Decimal | None] = mapped_column(Numeric(18, 6), nullable=True)
-    price_to_sma50: Mapped[Decimal | None] = mapped_column(Numeric(18, 8), nullable=True)
-    price_to_sma200: Mapped[Decimal | None] = mapped_column(Numeric(18, 8), nullable=True)
+    price_to_sma50: Mapped[Decimal | None] = mapped_column(
+        Numeric(18, 8), nullable=True
+    )
+    price_to_sma200: Mapped[Decimal | None] = mapped_column(
+        Numeric(18, 8), nullable=True
+    )
 
     # 7 macro
-    fed_funds_rate: Mapped[Decimal | None] = mapped_column(Numeric(18, 6), nullable=True)
+    fed_funds_rate: Mapped[Decimal | None] = mapped_column(
+        Numeric(18, 6), nullable=True
+    )
     cpi: Mapped[Decimal | None] = mapped_column(Numeric(18, 6), nullable=True)
     unemployment: Mapped[Decimal | None] = mapped_column(Numeric(18, 6), nullable=True)
     gdp: Mapped[Decimal | None] = mapped_column(Numeric(18, 6), nullable=True)
-    yield_spread_10y_2y: Mapped[Decimal | None] = mapped_column(Numeric(18, 6), nullable=True)
+    yield_spread_10y_2y: Mapped[Decimal | None] = mapped_column(
+        Numeric(18, 6), nullable=True
+    )
     vix: Mapped[Decimal | None] = mapped_column(Numeric(18, 6), nullable=True)
-    high_yield_spread: Mapped[Decimal | None] = mapped_column(Numeric(18, 6), nullable=True)
+    high_yield_spread: Mapped[Decimal | None] = mapped_column(
+        Numeric(18, 6), nullable=True
+    )
 
     # 4 targets
     target_t1: Mapped[Decimal | None] = mapped_column(Numeric(18, 8), nullable=True)
@@ -86,7 +100,9 @@ class FeatureMatrix(Base):
 
     __table_args__ = (
         PrimaryKeyConstraint(
-            "ticker_id", "bar_date", "feature_schema_version",
+            "ticker_id",
+            "bar_date",
+            "feature_schema_version",
             name="pk_feature_matrix",
         ),
     )
@@ -107,7 +123,9 @@ class NormalizationStats(Base):
 
     __table_args__ = (
         PrimaryKeyConstraint(
-            "ticker_id", "bar_date", "feature_name",
+            "ticker_id",
+            "bar_date",
+            "feature_name",
             name="pk_normalization_stats",
         ),
     )

@@ -4,7 +4,9 @@ import uuid
 class TestFilterGate:
     """Unit tests for the 4-criteria filter gate logic."""
 
-    def _make_prediction(self, ticker_id, horizon_idx, pred, lo, hi, conviction, universe_id=None):
+    def _make_prediction(
+        self, ticker_id, horizon_idx, pred, lo, hi, conviction, universe_id=None
+    ):
         """Helper to create a prediction-like dict."""
         h = ["t1", "t5", "t10", "t15"][horizon_idx]
         return {
@@ -22,6 +24,7 @@ class TestFilterGate:
     def test_conviction_at_threshold_fails(self):
         """Conviction exactly 67 fails; 67.01 passes conviction criterion."""
         from app.features.conviction_tickets.filter.gate import _check_conviction
+
         assert not _check_conviction(67.0)
         assert _check_conviction(67.01)
         assert not _check_conviction(66.99)
@@ -29,6 +32,7 @@ class TestFilterGate:
     def test_negative_predicted_return_fails(self):
         """Predicted return <= 0 always fails direction check."""
         from app.features.conviction_tickets.filter.gate import _check_direction
+
         assert _check_direction(0.01)
         assert not _check_direction(0.0)
         assert not _check_direction(-0.01)
@@ -36,6 +40,7 @@ class TestFilterGate:
     def test_backtest_pass_count_too_low_fails(self):
         """Less than 2 backtest passes fails the criterion."""
         from app.features.conviction_tickets.filter.gate import _check_backtest
+
         assert not _check_backtest(0)
         assert not _check_backtest(1)
         assert _check_backtest(2)
@@ -45,7 +50,8 @@ class TestFilterGate:
     def test_conformal_width_exceeds_W_max_fails(self):
         """Width >= W_max fails; width < W_max passes."""
         from app.features.conviction_tickets.filter.gate import _check_width
-        assert _check_width(0.03, 0.05)   # 0.03 < 0.05
+
+        assert _check_width(0.03, 0.05)  # 0.03 < 0.05
         assert not _check_width(0.05, 0.05)  # Exactly at threshold fails
         assert not _check_width(0.06, 0.05)  # Exceeds
 
@@ -70,8 +76,12 @@ class TestFilterGate:
         from app.features.conviction_tickets.filter.gate import evaluate_filter
 
         predictions = [
-            self._make_prediction("t1", 1, 0.02, 0.01, 0.04, 75.0),   # T+5: passes width 0.03
-            self._make_prediction("t1", 2, -0.01, -0.03, 0.00, 80.0),  # T+10: fails direction (neg return)
+            self._make_prediction(
+                "t1", 1, 0.02, 0.01, 0.04, 75.0
+            ),  # T+5: passes width 0.03
+            self._make_prediction(
+                "t1", 2, -0.01, -0.03, 0.00, 80.0
+            ),  # T+10: fails direction (neg return)
         ]
         backtest_passes = {"t1": 3}
         w_max = {0: 0.02, 1: 0.10, 2: 0.10, 3: 0.10}

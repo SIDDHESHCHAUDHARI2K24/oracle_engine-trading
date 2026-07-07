@@ -96,9 +96,7 @@ async def compute_pipeline_success(
         }
         return result_data
 
-    succeeded = sum(
-        1 for r in recent_runs if r.get("state", "").upper() == "COMPLETED"
-    )
+    succeeded = sum(1 for r in recent_runs if r.get("state", "").upper() == "COMPLETED")
     total = len(recent_runs)
     success_rate = succeeded / total
 

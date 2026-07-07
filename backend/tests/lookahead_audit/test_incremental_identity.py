@@ -75,7 +75,9 @@ def make_macro(n_rows: int) -> pd.DataFrame:
             "gdp": 25.0 + np.abs(rng.standard_normal(len(macro_dates)).cumsum()),
             "yield_spread_10y_2y": rng.standard_normal(len(macro_dates)),
             "vix": np.clip(rng.standard_normal(len(macro_dates)) + 18, 5, 60),
-            "high_yield_spread": np.clip(rng.standard_normal(len(macro_dates)) + 4, 1, 10),
+            "high_yield_spread": np.clip(
+                rng.standard_normal(len(macro_dates)) + 4, 1, 10
+            ),
         },
         index=macro_dates,
     )
@@ -102,11 +104,7 @@ class TestIncrementalIdentity:
 
         incremental_result = run_pipeline(ohlcv.copy(), macro.copy())
 
-        feature_cols = [
-            c
-            for c in input_feature_names()
-            if c in full_result.columns
-        ]
+        feature_cols = [c for c in input_feature_names() if c in full_result.columns]
         burn_in = 252
         compare_up_to = 549
 
@@ -118,9 +116,7 @@ class TestIncrementalIdentity:
                 if pd.isna(f_val) and pd.isna(i_val):
                     continue
                 if pd.isna(f_val) or pd.isna(i_val):
-                    failing.append(
-                        f"INCREMENTAL IDENTITY NaN mismatch: {col} row {i}"
-                    )
+                    failing.append(f"INCREMENTAL IDENTITY NaN mismatch: {col} row {i}")
                     continue
                 diff = abs(float(f_val) - float(i_val))
                 if diff >= 1e-10:

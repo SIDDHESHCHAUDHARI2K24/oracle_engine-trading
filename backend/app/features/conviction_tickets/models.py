@@ -43,9 +43,7 @@ class ConvictionTicket(Base, UUIDPrimaryKey, Timestamped):
         UUID(as_uuid=True), ForeignKey("backtest_runs.id"), nullable=True
     )
     backtest_passes: Mapped[int] = mapped_column(Integer, nullable=False)
-    backtest_pass_strategies: Mapped[list] = mapped_column(
-        ARRAY(String), default=list
-    )
+    backtest_pass_strategies: Mapped[list] = mapped_column(ARRAY(String), default=list)
     status: Mapped[str] = mapped_column(String(20), default="TRADABLE")
     resolution_date: Mapped[date] = mapped_column(Date, nullable=False)
     actual_return: Mapped[float | None] = mapped_column(Float, nullable=True)
@@ -81,7 +79,9 @@ class FilterRun(Base, UUIDPrimaryKey):
     completed_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
-    num_predictions_evaluated: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    num_predictions_evaluated: Mapped[int | None] = mapped_column(
+        Integer, nullable=True
+    )
     num_tickets_emitted: Mapped[int | None] = mapped_column(Integer, nullable=True)
     filter_config: Mapped[dict] = mapped_column(JSONB, default=dict)
     metadata_: Mapped[dict] = mapped_column("metadata", JSONB, default=dict)

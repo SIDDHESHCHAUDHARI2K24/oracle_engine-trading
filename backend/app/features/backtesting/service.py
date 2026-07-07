@@ -23,7 +23,9 @@ from app.features.backtesting.strategies.volatility_breakout import VolatilityBr
 from app.features.backtesting.strategies.stat_arb import StatArb
 from app.features.data_ingestion.models import OHLCVBar
 from app.features.feature_engineering.models import FeatureMatrix
-from app.features.feature_engineering.shared.feature_schema import FEATURE_SCHEMA_VERSION
+from app.features.feature_engineering.shared.feature_schema import (
+    FEATURE_SCHEMA_VERSION,
+)
 from app.features.universes.models import Ticker
 from app.features.universes.repository import list_active_tickers_for_universe
 
@@ -63,7 +65,9 @@ class BacktestOrchestrator:
 
         spy_close: pd.Series | None = None
         if spy_ticker_id is not None:
-            spy_bars = await _get_ohlcv_close(session, spy_ticker_id, period_start, period_end)
+            spy_bars = await _get_ohlcv_close(
+                session, spy_ticker_id, period_start, period_end
+            )
             spy_close = _bars_to_series(spy_bars)
 
         run = await create_backtest_run(
@@ -122,7 +126,9 @@ class BacktestOrchestrator:
         spy_ticker_id = await self._find_spy_ticker(session)
         spy_close: pd.Series | None = None
         if spy_ticker_id is not None:
-            spy_bars = await _get_ohlcv_close(session, spy_ticker_id, period_start, period_end)
+            spy_bars = await _get_ohlcv_close(
+                session, spy_ticker_id, period_start, period_end
+            )
             spy_close = _bars_to_series(spy_bars)
 
         run = await create_backtest_run(
@@ -193,18 +199,20 @@ class BacktestOrchestrator:
                 entries, exits = strategy.generate_signals(df)
                 result = self.metrics.run(df["close"], entries, exits)
 
-                metrics_records.append({
-                    "backtest_run_id": run_id,
-                    "ticker_id": ticker.id,
-                    "strategy_name": strategy_name,
-                    "sharpe_ratio": result["sharpe_ratio"],
-                    "max_drawdown": result["max_drawdown"],
-                    "total_return": result["total_return"],
-                    "win_rate": result["win_rate"],
-                    "profit_factor": result["profit_factor"],
-                    "total_trades": result["total_trades"],
-                    "equity_curve": result["equity_curve"],
-                })
+                metrics_records.append(
+                    {
+                        "backtest_run_id": run_id,
+                        "ticker_id": ticker.id,
+                        "strategy_name": strategy_name,
+                        "sharpe_ratio": result["sharpe_ratio"],
+                        "max_drawdown": result["max_drawdown"],
+                        "total_return": result["total_return"],
+                        "win_rate": result["win_rate"],
+                        "profit_factor": result["profit_factor"],
+                        "total_trades": result["total_trades"],
+                        "equity_curve": result["equity_curve"],
+                    }
+                )
             except Exception as e:
                 logger.error(
                     "Strategy %s failed for ticker %s: %s",

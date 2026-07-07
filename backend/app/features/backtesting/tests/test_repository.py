@@ -136,14 +136,19 @@ async def test_get_metrics_for_run(db_session):
             "total_trades": 12,
             "equity_curve": [],
         }
-        for i, name in enumerate(["mean_reversion", "momentum_cross", "volatility_breakout", "stat_arb"])
+        for i, name in enumerate(
+            ["mean_reversion", "momentum_cross", "volatility_breakout", "stat_arb"]
+        )
     ]
 
     await upsert_backtest_metrics(db_session, metrics)
     result = await get_metrics_for_run(db_session, run.id)
     assert len(result) == 4
     assert {m.strategy_name for m in result} == {
-        "mean_reversion", "momentum_cross", "volatility_breakout", "stat_arb"
+        "mean_reversion",
+        "momentum_cross",
+        "volatility_breakout",
+        "stat_arb",
     }
 
 
@@ -161,19 +166,23 @@ async def test_get_pass_summary(db_session):
 
     metrics = []
     for ticker in [ticker1, ticker2]:
-        for i, name in enumerate(["mean_reversion", "momentum_cross", "volatility_breakout", "stat_arb"]):
-            metrics.append({
-                "backtest_run_id": run.id,
-                "ticker_id": ticker.id,
-                "strategy_name": name,
-                "sharpe_ratio": 2.0 if i < 3 else 0.5,
-                "max_drawdown": -0.2,
-                "total_return": 0.3,
-                "win_rate": 0.6,
-                "profit_factor": 2.0,
-                "total_trades": 15,
-                "equity_curve": [],
-            })
+        for i, name in enumerate(
+            ["mean_reversion", "momentum_cross", "volatility_breakout", "stat_arb"]
+        ):
+            metrics.append(
+                {
+                    "backtest_run_id": run.id,
+                    "ticker_id": ticker.id,
+                    "strategy_name": name,
+                    "sharpe_ratio": 2.0 if i < 3 else 0.5,
+                    "max_drawdown": -0.2,
+                    "total_return": 0.3,
+                    "win_rate": 0.6,
+                    "profit_factor": 2.0,
+                    "total_trades": 15,
+                    "equity_curve": [],
+                }
+            )
 
     await upsert_backtest_metrics(db_session, metrics)
 

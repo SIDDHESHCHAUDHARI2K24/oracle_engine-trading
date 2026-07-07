@@ -60,21 +60,22 @@ class FeatureScaler:
             z = np.full_like(series.values, np.nan, dtype=np.float64)
             valid = rolling_std.notna() & (rolling_std > 0)
             z[valid.values] = (
-                (series[valid].values - rolling_mean[valid].values)
-                / rolling_std[valid].values
-            )
+                series[valid].values - rolling_mean[valid].values
+            ) / rolling_std[valid].values
             zero_std = rolling_std.notna() & (rolling_std <= 0)
             z[zero_std.values] = 0.0
 
             result[col] = z
 
             for idx in valid[valid].index:
-                stats.append({
-                    "ticker_id": ticker_id,
-                    "bar_date": idx,
-                    "feature_name": col,
-                    "rolling_mean": float(rolling_mean.loc[idx]),
-                    "rolling_std": float(rolling_std.loc[idx]),
-                })
+                stats.append(
+                    {
+                        "ticker_id": ticker_id,
+                        "bar_date": idx,
+                        "feature_name": col,
+                        "rolling_mean": float(rolling_mean.loc[idx]),
+                        "rolling_std": float(rolling_std.loc[idx]),
+                    }
+                )
 
         return result, stats

@@ -57,7 +57,6 @@ def _extract_numpy(output) -> np.ndarray:
 
 
 class _TFTModuleWrapper(LightningModule):
-
     def __init__(self, tft_model: TemporalFusionTransformer) -> None:
         super().__init__()
         self.model = tft_model
@@ -177,7 +176,9 @@ class TemporalFusionQuadArray(BaseMathEngine):
 
         for horizon in self.HORIZONS:
             if horizon not in self._wrappers:
-                logger.warning("No model initialized for horizon '%s'; skipping.", horizon)
+                logger.warning(
+                    "No model initialized for horizon '%s'; skipping.", horizon
+                )
                 continue
 
             wrapper = self._wrappers[horizon]
@@ -217,7 +218,9 @@ class TemporalFusionQuadArray(BaseMathEngine):
                 val_dataloaders=val_loader,
             )
 
-            best_score = early_stop.best_score if hasattr(early_stop, "best_score") else None
+            best_score = (
+                early_stop.best_score if hasattr(early_stop, "best_score") else None
+            )
             results[horizon] = {
                 "best_val_loss": best_score,
                 "stopped_epoch": trainer.current_epoch,
@@ -252,7 +255,10 @@ class TemporalFusionQuadArray(BaseMathEngine):
                     output = wrapper(data.to(device))
                     results[horizon] = _extract_numpy(output)
                 elif isinstance(data, dict):
-                    data_device = {k: v.to(device) if isinstance(v, torch.Tensor) else v for k, v in data.items()}
+                    data_device = {
+                        k: v.to(device) if isinstance(v, torch.Tensor) else v
+                        for k, v in data.items()
+                    }
                     output = wrapper(data_device)
                     results[horizon] = _extract_numpy(output)
 

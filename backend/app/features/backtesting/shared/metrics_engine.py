@@ -15,9 +15,7 @@ class MetricsEngine:
         self.risk_free = risk_free
         self.freq = freq
 
-    def run(
-        self, close: pd.Series, entries: pd.Series, exits: pd.Series
-    ) -> dict:
+    def run(self, close: pd.Series, entries: pd.Series, exits: pd.Series) -> dict:
         if not entries.any():
             return self._empty_metrics()
 

@@ -23,9 +23,7 @@ class BackgroundScheduler:
     def start(self) -> None:
         for interval_seconds, task in self._registrations:
             name = getattr(task, "__name__", str(id(task)))
-            t = asyncio.create_task(
-                self._run_periodic(interval_seconds, task, name)
-            )
+            t = asyncio.create_task(self._run_periodic(interval_seconds, task, name))
             self._tasks[name] = t
             logger.info("Scheduled task %s every %ss", name, interval_seconds)
 

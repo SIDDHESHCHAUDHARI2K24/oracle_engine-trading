@@ -32,8 +32,12 @@ async def test_tickets_concurrent():
     p50 = sorted(durations)[len(durations) // 2]
     p95 = sorted(durations)[int(len(durations) * 0.95)]
 
-    print(f"/tickets — {CONCURRENT_REQUESTS} concurrent → max={max_duration:.3f}s p50={p50:.3f}s p95={p95:.3f}s")
-    assert max_duration < MAX_DURATION_S, f"/tickets max duration {max_duration:.3f}s exceeds {MAX_DURATION_S}s"
+    print(
+        f"/tickets — {CONCURRENT_REQUESTS} concurrent → max={max_duration:.3f}s p50={p50:.3f}s p95={p95:.3f}s"
+    )
+    assert max_duration < MAX_DURATION_S, (
+        f"/tickets max duration {max_duration:.3f}s exceeds {MAX_DURATION_S}s"
+    )
 
 
 async def test_monitoring_health_concurrent():
@@ -61,8 +65,12 @@ async def test_monitoring_health_concurrent():
     p50 = sorted(durations)[len(durations) // 2]
     p95 = sorted(durations)[int(len(durations) * 0.95)]
 
-    print(f"/monitoring/health — {CONCURRENT_REQUESTS} concurrent → max={max_duration:.3f}s p50={p50:.3f}s p95={p95:.3f}s")
-    assert max_duration < MAX_DURATION_S, f"/monitoring/health max duration {max_duration:.3f}s exceeds {MAX_DURATION_S}s"
+    print(
+        f"/monitoring/health — {CONCURRENT_REQUESTS} concurrent → max={max_duration:.3f}s p50={p50:.3f}s p95={p95:.3f}s"
+    )
+    assert max_duration < MAX_DURATION_S, (
+        f"/monitoring/health max duration {max_duration:.3f}s exceeds {MAX_DURATION_S}s"
+    )
 
 
 def test_load_sanity():

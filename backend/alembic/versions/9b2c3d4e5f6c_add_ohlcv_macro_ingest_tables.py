@@ -150,9 +150,7 @@ def upgrade() -> None:
         "SELECT create_hypertable('macro_observations', 'observed_date', if_not_exists => TRUE);"
     )
 
-    op.execute(
-        "SELECT set_chunk_time_interval('ohlcv_bars', INTERVAL '1 month');"
-    )
+    op.execute("SELECT set_chunk_time_interval('ohlcv_bars', INTERVAL '1 month');")
     op.execute(
         "SELECT set_chunk_time_interval('macro_observations', INTERVAL '1 month');"
     )

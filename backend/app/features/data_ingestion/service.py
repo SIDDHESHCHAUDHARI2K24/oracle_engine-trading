@@ -152,7 +152,9 @@ class NumericalOrchestrator:
             except (EmptyDataError, FetcherError) as e:
                 logger.warning(
                     "Fetcher %s failed for %d symbols: %s",
-                    fetcher.source_name, len(remaining), e,
+                    fetcher.source_name,
+                    len(remaining),
+                    e,
                 )
                 continue
             except Exception as e:
@@ -171,7 +173,9 @@ class NumericalOrchestrator:
         if len(all_failed) > self._alert_threshold:
             raise DataPipelineAlert(
                 list(all_failed),
-                self._ohlcv_fetchers[0].source_name if self._ohlcv_fetchers else "unknown",
+                self._ohlcv_fetchers[0].source_name
+                if self._ohlcv_fetchers
+                else "unknown",
                 len(symbols),
             )
 
@@ -203,16 +207,20 @@ class NumericalOrchestrator:
 
             for idx, row in df.iterrows():
                 bar_date_val = idx.date() if hasattr(idx, "date") else idx
-                records.append({
-                    "ticker_id": ticker_id,
-                    "bar_date": bar_date_val,
-                    "open": Decimal(str(row.get("open", 0))),
-                    "high": Decimal(str(row.get("high", 0))),
-                    "low": Decimal(str(row.get("low", 0))),
-                    "close": Decimal(str(row.get("close", 0))),
-                    "adjusted_close": Decimal(str(row.get("adjusted_close", row.get("close", 0)))),
-                    "volume": int(row.get("volume", 0)),
-                })
+                records.append(
+                    {
+                        "ticker_id": ticker_id,
+                        "bar_date": bar_date_val,
+                        "open": Decimal(str(row.get("open", 0))),
+                        "high": Decimal(str(row.get("high", 0))),
+                        "low": Decimal(str(row.get("low", 0))),
+                        "close": Decimal(str(row.get("close", 0))),
+                        "adjusted_close": Decimal(
+                            str(row.get("adjusted_close", row.get("close", 0)))
+                        ),
+                        "volume": int(row.get("volume", 0)),
+                    }
+                )
 
         if not records:
             return 0
@@ -227,9 +235,7 @@ class NumericalOrchestrator:
             self._session, records, ingest_run_id, first_source
         )
 
-    async def _persist_macro(
-        self, df: pd.DataFrame, ingest_run_id: uuid.UUID
-    ) -> int:
+    async def _persist_macro(self, df: pd.DataFrame, ingest_run_id: uuid.UUID) -> int:
         """Convert macro DataFrame to DB records and bulk upsert."""
         records = []
         for idx, row in df.iterrows():
@@ -238,13 +244,15 @@ class NumericalOrchestrator:
                 val = row[col]
                 if pd.isna(val):
                     continue
-                records.append({
-                    "series_name": col,
-                    "observed_date": obs_date,
-                    "value": Decimal(str(float(val))),
-                    "source": "fred",
-                    "is_forward_filled": False,
-                })
+                records.append(
+                    {
+                        "series_name": col,
+                        "observed_date": obs_date,
+                        "value": Decimal(str(float(val))),
+                        "source": "fred",
+                        "is_forward_filled": False,
+                    }
+                )
 
         if not records:
             return 0

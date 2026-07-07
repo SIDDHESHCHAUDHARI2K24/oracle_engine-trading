@@ -68,9 +68,9 @@ class TestConformalCalibratorCoverage:
         inside = (y[test_idx] >= lo) & (y[test_idx] <= hi)
         coverage = inside.mean()
 
-        assert (
-            abs(coverage - 0.90) <= 0.03
-        ), f"Coverage {coverage:.3f} deviates from 0.90 by {abs(coverage - 0.90):.3f}"
+        assert abs(coverage - 0.90) <= 0.03, (
+            f"Coverage {coverage:.3f} deviates from 0.90 by {abs(coverage - 0.90):.3f}"
+        )
 
         torch.manual_seed(0)
 
@@ -111,7 +111,9 @@ class TestConformalCalibratorCoverage:
             0.02 + 0.15 * np.abs(x[:, 0]).reshape(-1, 1)
         )
         y = signal + noise
-        y_pred = signal + rng.standard_normal((x.shape[0], 4)).astype(np.float64) * 0.005
+        y_pred = (
+            signal + rng.standard_normal((x.shape[0], 4)).astype(np.float64) * 0.005
+        )
 
         cal_idx = np.concatenate([np.arange(0, 200), np.arange(800, 1000)])
         trn_idx = np.concatenate([np.arange(200, 300), np.arange(1000, 1100)])
@@ -185,9 +187,11 @@ class TestComputeWMax:
             assert w_max[h] > 0, f"W_max[{h}]={w_max[h]} should be positive"
 
         for h in range(3):
-            ratio = max(w_max[h], w_max[h + 1]) / max(min(w_max[h], w_max[h + 1]), 1e-10)
+            ratio = max(w_max[h], w_max[h + 1]) / max(
+                min(w_max[h], w_max[h + 1]), 1e-10
+            )
             assert ratio < 5.0, (
-                f"W_max[{h}]={w_max[h]} and W_max[{h+1}]={w_max[h+1]} "
+                f"W_max[{h}]={w_max[h]} and W_max[{h + 1}]={w_max[h + 1]} "
                 f"differ by factor {ratio:.2f} — not wildly out of order"
             )
 
@@ -230,7 +234,11 @@ class TestComputeWMax:
             )
 
         for h in range(4):
-            expected = float(2.0 * max(calibrator.quantiles[h], 0.0) * np.percentile(np.maximum(r_hat, EPS), 90))
+            expected = float(
+                2.0
+                * max(calibrator.quantiles[h], 0.0)
+                * np.percentile(np.maximum(r_hat, EPS), 90)
+            )
             assert abs(w_max[h] - expected) < 1e-6, (
                 f"W_max[{h}]={w_max[h]} != expected {expected}"
             )

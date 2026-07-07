@@ -62,18 +62,14 @@ async def _backfill(
         tickers = await get_active_tickers(session)
         if ticker_symbol:
             tickers = [
-                t
-                for t in tickers
-                if t["symbol"].upper() == ticker_symbol.upper()
+                t for t in tickers if t["symbol"].upper() == ticker_symbol.upper()
             ]
             if not tickers:
                 logger.error(f"Ticker {ticker_symbol} not found")
                 return
 
         ticker_ids = [_uuid.UUID(t["id"]) for t in tickers]
-        logger.info(
-            f"Backfilling features for {len(tickers)} tickers (mode={mode})..."
-        )
+        logger.info(f"Backfilling features for {len(tickers)} tickers (mode={mode})...")
 
         # ── Load macro DataFrame ──
         macro_stmt = (
@@ -105,14 +101,16 @@ async def _backfill(
                 return pd.DataFrame()
             records = []
             for bar in bars:
-                records.append({
-                    "bar_date": bar.bar_date,
-                    "open": float(bar.open),
-                    "high": float(bar.high),
-                    "low": float(bar.low),
-                    "close": float(bar.close),
-                    "volume": int(bar.volume),
-                })
+                records.append(
+                    {
+                        "bar_date": bar.bar_date,
+                        "open": float(bar.open),
+                        "high": float(bar.high),
+                        "low": float(bar.low),
+                        "close": float(bar.close),
+                        "volume": int(bar.volume),
+                    }
+                )
             df = pd.DataFrame(records)
             if not df.empty:
                 df = df.set_index("bar_date").sort_index()

@@ -50,7 +50,9 @@ class StooqFetcher(DataFetcher):
 
         for symbol in symbols:
             try:
-                url = f"{STOOQ_BASE_URL}?s={symbol}.us&i=d&d1={start_date}&d2={end_date}"
+                url = (
+                    f"{STOOQ_BASE_URL}?s={symbol}.us&i=d&d1={start_date}&d2={end_date}"
+                )
                 response = httpx.get(url, timeout=30.0, follow_redirects=True)
                 response.raise_for_status()
 

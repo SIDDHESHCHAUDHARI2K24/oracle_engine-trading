@@ -38,9 +38,7 @@ class BacktestRun(Base, UUIDPrimaryKey, Timestamped):
     status: Mapped[str] = mapped_column(String(20), default="running")
     num_tickers: Mapped[int | None] = mapped_column(Integer, nullable=True)
     num_strategies: Mapped[int] = mapped_column(Integer, default=4)
-    metadata_: Mapped[dict] = mapped_column(
-        "metadata", JSONB, default=dict
-    )
+    metadata_: Mapped[dict] = mapped_column("metadata", JSONB, default=dict)
 
 
 class BacktestMetrics(Base, UUIDPrimaryKey):
@@ -74,6 +72,11 @@ class BacktestMetrics(Base, UUIDPrimaryKey):
 
     __table_args__ = (
         UniqueConstraint("backtest_run_id", "ticker_id", "strategy_name"),
-        Index("idx_metrics_ticker_strategy_time", "ticker_id", "strategy_name", "computed_at"),
+        Index(
+            "idx_metrics_ticker_strategy_time",
+            "ticker_id",
+            "strategy_name",
+            "computed_at",
+        ),
         Index("idx_metrics_run_passed", "backtest_run_id", "passed"),
     )

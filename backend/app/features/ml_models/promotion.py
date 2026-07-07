@@ -29,8 +29,7 @@ async def _get_champion_metrics(
 
     training_run_id = active_row[0]
     run_metrics = await session.execute(
-        select(TrainingRun.validation_metrics)
-        .where(
+        select(TrainingRun.validation_metrics).where(
             TrainingRun.id == training_run_id,
             TrainingRun.status == "completed",
             TrainingRun.validation_metrics.isnot(None),
@@ -73,7 +72,9 @@ async def promote_challenger(
     challenger_score = _best_metric(challenger_metrics)
     champion_score = _best_metric(champion_metrics)
 
-    relative_improvement = (champion_score - challenger_score) / max(champion_score, 1e-12)
+    relative_improvement = (champion_score - challenger_score) / max(
+        champion_score, 1e-12
+    )
 
     if relative_improvement >= promotion_margin:
         await artifact_service.activate_all(session, challenger_artifact_ids)

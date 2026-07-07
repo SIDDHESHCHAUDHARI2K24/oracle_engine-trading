@@ -14,14 +14,18 @@ class _FakeAlertService:
     def __init__(self):
         self.alerts = []
 
-    async def raise_alert(self, session, severity, code, message, universe_id=None, context=None):
-        self.alerts.append({
-            "severity": severity,
-            "code": code,
-            "message": message,
-            "universe_id": universe_id,
-            "context": context,
-        })
+    async def raise_alert(
+        self, session, severity, code, message, universe_id=None, context=None
+    ):
+        self.alerts.append(
+            {
+                "severity": severity,
+                "code": code,
+                "message": message,
+                "universe_id": universe_id,
+                "context": context,
+            }
+        )
 
 
 async def _make_universe(db_session) -> Universe:

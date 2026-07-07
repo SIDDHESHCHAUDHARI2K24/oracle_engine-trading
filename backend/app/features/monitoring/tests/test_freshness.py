@@ -13,14 +13,18 @@ class _FakeAlertService:
     def __init__(self):
         self.alerts = []
 
-    async def raise_alert(self, session, severity, code, message, universe_id=None, context=None):
-        self.alerts.append({
-            "severity": severity,
-            "code": code,
-            "message": message,
-            "universe_id": universe_id,
-            "context": context,
-        })
+    async def raise_alert(
+        self, session, severity, code, message, universe_id=None, context=None
+    ):
+        self.alerts.append(
+            {
+                "severity": severity,
+                "code": code,
+                "message": message,
+                "universe_id": universe_id,
+                "context": context,
+            }
+        )
 
 
 @pytest.mark.asyncio
@@ -76,13 +80,15 @@ async def test_pipeline_success_below_threshold(monkeypatch):
         runs = []
         for i in range(10):
             state = "COMPLETED" if i < 9 else "FAILED"
-            runs.append({
-                "id": f"run-{i}",
-                "name": f"flow-{i}",
-                "state": state,
-                "start_time": (now - timedelta(hours=1)).isoformat(),
-                "end_time": now.isoformat(),
-            })
+            runs.append(
+                {
+                    "id": f"run-{i}",
+                    "name": f"flow-{i}",
+                    "state": state,
+                    "start_time": (now - timedelta(hours=1)).isoformat(),
+                    "end_time": now.isoformat(),
+                }
+            )
         return runs
 
     monkeypatch.setattr(
@@ -91,7 +97,9 @@ async def test_pipeline_success_below_threshold(monkeypatch):
     )
 
     alert_service = _FakeAlertService()
-    result = await compute_pipeline_success(alert_service=alert_service, lookback_hours=24)
+    result = await compute_pipeline_success(
+        alert_service=alert_service, lookback_hours=24
+    )
 
     assert result is not None
     assert result["success_rate"] == 0.9
@@ -109,13 +117,15 @@ async def test_pipeline_success_healthy(monkeypatch):
         runs = []
         for i in range(50):
             state = "FAILED" if i < 1 else "COMPLETED"
-            runs.append({
-                "id": f"run-{i}",
-                "name": f"flow-{i}",
-                "state": state,
-                "start_time": (now - timedelta(hours=1)).isoformat(),
-                "end_time": now.isoformat(),
-            })
+            runs.append(
+                {
+                    "id": f"run-{i}",
+                    "name": f"flow-{i}",
+                    "state": state,
+                    "start_time": (now - timedelta(hours=1)).isoformat(),
+                    "end_time": now.isoformat(),
+                }
+            )
         return runs
 
     monkeypatch.setattr(
@@ -124,7 +134,9 @@ async def test_pipeline_success_healthy(monkeypatch):
     )
 
     alert_service = _FakeAlertService()
-    result = await compute_pipeline_success(alert_service=alert_service, lookback_hours=24)
+    result = await compute_pipeline_success(
+        alert_service=alert_service, lookback_hours=24
+    )
 
     assert result is not None
     assert result["success_rate"] == 0.98

@@ -59,9 +59,7 @@ def _rows_to_dataframe(
 
 def _load_tft_model(artifact_bytes: bytes) -> TemporalFusionTransformer:
     payload = pickle.loads(artifact_bytes)
-    dummy_records = [
-        {"ticker_id": uuid.UUID(int=0), "bar_date": date(2020, 1, 1)}
-    ]
+    dummy_records = [{"ticker_id": uuid.UUID(int=0), "bar_date": date(2020, 1, 1)}]
     for fc in FEATURE_COLUMNS:
         dummy_records[0][fc] = 0.0
     for tc in TARGET_COLUMNS:
@@ -164,7 +162,9 @@ async def run_inference(
             tft_models[role_key] = _load_tft_model(tft_bytes)
             logger.info("Loaded TFT model for role=%s", role_key)
         except (ValueError, KeyError):
-            logger.info("No active TFT artifact for role=%s; using synthetic zeros.", role_key)
+            logger.info(
+                "No active TFT artifact for role=%s; using synthetic zeros.", role_key
+            )
             tft_models[role_key] = None
 
     tickers = await list_active_tickers_for_universe(db_session, universe_id)
@@ -239,7 +239,9 @@ async def run_inference(
                 except Exception as exc:
                     logger.warning(
                         "TFT inference failed for ticker=%s horizon=%s: %s",
-                        ticker.id, horizon_label, exc,
+                        ticker.id,
+                        horizon_label,
+                        exc,
                     )
 
         if calibrator is not None:
@@ -256,32 +258,34 @@ async def run_inference(
             pred.reshape(1, -1), tft_q10.reshape(1, -1), tft_q90.reshape(1, -1)
         )[0]
 
-        predictions.append({
-            "inference_run_id": inference_run.id,
-            "ticker_id": ticker.id,
-            "universe_id": universe_id,
-            "inference_date": inference_date,
-            "pred_t1": float(pred[0]),
-            "pred_lo_t1": float(pred_lo[0]),
-            "pred_hi_t1": float(pred_hi[0]),
-            "conviction_t1": float(conviction[0]),
-            "pred_t5": float(pred[1]),
-            "pred_lo_t5": float(pred_lo[1]),
-            "pred_hi_t5": float(pred_hi[1]),
-            "conviction_t5": float(conviction[1]),
-            "pred_t10": float(pred[2]),
-            "pred_lo_t10": float(pred_lo[2]),
-            "pred_hi_t10": float(pred_hi[2]),
-            "conviction_t10": float(conviction[2]),
-            "pred_t15": float(pred[3]),
-            "pred_lo_t15": float(pred_lo[3]),
-            "pred_hi_t15": float(pred_hi[3]),
-            "conviction_t15": float(conviction[3]),
-            "lstm_outputs": lstm_output[0].tolist(),
-            "tft_q10": tft_q10.tolist(),
-            "tft_q50": tft_q50.tolist(),
-            "tft_q90": tft_q90.tolist(),
-        })
+        predictions.append(
+            {
+                "inference_run_id": inference_run.id,
+                "ticker_id": ticker.id,
+                "universe_id": universe_id,
+                "inference_date": inference_date,
+                "pred_t1": float(pred[0]),
+                "pred_lo_t1": float(pred_lo[0]),
+                "pred_hi_t1": float(pred_hi[0]),
+                "conviction_t1": float(conviction[0]),
+                "pred_t5": float(pred[1]),
+                "pred_lo_t5": float(pred_lo[1]),
+                "pred_hi_t5": float(pred_hi[1]),
+                "conviction_t5": float(conviction[1]),
+                "pred_t10": float(pred[2]),
+                "pred_lo_t10": float(pred_lo[2]),
+                "pred_hi_t10": float(pred_hi[2]),
+                "conviction_t10": float(conviction[2]),
+                "pred_t15": float(pred[3]),
+                "pred_lo_t15": float(pred_lo[3]),
+                "pred_hi_t15": float(pred_hi[3]),
+                "conviction_t15": float(conviction[3]),
+                "lstm_outputs": lstm_output[0].tolist(),
+                "tft_q10": tft_q10.tolist(),
+                "tft_q50": tft_q50.tolist(),
+                "tft_q90": tft_q90.tolist(),
+            }
+        )
 
     if skipped:
         logger.info("Skipped %d tickers with < %d days of history.", skipped, LOOKBACK)

@@ -4,8 +4,8 @@ from app.features.backtesting.shared.base import BaseStrategy
 
 class VolatilityBreakout(BaseStrategy):
     def generate_signals(self, df: pd.DataFrame) -> tuple[pd.Series, pd.Series]:
-        atr = df['atr_14']
-        close = df['close']
+        atr = df["atr_14"]
+        close = df["close"]
 
         atr_ma14 = atr.rolling(14).mean()
         rolling_high20 = close.rolling(20).max().shift(1)

@@ -18,7 +18,9 @@ class OHLCVBarSchema(BaseSchema):
     high: Decimal = Field(max_digits=18, decimal_places=6)
     low: Decimal = Field(max_digits=18, decimal_places=6)
     close: Decimal = Field(max_digits=18, decimal_places=6)
-    adjusted_close: Decimal | None = Field(default=None, max_digits=18, decimal_places=6)
+    adjusted_close: Decimal | None = Field(
+        default=None, max_digits=18, decimal_places=6
+    )
     volume: int
     source: str
     ingest_run_id: UUID | None = None

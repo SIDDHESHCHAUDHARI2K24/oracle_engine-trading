@@ -85,7 +85,9 @@ class TestBuildTFTDataset:
         assert hasattr(ds, "time_varying_unknown_reals")
         assert len(ds.time_varying_unknown_reals) == 24
 
-        recon_names = set(ds.time_varying_known_reals) | set(ds.time_varying_unknown_reals)
+        recon_names = set(ds.time_varying_known_reals) | set(
+            ds.time_varying_unknown_reals
+        )
         assert "close" in recon_names
         assert "vix" in recon_names
 
@@ -150,7 +152,9 @@ class TestBuildTFTDataset:
             self.build_tft_dataset(df, target_column="nonexistent_target")
 
     def test_missing_ticker_column_raises(self) -> None:
-        df = pd.DataFrame({"bar_date": [pd.Timestamp("2020-01-01")], "target_t1": [0.01]})
+        df = pd.DataFrame(
+            {"bar_date": [pd.Timestamp("2020-01-01")], "target_t1": [0.01]}
+        )
         with pytest.raises(KeyError, match="ticker_col"):
             self.build_tft_dataset(df, target_column="target_t1")
 

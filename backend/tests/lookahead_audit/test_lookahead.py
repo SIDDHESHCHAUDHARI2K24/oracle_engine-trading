@@ -137,9 +137,7 @@ class TestLookaheadAudit:
         full_result, _ = self.run_pipeline(df, macro)
         partial_result, _ = self.run_pipeline(partial, macro)
 
-        _assert_all_past_rows_invariant(
-            partial_result, full_result, t, "full_pipeline"
-        )
+        _assert_all_past_rows_invariant(partial_result, full_result, t, "full_pipeline")
 
     def test_scaler_only_all_rows_no_future_leakage(self):
         """All rows in scaler output must be invariant."""
@@ -151,9 +149,7 @@ class TestLookaheadAudit:
         full_scaled, _ = self.scaler.fit_transform("AUDIT", df)
         partial_scaled, _ = self.scaler.fit_transform("AUDIT-PARTIAL", partial)
 
-        _assert_all_past_rows_invariant(
-            partial_scaled, full_scaled, t, "scaler_only"
-        )
+        _assert_all_past_rows_invariant(partial_scaled, full_scaled, t, "scaler_only")
 
     def test_engineer_only_all_rows_no_future_leakage(self):
         """All technical indicator rows must be invariant."""
@@ -198,9 +194,7 @@ class TestLookaheadAudit:
         full_result, _ = self.run_pipeline(df, macro)
         partial_result, _ = self.run_pipeline(partial, macro)
 
-        _assert_all_past_rows_invariant(
-            partial_result, full_result, t, "e2e"
-        )
+        _assert_all_past_rows_invariant(partial_result, full_result, t, "e2e")
 
 
 class TestMacroMergerLookahead:
@@ -221,24 +215,17 @@ class TestMacroMergerLookahead:
         rng = np.random.default_rng(55)
         full_macro_dates = pd.date_range("2023-06-01", "2025-06-30", freq="MS")
         full_macro = pd.DataFrame(
-            {
-                col: rng.standard_normal(len(full_macro_dates))
-                for col in macro_names()
-            },
+            {col: rng.standard_normal(len(full_macro_dates)) for col in macro_names()},
             index=full_macro_dates,
         )
 
         t = 120
         cutoff_date = dates[t - 1]
-        partial_macro_count = len(
-            full_macro[full_macro.index <= cutoff_date]
-        )
+        partial_macro_count = len(full_macro[full_macro.index <= cutoff_date])
         partial_macro = full_macro.iloc[: partial_macro_count + 1].copy()
 
         full_merged = self.merger.merge(equity.copy(), full_macro.copy())
-        partial_merged = self.merger.merge(
-            equity.iloc[:t].copy(), partial_macro.copy()
-        )
+        partial_merged = self.merger.merge(equity.iloc[:t].copy(), partial_macro.copy())
 
         for col in macro_names():
             if col not in partial_merged.columns or col not in full_merged.columns:
@@ -248,6 +235,5 @@ class TestMacroMergerLookahead:
             if pd.isna(p_val) and pd.isna(f_val):
                 continue
             assert float(p_val) == pytest.approx(float(f_val), rel=1e-8), (
-                f"MACRO MERGER LOOKAHEAD in {col}: "
-                f"partial={p_val}, full={f_val}"
+                f"MACRO MERGER LOOKAHEAD in {col}: partial={p_val}, full={f_val}"
             )

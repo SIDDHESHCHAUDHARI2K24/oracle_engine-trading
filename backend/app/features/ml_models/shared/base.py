@@ -22,12 +22,10 @@ class BaseMathEngine(ABC, torch.nn.Module):
         self,
         train_loader: torch.utils.data.DataLoader,
         val_loader: torch.utils.data.DataLoader,
-    ) -> dict:
-        ...
+    ) -> dict: ...
 
     @abstractmethod
-    def predict(self, x: torch.Tensor) -> np.ndarray:
-        ...
+    def predict(self, x: torch.Tensor) -> np.ndarray: ...
 
     def serialize(self) -> bytes:
         buf = BytesIO()

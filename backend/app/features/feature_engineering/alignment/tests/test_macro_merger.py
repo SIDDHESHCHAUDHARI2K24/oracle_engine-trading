@@ -19,10 +19,17 @@ def make_equity_df(n_days: int = 252) -> pd.DataFrame:
 
 def make_macro_df() -> pd.DataFrame:
     """Monthly macro data: sparse dates, forward-fill carries values."""
-    dates = pd.to_datetime([
-        "2024-01-02", "2024-02-01", "2024-03-01", "2024-04-01",
-        "2024-05-01", "2024-06-03", "2024-07-01",
-    ])
+    dates = pd.to_datetime(
+        [
+            "2024-01-02",
+            "2024-02-01",
+            "2024-03-01",
+            "2024-04-01",
+            "2024-05-01",
+            "2024-06-03",
+            "2024-07-01",
+        ]
+    )
     return pd.DataFrame(
         {
             "fed_funds_rate": [5.33, 5.33, 5.33, 5.33, 5.33, 5.33, 5.50],
@@ -43,6 +50,7 @@ class TestMacroMerger:
         from app.features.feature_engineering.alignment.macro_merger import (
             MacroMerger,
         )
+
         self.MacroMerger = MacroMerger
         self.equity = make_equity_df(252)
         self.macro = make_macro_df()

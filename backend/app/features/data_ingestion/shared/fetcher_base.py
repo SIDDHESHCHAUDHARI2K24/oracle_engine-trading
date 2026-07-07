@@ -56,11 +56,17 @@ def enforce_ohlcv_schema(df: pd.DataFrame) -> pd.DataFrame:
     required = {"open", "high", "low", "close", "volume"}
     missing = required - set(df.columns)
     if missing:
-        raise FetcherError("schema_enforcer", [], original_error=ValueError(f"Missing columns: {missing}"))
+        raise FetcherError(
+            "schema_enforcer",
+            [],
+            original_error=ValueError(f"Missing columns: {missing}"),
+        )
 
     for col in ["open", "high", "low", "close"]:
         df[col] = pd.to_numeric(df[col], errors="coerce")
-    df["volume"] = pd.to_numeric(df["volume"], errors="coerce").fillna(0).astype("int64")
+    df["volume"] = (
+        pd.to_numeric(df["volume"], errors="coerce").fillna(0).astype("int64")
+    )
 
     if df[["open", "high", "low", "close"]].isna().any().any():
         df = df.dropna(subset=["open", "high", "low", "close"])
@@ -82,7 +88,9 @@ class DataFetcher(ABC):
         self._config = kwargs
 
     @abstractmethod
-    def fetch(self, symbols: list[str], start_date: str, end_date: str) -> dict[str, pd.DataFrame]:
+    def fetch(
+        self, symbols: list[str], start_date: str, end_date: str
+    ) -> dict[str, pd.DataFrame]:
         """Fetch OHLCV data for the given symbols and date range.
 
         Args:

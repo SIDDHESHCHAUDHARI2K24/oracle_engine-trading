@@ -83,7 +83,9 @@ def _to_float(val):
 
 
 def _row_to_feature_vector(row) -> np.ndarray:
-    return np.array([_to_float(getattr(row, c, 0.0)) for c in FEATURE_COLUMNS], dtype=np.float32)
+    return np.array(
+        [_to_float(getattr(row, c, 0.0)) for c in FEATURE_COLUMNS], dtype=np.float32
+    )
 
 
 def _row_to_target_vector(row) -> np.ndarray:
@@ -109,9 +111,7 @@ async def _fetch_active_ticker_ids(
     return [row[0] for row in result.fetchall()]
 
 
-async def _fetch_universe_name(
-    session: AsyncSession, universe_id: uuid.UUID
-) -> str:
+async def _fetch_universe_name(session: AsyncSession, universe_id: uuid.UUID) -> str:
     result = await session.execute(
         select(Universe.name).where(Universe.id == universe_id)
     )
@@ -187,9 +187,7 @@ async def _build_training_data(
             all_dates.append(ticker_dates[i])
 
     if not all_features:
-        raise ValueError(
-            f"No windows built: need >{SEQUENCE_LENGTH} rows per ticker"
-        )
+        raise ValueError(f"No windows built: need >{SEQUENCE_LENGTH} rows per ticker")
 
     X = np.stack(all_features, axis=0)
     y = np.stack(all_targets, axis=0)
@@ -283,9 +281,7 @@ async def train_universe(
         train_loader = DataLoader(
             train_ds, batch_size=hparams["batch_size"], shuffle=False
         )
-        val_loader = DataLoader(
-            val_ds, batch_size=hparams["batch_size"], shuffle=False
-        )
+        val_loader = DataLoader(val_ds, batch_size=hparams["batch_size"], shuffle=False)
 
         lstm_engine = LSTMMathEngine()
         lstm_trainer = LSTMTrainer(
@@ -300,12 +296,14 @@ async def train_universe(
         )
 
         lstm_history = lstm_trainer.train_model(train_loader, val_loader)
-        per_epoch_losses.append({
-            "model_role": "lstm",
-            "train_loss": lstm_history["train_loss"],
-            "val_loss": lstm_history["val_loss"],
-            "epochs_run": lstm_history["epochs_run"],
-        })
+        per_epoch_losses.append(
+            {
+                "model_role": "lstm",
+                "train_loss": lstm_history["train_loss"],
+                "val_loss": lstm_history["val_loss"],
+                "epochs_run": lstm_history["epochs_run"],
+            }
+        )
 
         lstm_bytes = lstm_engine.serialize()
         lstm_artifact = await artifact_service.save_artifact(
@@ -364,10 +362,14 @@ async def train_universe(
                 )
                 logger.info(
                     "Built TFT dataset for horizon=%s: %d train samples, %d val samples",
-                    horizon, len(train_ds), len(val_ds),
+                    horizon,
+                    len(train_ds),
+                    len(val_ds),
                 )
             except Exception as exc:
-                logger.warning("Failed to build TFT dataset for horizon=%s: %s", horizon, exc)
+                logger.warning(
+                    "Failed to build TFT dataset for horizon=%s: %s", horizon, exc
+                )
 
         if tft_datasets:
             try:
@@ -386,7 +388,8 @@ async def train_universe(
                     for horizon, _target_col, model_role in tft_horizon_map:
                         if horizon not in quad_array.models:
                             logger.warning(
-                                "TFT model for horizon=%s not initialized; skipping artifact save.", horizon
+                                "TFT model for horizon=%s not initialized; skipping artifact save.",
+                                horizon,
                             )
                             continue
                         try:
@@ -395,14 +398,20 @@ async def train_universe(
                             model_path = Path(tmpdir) / f"{model_role}.pt"
                             torch.save(tft_model.state_dict(), model_path)
                             model_bytes = model_path.read_bytes()
-                            tft_bytes = pickle.dumps({
-                                "state_dict_bytes": model_bytes,
-                                "hidden_size": tft_hparams["hidden_size"],
-                                "attention_head_size": tft_hparams["attention_head_size"],
-                                "dropout": tft_hparams["dropout"],
-                                "hidden_continuous_size": tft_hparams["hidden_continuous_size"],
-                                "learning_rate": tft_hparams["learning_rate"],
-                            })
+                            tft_bytes = pickle.dumps(
+                                {
+                                    "state_dict_bytes": model_bytes,
+                                    "hidden_size": tft_hparams["hidden_size"],
+                                    "attention_head_size": tft_hparams[
+                                        "attention_head_size"
+                                    ],
+                                    "dropout": tft_hparams["dropout"],
+                                    "hidden_continuous_size": tft_hparams[
+                                        "hidden_continuous_size"
+                                    ],
+                                    "learning_rate": tft_hparams["learning_rate"],
+                                }
+                            )
                             tft_artifact = await artifact_service.save_artifact(
                                 session,
                                 universe_id=universe_id,
@@ -415,16 +424,24 @@ async def train_universe(
                             logger.info("Saved TFT artifact for role=%s", model_role)
                         except Exception as exc:
                             logger.exception(
-                                "Failed to save TFT artifact for role=%s: %s", model_role, exc
+                                "Failed to save TFT artifact for role=%s: %s",
+                                model_role,
+                                exc,
                             )
 
                     for horizon, _target_col, model_role in tft_horizon_map:
                         if horizon in tft_results:
-                            per_epoch_losses.append({
-                                "model_role": model_role,
-                                "best_val_loss": tft_results[horizon].get("best_val_loss"),
-                                "stopped_epoch": tft_results[horizon].get("stopped_epoch"),
-                            })
+                            per_epoch_losses.append(
+                                {
+                                    "model_role": model_role,
+                                    "best_val_loss": tft_results[horizon].get(
+                                        "best_val_loss"
+                                    ),
+                                    "stopped_epoch": tft_results[horizon].get(
+                                        "stopped_epoch"
+                                    ),
+                                }
+                            )
             except Exception as tft_exc:
                 logger.exception(
                     "TFT training failed for universe '%s': %s",
@@ -456,12 +473,15 @@ async def train_universe(
         w_max = calibrator.compute_W_max(X_features[cal_mask])
 
         cal_buf = BytesIO()
-        torch.save({
-            "quantiles": calibrator.quantiles,
-            "alpha": calibrator.alpha,
-            "residual_predictor_state": calibrator.residual_predictor.state_dict(),
-            "w_max": w_max,
-        }, cal_buf)
+        torch.save(
+            {
+                "quantiles": calibrator.quantiles,
+                "alpha": calibrator.alpha,
+                "residual_predictor_state": calibrator.residual_predictor.state_dict(),
+                "w_max": w_max,
+            },
+            cal_buf,
+        )
         cal_bytes = cal_buf.getvalue()
         cal_artifact = await artifact_service.save_artifact(
             session,

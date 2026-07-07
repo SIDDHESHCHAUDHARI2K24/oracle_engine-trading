@@ -169,11 +169,26 @@ async def upsert_predictions(
         existing = existing.scalar_one_or_none()
         if existing is not None:
             for col in (
-                "pred_t1", "pred_lo_t1", "pred_hi_t1", "conviction_t1",
-                "pred_t5", "pred_lo_t5", "pred_hi_t5", "conviction_t5",
-                "pred_t10", "pred_lo_t10", "pred_hi_t10", "conviction_t10",
-                "pred_t15", "pred_lo_t15", "pred_hi_t15", "conviction_t15",
-                "lstm_outputs", "tft_q10", "tft_q50", "tft_q90",
+                "pred_t1",
+                "pred_lo_t1",
+                "pred_hi_t1",
+                "conviction_t1",
+                "pred_t5",
+                "pred_lo_t5",
+                "pred_hi_t5",
+                "conviction_t5",
+                "pred_t10",
+                "pred_lo_t10",
+                "pred_hi_t10",
+                "conviction_t10",
+                "pred_t15",
+                "pred_lo_t15",
+                "pred_hi_t15",
+                "conviction_t15",
+                "lstm_outputs",
+                "tft_q10",
+                "tft_q50",
+                "tft_q90",
             ):
                 setattr(existing, col, p[col])
         else:

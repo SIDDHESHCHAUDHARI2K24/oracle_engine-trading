@@ -17,13 +17,12 @@ async def compute_conviction_correlation(
     alert_service: AlertService | None = None,
 ) -> float | None:
     window_start = date.today() - timedelta(days=90)
-    stmt = (
-        select(ConvictionTicket.conviction_score, ConvictionTicket.actual_return)
-        .where(
-            ConvictionTicket.universe_id == universe_id,
-            ConvictionTicket.resolution_date >= window_start,
-            ConvictionTicket.actual_return.isnot(None),
-        )
+    stmt = select(
+        ConvictionTicket.conviction_score, ConvictionTicket.actual_return
+    ).where(
+        ConvictionTicket.universe_id == universe_id,
+        ConvictionTicket.resolution_date >= window_start,
+        ConvictionTicket.actual_return.isnot(None),
     )
     result = await session.execute(stmt)
     rows = result.all()

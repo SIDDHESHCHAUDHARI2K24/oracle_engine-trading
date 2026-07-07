@@ -100,9 +100,7 @@ class YahooFinanceFetcher(DataFetcher):
 
         return results
 
-    def _extract_symbol(
-        self, df: pd.DataFrame, symbol: str
-    ) -> pd.DataFrame | None:
+    def _extract_symbol(self, df: pd.DataFrame, symbol: str) -> pd.DataFrame | None:
         if isinstance(df.columns, pd.MultiIndex):
             if symbol not in df.columns.get_level_values(0):
                 return None
@@ -136,7 +134,8 @@ class YahooFinanceFetcher(DataFetcher):
         for col in required_cols:
             if col not in df.columns:
                 raise FetcherError(
-                    self.source_name, [],
+                    self.source_name,
+                    [],
                     original_error=ValueError(f"Missing column: {col}"),
                 )
 

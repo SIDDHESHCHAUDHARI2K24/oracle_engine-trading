@@ -57,16 +57,18 @@ def evaluate_filter(
             and _check_backtest(bt_passes)
             and _check_width(width, w)
         ):
-            passing.append({
-                "ticker_id": ticker_id,
-                "horizon_idx": horizon_idx,
-                "pred": pred,
-                "conviction": conviction,
-                "width": width,
-                "backtest_passes": bt_passes,
-                "pred_lo": p.get("pred_lo", 0),
-                "pred_hi": p.get("pred_hi", 0),
-                "universe_id": p.get("universe_id"),
-            })
+            passing.append(
+                {
+                    "ticker_id": ticker_id,
+                    "horizon_idx": horizon_idx,
+                    "pred": pred,
+                    "conviction": conviction,
+                    "width": width,
+                    "backtest_passes": bt_passes,
+                    "pred_lo": p.get("pred_lo", 0),
+                    "pred_hi": p.get("pred_hi", 0),
+                    "universe_id": p.get("universe_id"),
+                }
+            )
 
     return passing

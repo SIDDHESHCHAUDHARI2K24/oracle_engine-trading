@@ -97,7 +97,8 @@ async def filter_and_emit_tickets(
     logger = get_run_logger()
     logger.info(
         "Filter & emit starting for universe=%s run=%s",
-        universe_id, inference_run_id,
+        universe_id,
+        inference_run_id,
     )
 
     from app.features.core.database import async_session_factory
@@ -125,7 +126,8 @@ async def filter_and_emit_tickets(
             if not predictions:
                 logger.info(
                     "No predictions for universe=%s date=%s — skipping filter",
-                    universe_id, inference_date,
+                    universe_id,
+                    inference_date,
                 )
                 return {
                     "universe_id": str(universe_id),
@@ -170,14 +172,14 @@ async def filter_and_emit_tickets(
         except Exception:
             logger.exception(
                 "Filter & emit failed for universe=%s run=%s",
-                universe_id, inference_run_id,
+                universe_id,
+                inference_run_id,
             )
             return {
                 "universe_id": str(universe_id),
                 "inference_run_id": str(inference_run_id),
                 "status": "failed",
             }
-
 
 
 @flow(name="daily_inference", log_prints=True)
@@ -216,9 +218,7 @@ async def daily_inference_flow() -> dict:
             )
             results.append(filter_result)
 
-    succeeded = sum(
-        1 for r in results if r.get("status") == "completed"
-    )
+    succeeded = sum(1 for r in results if r.get("status") == "completed")
     failed = sum(1 for r in results if r.get("status") == "failed")
 
     logger.info(

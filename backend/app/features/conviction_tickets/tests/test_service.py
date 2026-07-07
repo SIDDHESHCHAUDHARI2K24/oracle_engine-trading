@@ -10,10 +10,22 @@ def _make_prediction_row(
     universe_id,
     inference_run_id,
     inference_date,
-    pred_t1=0.02, pred_lo_t1=0.01, pred_hi_t1=0.04, conviction_t1=80.0,
-    pred_t5=0.03, pred_lo_t5=0.01, pred_hi_t5=0.06, conviction_t5=75.0,
-    pred_t10=0.01, pred_lo_t10=0.00, pred_hi_t10=0.03, conviction_t10=70.0,
-    pred_t15=0.015, pred_lo_t15=0.005, pred_hi_t15=0.035, conviction_t15=68.0,
+    pred_t1=0.02,
+    pred_lo_t1=0.01,
+    pred_hi_t1=0.04,
+    conviction_t1=80.0,
+    pred_t5=0.03,
+    pred_lo_t5=0.01,
+    pred_hi_t5=0.06,
+    conviction_t5=75.0,
+    pred_t10=0.01,
+    pred_lo_t10=0.00,
+    pred_hi_t10=0.03,
+    conviction_t10=70.0,
+    pred_t15=0.015,
+    pred_lo_t15=0.005,
+    pred_hi_t15=0.035,
+    conviction_t15=68.0,
 ):
     p = MagicMock()
     p.ticker_id = ticker_id
@@ -55,14 +67,22 @@ async def _seed_ref_data(db_session, universe_id, ticker_id, inf_run_id, bt_run_
             "INSERT INTO universes (id, name, display_name, created_at) "
             "VALUES (:id, :name, :dn, now())"
         ),
-        {"id": universe_id, "name": f"test-{universe_id}", "dn": f"Display {universe_id}"},
+        {
+            "id": universe_id,
+            "name": f"test-{universe_id}",
+            "dn": f"Display {universe_id}",
+        },
     )
     await db_session.execute(
         text(
             "INSERT INTO tickers (id, symbol, name, created_at, active) "
             "VALUES (:id, :sym, :name, now(), true)"
         ),
-        {"id": ticker_id, "sym": f"T{str(ticker_id)[:18]}", "name": f"Ticker {ticker_id}"},
+        {
+            "id": ticker_id,
+            "sym": f"T{str(ticker_id)[:18]}",
+            "name": f"Ticker {ticker_id}",
+        },
     )
     await db_session.execute(
         text(
@@ -108,8 +128,14 @@ class TestPredictionsToDicts:
         universe_id = uuid.uuid4()
         inf_run_id = uuid.uuid4()
         pred = _make_prediction_row(
-            ticker_id, universe_id, inf_run_id, date.today(),
-            pred_t1=0.025, pred_lo_t1=0.01, pred_hi_t1=0.04, conviction_t1=82.0,
+            ticker_id,
+            universe_id,
+            inf_run_id,
+            date.today(),
+            pred_t1=0.025,
+            pred_lo_t1=0.01,
+            pred_hi_t1=0.04,
+            conviction_t1=82.0,
         )
 
         dicts = _predictions_to_dicts([pred])
@@ -126,8 +152,13 @@ class TestPredictionsToDicts:
         from app.features.conviction_tickets.service import _predictions_to_dicts
 
         pred = _make_prediction_row(
-            uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), date.today(),
-            pred_t5=0.03, pred_lo_t5=0.02, pred_hi_t5=0.07,
+            uuid.uuid4(),
+            uuid.uuid4(),
+            uuid.uuid4(),
+            date.today(),
+            pred_t5=0.03,
+            pred_lo_t5=0.02,
+            pred_hi_t5=0.07,
         )
 
         dicts = _predictions_to_dicts([pred])
@@ -142,8 +173,21 @@ class TestBacktestPasses:
         from app.features.conviction_tickets.service import _build_backtest_passes
 
         metrics = [
-            {"ticker_id": "AAA", "passes": 3, "strategies": {"mac": True, "ma_cross": True, "bb": True, "rsi": False}},
-            {"ticker_id": "BBB", "passes": 1, "strategies": {"mac": False, "ma_cross": True, "bb": False, "rsi": False}},
+            {
+                "ticker_id": "AAA",
+                "passes": 3,
+                "strategies": {"mac": True, "ma_cross": True, "bb": True, "rsi": False},
+            },
+            {
+                "ticker_id": "BBB",
+                "passes": 1,
+                "strategies": {
+                    "mac": False,
+                    "ma_cross": True,
+                    "bb": False,
+                    "rsi": False,
+                },
+            },
         ]
         passes = _build_backtest_passes(metrics)
         assert passes == {"AAA": 3, "BBB": 1}
@@ -152,8 +196,21 @@ class TestBacktestPasses:
         from app.features.conviction_tickets.service import _build_backtest_strategies
 
         metrics = [
-            {"ticker_id": "AAA", "passes": 3, "strategies": {"mac": True, "ma_cross": True, "bb": True, "rsi": False}},
-            {"ticker_id": "BBB", "passes": 1, "strategies": {"mac": False, "ma_cross": True, "bb": False, "rsi": False}},
+            {
+                "ticker_id": "AAA",
+                "passes": 3,
+                "strategies": {"mac": True, "ma_cross": True, "bb": True, "rsi": False},
+            },
+            {
+                "ticker_id": "BBB",
+                "passes": 1,
+                "strategies": {
+                    "mac": False,
+                    "ma_cross": True,
+                    "bb": False,
+                    "rsi": False,
+                },
+            },
         ]
         strategies = _build_backtest_strategies(metrics)
         assert sorted(strategies["AAA"]) == sorted(["mac", "ma_cross", "bb"])
@@ -173,16 +230,35 @@ class TestTicketServiceEmitTickets:
         await _seed_ref_data(db_session, universe_id, ticker_id, inf_run_id, bt_run_id)
 
         prediction_row = _make_prediction_row(
-            ticker_id, universe_id, inf_run_id, date.today(),
-            pred_t1=0.025, pred_lo_t1=0.01, pred_hi_t1=0.04, conviction_t1=82.0,
-            pred_t5=0.015, pred_lo_t5=0.01, pred_hi_t5=0.035, conviction_t5=68.0,
-            pred_t10=-0.01, pred_lo_t10=-0.03, pred_hi_t10=0.0, conviction_t10=75.0,
-            pred_t15=0.02, pred_lo_t15=0.0, pred_hi_t15=0.12, conviction_t15=70.0,
+            ticker_id,
+            universe_id,
+            inf_run_id,
+            date.today(),
+            pred_t1=0.025,
+            pred_lo_t1=0.01,
+            pred_hi_t1=0.04,
+            conviction_t1=82.0,
+            pred_t5=0.015,
+            pred_lo_t5=0.01,
+            pred_hi_t5=0.035,
+            conviction_t5=68.0,
+            pred_t10=-0.01,
+            pred_lo_t10=-0.03,
+            pred_hi_t10=0.0,
+            conviction_t10=75.0,
+            pred_t15=0.02,
+            pred_lo_t15=0.0,
+            pred_hi_t15=0.12,
+            conviction_t15=70.0,
         )
         inference_run = _make_inference_run(inf_run_id, universe_id, date.today())
 
         bt_metrics = [
-            {"ticker_id": str(ticker_id), "passes": 3, "strategies": {"mac": True, "ma_cross": True, "bb": True}},
+            {
+                "ticker_id": str(ticker_id),
+                "passes": 3,
+                "strategies": {"mac": True, "ma_cross": True, "bb": True},
+            },
         ]
         w_max = {0: 0.05, 1: 0.10, 2: 0.10, 3: 0.10}
 
@@ -214,11 +290,26 @@ class TestTicketServiceEmitTickets:
         await _seed_ref_data(db_session, universe_id, ticker_id, inf_run_id, bt_run_id)
 
         prediction_row = _make_prediction_row(
-            ticker_id, universe_id, inf_run_id, date.today(),
-            pred_t1=-0.01, pred_lo_t1=-0.03, pred_hi_t1=0.0, conviction_t1=80.0,
-            pred_t5=-0.02, pred_lo_t5=-0.04, pred_hi_t5=0.0, conviction_t5=70.0,
-            pred_t10=-0.01, pred_lo_t10=-0.02, pred_hi_t10=0.0, conviction_t10=75.0,
-            pred_t15=-0.005, pred_lo_t15=-0.01, pred_hi_t15=0.0, conviction_t15=65.0,
+            ticker_id,
+            universe_id,
+            inf_run_id,
+            date.today(),
+            pred_t1=-0.01,
+            pred_lo_t1=-0.03,
+            pred_hi_t1=0.0,
+            conviction_t1=80.0,
+            pred_t5=-0.02,
+            pred_lo_t5=-0.04,
+            pred_hi_t5=0.0,
+            conviction_t5=70.0,
+            pred_t10=-0.01,
+            pred_lo_t10=-0.02,
+            pred_hi_t10=0.0,
+            conviction_t10=75.0,
+            pred_t15=-0.005,
+            pred_lo_t15=-0.01,
+            pred_hi_t15=0.0,
+            conviction_t15=65.0,
         )
         inference_run = _make_inference_run(inf_run_id, universe_id, date.today())
 

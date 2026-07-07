@@ -56,18 +56,12 @@ def build_tft_dataset(
     df = df.sort_values([ticker_col, date_col]).reset_index(drop=True)
 
     df["time_idx"] = (
-        df.groupby(ticker_col, sort=False)[date_col]
-        .rank(method="dense")
-        .astype(int)
+        df.groupby(ticker_col, sort=False)[date_col].rank(method="dense").astype(int)
         - 1
     )
 
     time_varying_known = [c for c in _macro_names if c in df.columns]
-    time_varying_unknown = [
-        c
-        for c in _raw_names + _technical_names
-        if c in df.columns
-    ]
+    time_varying_unknown = [c for c in _raw_names + _technical_names if c in df.columns]
 
     min_encoder = min(
         max_encoder_length,

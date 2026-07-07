@@ -207,7 +207,9 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id", "inference_date", name="pk_predictions"),
         sa.UniqueConstraint(
-            "ticker_id", "universe_id", "inference_date",
+            "ticker_id",
+            "universe_id",
+            "inference_date",
             name="uq_predictions_ticker_universe_date",
         ),
     )

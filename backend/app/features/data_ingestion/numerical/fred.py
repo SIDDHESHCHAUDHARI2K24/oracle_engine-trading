@@ -45,7 +45,8 @@ class FREDFetcher(DataFetcher):
     ) -> dict[str, pd.DataFrame]:
         if not settings.fred_api_key:
             raise FetcherError(
-                self.source_name, [],
+                self.source_name,
+                [],
                 original_error=ValueError("FRED_API_KEY not configured"),
             )
 
@@ -66,13 +67,19 @@ class FREDFetcher(DataFetcher):
 
         for fred_id, col_name in FRED_SERIES.items():
             try:
-                raw = fred.get_series(fred_id, observation_start=start_date, observation_end=end_date)
+                raw = fred.get_series(
+                    fred_id, observation_start=start_date, observation_end=end_date
+                )
                 if raw.empty:
                     logger.warning("FRED series %s returned no data", fred_id)
                     continue
                 raw.name = col_name
                 series_frames[col_name] = raw
-                latest_dates[col_name] = raw.index[-1] if isinstance(raw.index, pd.DatetimeIndex) else pd.Timestamp(raw.index[-1])
+                latest_dates[col_name] = (
+                    raw.index[-1]
+                    if isinstance(raw.index, pd.DatetimeIndex)
+                    else pd.Timestamp(raw.index[-1])
+                )
             except Exception as e:
                 logger.warning("FRED series %s fetch failed: %s", fred_id, e)
                 continue

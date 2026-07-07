@@ -22,7 +22,9 @@ async def freshness_signal_task(universe_id: uuid.UUID | None = None) -> dict:
     async with async_session_factory() as session:
         try:
             alert_service = AlertService()
-            result = await compute_freshness(session, universe_id=universe_id, alert_service=alert_service)
+            result = await compute_freshness(
+                session, universe_id=universe_id, alert_service=alert_service
+            )
             await session.flush()
             logger.info("Freshness check complete")
             return {"status": "completed", "data": result}
@@ -52,7 +54,9 @@ async def pipeline_success_signal_task() -> dict:
     async with async_session_factory() as session:
         try:
             alert_service = AlertService()
-            result = await compute_pipeline_success(session=session, alert_service=alert_service)
+            result = await compute_pipeline_success(
+                session=session, alert_service=alert_service
+            )
             await session.flush()
             logger.info("Pipeline success check complete")
             return {"status": "completed", "data": result}
@@ -77,15 +81,25 @@ async def correlation_signal_task(universe_id: uuid.UUID) -> dict:
     logger = get_run_logger()
 
     from app.features.core.database import async_session_factory
-    from app.features.monitoring.signals.correlation import compute_conviction_correlation
+    from app.features.monitoring.signals.correlation import (
+        compute_conviction_correlation,
+    )
 
     async with async_session_factory() as session:
         try:
             alert_service = AlertService()
-            corr = await compute_conviction_correlation(session, universe_id, alert_service=alert_service)
+            corr = await compute_conviction_correlation(
+                session, universe_id, alert_service=alert_service
+            )
             await session.flush()
-            logger.info("Correlation check complete for universe %s: corr=%s", universe_id, corr)
-            return {"universe_id": str(universe_id), "status": "completed", "correlation": corr}
+            logger.info(
+                "Correlation check complete for universe %s: corr=%s", universe_id, corr
+            )
+            return {
+                "universe_id": str(universe_id),
+                "status": "completed",
+                "correlation": corr,
+            }
         except Exception:
             logger.exception("Correlation check failed for universe %s", universe_id)
             await AlertService().raise_alert(
@@ -113,7 +127,9 @@ async def drift_signal_task(universe_id: uuid.UUID) -> dict:
 
     async with async_session_factory() as session:
         try:
-            await FeatureDriftSignal.compute_all_drift(session, universe_id, measure_date)
+            await FeatureDriftSignal.compute_all_drift(
+                session, universe_id, measure_date
+            )
             await session.flush()
             logger.info("Drift check complete for universe %s", universe_id)
             return {"universe_id": str(universe_id), "status": "completed"}
@@ -144,10 +160,16 @@ async def backtest_drift_signal_task(universe_id: uuid.UUID) -> dict:
     async with async_session_factory() as session:
         try:
             alert_service = AlertService()
-            result = await compute_backtest_drift(session, universe_id, alert_service=alert_service)
+            result = await compute_backtest_drift(
+                session, universe_id, alert_service=alert_service
+            )
             await session.flush()
             logger.info("Backtest drift check complete for universe %s", universe_id)
-            return {"universe_id": str(universe_id), "status": "completed", "data": result}
+            return {
+                "universe_id": str(universe_id),
+                "status": "completed",
+                "data": result,
+            }
         except Exception:
             logger.exception("Backtest drift check failed for universe %s", universe_id)
             await AlertService().raise_alert(

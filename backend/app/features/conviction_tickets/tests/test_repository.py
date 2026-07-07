@@ -65,22 +65,24 @@ class TestTicketRepository:
         await _seed_inference_run(db_session, inf_run_id, universe_id, date.today())
         await db_session.flush()
 
-        ticket_dicts = [{
-            "inference_run_id": inf_run_id,
-            "ticker_id": ticker_id,
-            "universe_id": universe_id,
-            "inference_date": date.today(),
-            "horizon": "T1",
-            "direction": "LONG",
-            "predicted_return": 0.02,
-            "conviction_score": 80.0,
-            "conformal_lower": 0.01,
-            "conformal_upper": 0.04,
-            "backtest_passes": 3,
-            "backtest_pass_strategies": ["mac", "ma_cross", "bb"],
-            "status": "TRADABLE",
-            "resolution_date": date.today(),
-        }]
+        ticket_dicts = [
+            {
+                "inference_run_id": inf_run_id,
+                "ticker_id": ticker_id,
+                "universe_id": universe_id,
+                "inference_date": date.today(),
+                "horizon": "T1",
+                "direction": "LONG",
+                "predicted_return": 0.02,
+                "conviction_score": 80.0,
+                "conformal_lower": 0.01,
+                "conformal_upper": 0.04,
+                "backtest_passes": 3,
+                "backtest_pass_strategies": ["mac", "ma_cross", "bb"],
+                "status": "TRADABLE",
+                "resolution_date": date.today(),
+            }
+        ]
 
         count = await upsert_tickets(db_session, ticket_dicts)
         assert count == 1
@@ -97,22 +99,24 @@ class TestTicketRepository:
         await _seed_inference_run(db_session, inf_run_id, universe_id, date.today())
         await db_session.flush()
 
-        ticket_dicts = [{
-            "inference_run_id": inf_run_id,
-            "ticker_id": ticker_id,
-            "universe_id": universe_id,
-            "inference_date": date.today(),
-            "horizon": "T5",
-            "direction": "LONG",
-            "predicted_return": 0.03,
-            "conviction_score": 75.0,
-            "conformal_lower": 0.02,
-            "conformal_upper": 0.05,
-            "backtest_passes": 2,
-            "backtest_pass_strategies": ["mac", "bb"],
-            "status": "TRADABLE",
-            "resolution_date": date.today(),
-        }]
+        ticket_dicts = [
+            {
+                "inference_run_id": inf_run_id,
+                "ticker_id": ticker_id,
+                "universe_id": universe_id,
+                "inference_date": date.today(),
+                "horizon": "T5",
+                "direction": "LONG",
+                "predicted_return": 0.03,
+                "conviction_score": 75.0,
+                "conformal_lower": 0.02,
+                "conformal_upper": 0.05,
+                "backtest_passes": 2,
+                "backtest_pass_strategies": ["mac", "bb"],
+                "status": "TRADABLE",
+                "resolution_date": date.today(),
+            }
+        ]
 
         count1 = await upsert_tickets(db_session, ticket_dicts)
         assert count1 == 1
@@ -121,7 +125,10 @@ class TestTicketRepository:
         assert count2 == 0
 
     async def test_get_ticket_by_id(self, db_session):
-        from app.features.conviction_tickets.repository import upsert_tickets, get_ticket_by_id
+        from app.features.conviction_tickets.repository import (
+            upsert_tickets,
+            get_ticket_by_id,
+        )
         from app.features.conviction_tickets.models import ConvictionTicket
         from sqlalchemy import select
 
@@ -134,22 +141,24 @@ class TestTicketRepository:
         await _seed_inference_run(db_session, inf_run_id, universe_id, date.today())
         await db_session.flush()
 
-        ticket_dicts = [{
-            "inference_run_id": inf_run_id,
-            "ticker_id": ticker_id,
-            "universe_id": universe_id,
-            "inference_date": date.today(),
-            "horizon": "T1",
-            "direction": "LONG",
-            "predicted_return": 0.02,
-            "conviction_score": 80.0,
-            "conformal_lower": 0.01,
-            "conformal_upper": 0.04,
-            "backtest_passes": 3,
-            "backtest_pass_strategies": ["mac", "ma_cross"],
-            "status": "TRADABLE",
-            "resolution_date": date.today(),
-        }]
+        ticket_dicts = [
+            {
+                "inference_run_id": inf_run_id,
+                "ticker_id": ticker_id,
+                "universe_id": universe_id,
+                "inference_date": date.today(),
+                "horizon": "T1",
+                "direction": "LONG",
+                "predicted_return": 0.02,
+                "conviction_score": 80.0,
+                "conformal_lower": 0.01,
+                "conformal_upper": 0.04,
+                "backtest_passes": 3,
+                "backtest_pass_strategies": ["mac", "ma_cross"],
+                "status": "TRADABLE",
+                "resolution_date": date.today(),
+            }
+        ]
         await upsert_tickets(db_session, ticket_dicts)
 
         result = await db_session.execute(
@@ -169,7 +178,10 @@ class TestTicketRepository:
         assert not_found is None
 
     async def test_get_tickets_inbox(self, db_session):
-        from app.features.conviction_tickets.repository import upsert_tickets, get_tickets_inbox
+        from app.features.conviction_tickets.repository import (
+            upsert_tickets,
+            get_tickets_inbox,
+        )
 
         ticker_id = uuid.uuid4()
         universe_id = uuid.uuid4()
@@ -222,7 +234,10 @@ class TestTicketRepository:
         assert inbox[1].conviction_score == 80.0
 
     async def test_get_tickets_history(self, db_session):
-        from app.features.conviction_tickets.repository import upsert_tickets, get_tickets_history
+        from app.features.conviction_tickets.repository import (
+            upsert_tickets,
+            get_tickets_history,
+        )
 
         ticker_id = uuid.uuid4()
         universe_id = uuid.uuid4()
@@ -230,32 +245,39 @@ class TestTicketRepository:
 
         await _seed_universe(db_session, universe_id, "test-u5")
         await _seed_ticker(db_session, ticker_id, "HIST")
-        await _seed_inference_run(db_session, inf_run_id, universe_id, date(2025, 1, 15))
+        await _seed_inference_run(
+            db_session, inf_run_id, universe_id, date(2025, 1, 15)
+        )
         await db_session.flush()
 
-        ticket_dicts = [{
-            "inference_run_id": inf_run_id,
-            "ticker_id": ticker_id,
-            "universe_id": universe_id,
-            "inference_date": date(2025, 1, 15),
-            "horizon": "T1",
-            "direction": "LONG",
-            "predicted_return": 0.02,
-            "conviction_score": 75.0,
-            "conformal_lower": 0.01,
-            "conformal_upper": 0.04,
-            "backtest_passes": 2,
-            "backtest_pass_strategies": ["mac"],
-            "status": "REVIEWED",
-            "resolution_date": date(2025, 1, 16),
-        }]
+        ticket_dicts = [
+            {
+                "inference_run_id": inf_run_id,
+                "ticker_id": ticker_id,
+                "universe_id": universe_id,
+                "inference_date": date(2025, 1, 15),
+                "horizon": "T1",
+                "direction": "LONG",
+                "predicted_return": 0.02,
+                "conviction_score": 75.0,
+                "conformal_lower": 0.01,
+                "conformal_upper": 0.04,
+                "backtest_passes": 2,
+                "backtest_pass_strategies": ["mac"],
+                "status": "REVIEWED",
+                "resolution_date": date(2025, 1, 16),
+            }
+        ]
         await upsert_tickets(db_session, ticket_dicts)
 
         history = await get_tickets_history(db_session, universe_id=universe_id)
         assert len(history) >= 1
 
     async def test_get_tickets_for_resolution(self, db_session):
-        from app.features.conviction_tickets.repository import upsert_tickets, get_tickets_for_resolution
+        from app.features.conviction_tickets.repository import (
+            upsert_tickets,
+            get_tickets_for_resolution,
+        )
 
         ticker_id = uuid.uuid4()
         universe_id = uuid.uuid4()
@@ -269,22 +291,24 @@ class TestTicketRepository:
         await _seed_inference_run(db_session, inf_run_id, universe_id, inf_date)
         await db_session.flush()
 
-        ticket_dicts = [{
-            "inference_run_id": inf_run_id,
-            "ticker_id": ticker_id,
-            "universe_id": universe_id,
-            "inference_date": inf_date,
-            "horizon": "T1",
-            "direction": "LONG",
-            "predicted_return": 0.02,
-            "conviction_score": 80.0,
-            "conformal_lower": 0.01,
-            "conformal_upper": 0.04,
-            "backtest_passes": 3,
-            "backtest_pass_strategies": ["mac"],
-            "status": "TRADABLE",
-            "resolution_date": past_date,
-        }]
+        ticket_dicts = [
+            {
+                "inference_run_id": inf_run_id,
+                "ticker_id": ticker_id,
+                "universe_id": universe_id,
+                "inference_date": inf_date,
+                "horizon": "T1",
+                "direction": "LONG",
+                "predicted_return": 0.02,
+                "conviction_score": 80.0,
+                "conformal_lower": 0.01,
+                "conformal_upper": 0.04,
+                "backtest_passes": 3,
+                "backtest_pass_strategies": ["mac"],
+                "status": "TRADABLE",
+                "resolution_date": past_date,
+            }
+        ]
         await upsert_tickets(db_session, ticket_dicts)
 
         due = await get_tickets_for_resolution(db_session, date.today())
@@ -292,7 +316,8 @@ class TestTicketRepository:
 
     async def test_update_ticket_status(self, db_session):
         from app.features.conviction_tickets.repository import (
-            upsert_tickets, update_ticket_status,
+            upsert_tickets,
+            update_ticket_status,
         )
         from app.features.conviction_tickets.models import ConvictionTicket
         from sqlalchemy import select
@@ -306,22 +331,24 @@ class TestTicketRepository:
         await _seed_inference_run(db_session, inf_run_id, universe_id, date.today())
         await db_session.flush()
 
-        ticket_dicts = [{
-            "inference_run_id": inf_run_id,
-            "ticker_id": ticker_id,
-            "universe_id": universe_id,
-            "inference_date": date.today(),
-            "horizon": "T1",
-            "direction": "LONG",
-            "predicted_return": 0.02,
-            "conviction_score": 80.0,
-            "conformal_lower": 0.01,
-            "conformal_upper": 0.04,
-            "backtest_passes": 3,
-            "backtest_pass_strategies": ["mac"],
-            "status": "TRADABLE",
-            "resolution_date": date.today(),
-        }]
+        ticket_dicts = [
+            {
+                "inference_run_id": inf_run_id,
+                "ticker_id": ticker_id,
+                "universe_id": universe_id,
+                "inference_date": date.today(),
+                "horizon": "T1",
+                "direction": "LONG",
+                "predicted_return": 0.02,
+                "conviction_score": 80.0,
+                "conformal_lower": 0.01,
+                "conformal_upper": 0.04,
+                "backtest_passes": 3,
+                "backtest_pass_strategies": ["mac"],
+                "status": "TRADABLE",
+                "resolution_date": date.today(),
+            }
+        ]
         await upsert_tickets(db_session, ticket_dicts)
 
         result = await db_session.execute(
@@ -332,7 +359,9 @@ class TestTicketRepository:
         created = result.scalar_one()
 
         updated = await update_ticket_status(
-            db_session, created.id, "REVIEWED",
+            db_session,
+            created.id,
+            "REVIEWED",
             user_notes="Looks good",
         )
         assert updated is not None

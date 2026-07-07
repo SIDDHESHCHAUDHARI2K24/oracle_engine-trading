@@ -105,13 +105,17 @@ async def compute_features(
         from sqlalchemy import select
         from app.features.feature_engineering.shared.feature_schema import macro_names
 
-        macro_stmt = select(
-            MacroObservation.series_name,
-            MacroObservation.observed_date,
-            MacroObservation.value,
-        ).where(
-            MacroObservation.series_name.in_(macro_names()),
-        ).order_by(MacroObservation.observed_date)
+        macro_stmt = (
+            select(
+                MacroObservation.series_name,
+                MacroObservation.observed_date,
+                MacroObservation.value,
+            )
+            .where(
+                MacroObservation.series_name.in_(macro_names()),
+            )
+            .order_by(MacroObservation.observed_date)
+        )
         macro_result = await session.execute(macro_stmt)
         macro_rows = macro_result.fetchall()
 
@@ -126,22 +130,22 @@ async def compute_features(
             macro_df = macro_df.ffill()
 
         # ── OHLCV loader (called inside orchestrator for each ticker) ──
-        async def load_ohlcv_range(
-            ticker_id, start_date, end_date
-        ) -> pd.DataFrame:
+        async def load_ohlcv_range(ticker_id, start_date, end_date) -> pd.DataFrame:
             bars = await _get_bars(session, ticker_id, start_date, end_date)
             if not bars:
                 return pd.DataFrame()
             records = []
             for bar in bars:
-                records.append({
-                    "bar_date": bar.bar_date,
-                    "open": float(bar.open),
-                    "high": float(bar.high),
-                    "low": float(bar.low),
-                    "close": float(bar.close),
-                    "volume": int(bar.volume),
-                })
+                records.append(
+                    {
+                        "bar_date": bar.bar_date,
+                        "open": float(bar.open),
+                        "high": float(bar.high),
+                        "low": float(bar.low),
+                        "close": float(bar.close),
+                        "volume": int(bar.volume),
+                    }
+                )
             df = pd.DataFrame(records)
             if not df.empty:
                 df = df.set_index("bar_date").sort_index()

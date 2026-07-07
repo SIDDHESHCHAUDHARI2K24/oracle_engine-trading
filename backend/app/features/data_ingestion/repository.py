@@ -31,19 +31,21 @@ async def bulk_upsert_ohlcv(
     enriched = []
     now = datetime.now(timezone.utc)
     for r in records:
-        enriched.append({
-            "ticker_id": r["ticker_id"],
-            "bar_date": r["bar_date"],
-            "open": r["open"],
-            "high": r["high"],
-            "low": r["low"],
-            "close": r["close"],
-            "adjusted_close": r.get("adjusted_close"),
-            "volume": r["volume"],
-            "source": source,
-            "ingest_run_id": ingest_run_id,
-            "created_at": now,
-        })
+        enriched.append(
+            {
+                "ticker_id": r["ticker_id"],
+                "bar_date": r["bar_date"],
+                "open": r["open"],
+                "high": r["high"],
+                "low": r["low"],
+                "close": r["close"],
+                "adjusted_close": r.get("adjusted_close"),
+                "volume": r["volume"],
+                "source": source,
+                "ingest_run_id": ingest_run_id,
+                "created_at": now,
+            }
+        )
 
     stmt = insert(OHLCVBar).values(enriched)
     stmt = stmt.on_conflict_do_update(
@@ -81,15 +83,17 @@ async def bulk_upsert_macro(
     enriched = []
     now = datetime.now(timezone.utc)
     for r in records:
-        enriched.append({
-            "series_name": r["series_name"],
-            "observed_date": r["observed_date"],
-            "value": r["value"],
-            "source": source,
-            "is_forward_filled": r.get("is_forward_filled", False),
-            "ingest_run_id": ingest_run_id,
-            "created_at": now,
-        })
+        enriched.append(
+            {
+                "series_name": r["series_name"],
+                "observed_date": r["observed_date"],
+                "value": r["value"],
+                "source": source,
+                "is_forward_filled": r.get("is_forward_filled", False),
+                "ingest_run_id": ingest_run_id,
+                "created_at": now,
+            }
+        )
 
     stmt = insert(MacroObservation).values(enriched)
     stmt = stmt.on_conflict_do_update(
@@ -111,10 +115,7 @@ async def get_latest_bar_date(
     session: AsyncSession, ticker_id: uuid.UUID
 ) -> date | None:
     """Return the most recent bar date for a ticker, or None."""
-    stmt = (
-        select(func.max(OHLCVBar.bar_date))
-        .where(OHLCVBar.ticker_id == ticker_id)
-    )
+    stmt = select(func.max(OHLCVBar.bar_date)).where(OHLCVBar.ticker_id == ticker_id)
     result = await session.execute(stmt)
     return result.scalar_one_or_none()
 

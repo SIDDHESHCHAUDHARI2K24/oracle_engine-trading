@@ -6,18 +6,20 @@ from app.features.backtesting.shared.base import BaseStrategy
 
 class StatArb(BaseStrategy):
     def generate_signals(self, df: pd.DataFrame) -> tuple[pd.Series, pd.Series]:
-        close = df['close']
-        spy_close = df['spy_close']
+        close = df["close"]
+        spy_close = df["spy_close"]
         n = len(df)
 
         if n < 61:
-            return pd.Series([False]*n, index=df.index), pd.Series([False]*n, index=df.index)
+            return pd.Series([False] * n, index=df.index), pd.Series(
+                [False] * n, index=df.index
+            )
 
         residuals = pd.Series(np.nan, index=df.index)
 
         for i in range(60, n):
-            asset_slice = close.iloc[i-60:i]
-            spy_slice = spy_close.iloc[i-60:i]
+            asset_slice = close.iloc[i - 60 : i]
+            spy_slice = spy_close.iloc[i - 60 : i]
 
             if spy_slice.isna().any() or asset_slice.isna().any():
                 continue

@@ -31,7 +31,9 @@ logger = logging.getLogger(__name__)
 
 @app.command()
 def backfill(
-    universe: str = typer.Option(None, "--universe", "-u", help="Universe name to scope to"),
+    universe: str = typer.Option(
+        None, "--universe", "-u", help="Universe name to scope to"
+    ),
     batch_size: int = typer.Option(50, "--batch-size", "-b", help="Tickers per batch"),
     years: int = typer.Option(2, "--years", "-y", help="Years of history to pull"),
 ):
@@ -77,10 +79,7 @@ async def _run_backfill(universe: str | None, batch_size: int, years: int):
         total_failed: list[str] = []
 
         for batch_idx, batch_map in enumerate(batches):
-            print(
-                f"Batch {batch_idx + 1}/{len(batches)}: "
-                f"{len(batch_map)} tickers..."
-            )
+            print(f"Batch {batch_idx + 1}/{len(batches)}: {len(batch_map)} tickers...")
 
             fetchers = [YahooFinanceFetcher(), AlpacaFetcher(), StooqFetcher()]
             macro = FREDFetcher()
@@ -107,9 +106,13 @@ async def _run_backfill(universe: str | None, batch_size: int, years: int):
                 f"{len(result.get('failed_tickers', []))} failed tickers"
             )
 
-        print(f"\nBackfill complete: {total_ohlcv} OHLCV rows, {total_macro} macro rows")
+        print(
+            f"\nBackfill complete: {total_ohlcv} OHLCV rows, {total_macro} macro rows"
+        )
         if total_failed:
-            print(f"Failed tickers ({len(total_failed)}): {', '.join(total_failed[:20])}")
+            print(
+                f"Failed tickers ({len(total_failed)}): {', '.join(total_failed[:20])}"
+            )
             if len(total_failed) > 20:
                 print(f"  ... and {len(total_failed) - 20} more")
 

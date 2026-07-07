@@ -4,7 +4,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.features.auth.dependencies import requires_role
-from app.features.conviction_tickets.repository import get_ticket_by_id, update_ticket_status
+from app.features.conviction_tickets.repository import (
+    get_ticket_by_id,
+    update_ticket_status,
+)
 from app.features.conviction_tickets.schemas import (
     LifecycleRequest,
     TicketActionResponse,

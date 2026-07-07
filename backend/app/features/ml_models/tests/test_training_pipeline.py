@@ -118,7 +118,9 @@ class TestTrainingPipeline:
         with TemporaryDirectory() as tmpdir:
             yield LocalArtifactStore(root=Path(tmpdir) / "artifacts")
 
-    async def test_training_produces_artifacts_and_run(self, db_session, artifact_store):
+    async def test_training_produces_artifacts_and_run(
+        self, db_session, artifact_store
+    ):
         universe, ticker_ids = await _setup_universe(db_session)
 
         result = await train_universe(
@@ -187,7 +189,9 @@ class TestTrainingPipeline:
         horizon_keys = set(w_max.keys())
         has_int_keys = {0, 1, 2, 3}.issubset(horizon_keys)
         has_str_keys = {"0", "1", "2", "3"}.issubset(horizon_keys)
-        assert has_int_keys or has_str_keys, f"w_max missing expected horizon keys: {horizon_keys}"
+        assert has_int_keys or has_str_keys, (
+            f"w_max missing expected horizon keys: {horizon_keys}"
+        )
         for key in w_max:
             val = w_max[key]
             assert isinstance(val, (int, float)), f"w_max[{key}] not numeric: {val}"
@@ -421,6 +425,5 @@ class TestChampionChallenger:
         )
 
         assert promoted is False, (
-            f"0.099 vs 0.10 is only 1% improvement, "
-            f"should not pass 2% margin: {reason}"
+            f"0.099 vs 0.10 is only 1% improvement, should not pass 2% margin: {reason}"
         )

@@ -82,9 +82,7 @@ async def get_universe_backtest(
             ],
         )
 
-    return UniversePassSummary(
-        universe_id=universe_id, run=None, tickers=[]
-    )
+    return UniversePassSummary(universe_id=universe_id, run=None, tickers=[])
 
 
 @router.get("/{universe_id}/{ticker_id}", response_model=TickerBacktestDetail)
@@ -102,11 +100,12 @@ async def get_ticker_backtest_detail(
         if symbol is None:
             raise HTTPException(
                 status_code=404,
-                detail={"error_code": "TICKER_NOT_FOUND", "message": "Ticker not found"},
+                detail={
+                    "error_code": "TICKER_NOT_FOUND",
+                    "message": "Ticker not found",
+                },
             )
-        return TickerBacktestDetail(
-            ticker_id=ticker_id, symbol=symbol, strategies=[]
-        )
+        return TickerBacktestDetail(ticker_id=ticker_id, symbol=symbol, strategies=[])
 
     stmt = select(Ticker.symbol).where(Ticker.id == ticker_id)
     result = await session.execute(stmt)

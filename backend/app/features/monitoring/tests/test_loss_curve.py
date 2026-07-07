@@ -60,9 +60,7 @@ class TestLossCurveSignal:
             "train_losses": train_losses,
             "val_losses": val_losses,
         }
-        await _seed_training_run(
-            db_session, run_id, universe_id, validation_metrics
-        )
+        await _seed_training_run(db_session, run_id, universe_id, validation_metrics)
         await db_session.flush()
 
         mock_alert = AsyncMock()
@@ -95,9 +93,7 @@ class TestLossCurveSignal:
             "train_losses": train_losses,
             "val_losses": val_losses,
         }
-        await _seed_training_run(
-            db_session, run_id, universe_id, validation_metrics
-        )
+        await _seed_training_run(db_session, run_id, universe_id, validation_metrics)
         await db_session.flush()
 
         mock_alert = AsyncMock()
@@ -121,9 +117,7 @@ class TestLossCurveSignal:
             "train_losses": train_losses,
             "val_losses": val_losses,
         }
-        await _seed_training_run(
-            db_session, run_id, universe_id, validation_metrics
-        )
+        await _seed_training_run(db_session, run_id, universe_id, validation_metrics)
         await db_session.flush()
 
         mock_alert = AsyncMock()

@@ -5,7 +5,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.features.conviction_tickets.repository import get_tickets_for_resolution
 from app.features.data_ingestion.models import OHLCVBar
-from app.features.data_ingestion.shared.trading_calendar import is_trading_day, trading_days
+from app.features.data_ingestion.shared.trading_calendar import (
+    is_trading_day,
+    trading_days,
+)
 
 
 async def _get_close_price(
@@ -88,4 +91,9 @@ async def resolve_tickets(
             continue
 
     await session.flush()
-    return {"resolved": resolved, "expired": expired, "deferred": deferred, "errors": errors}
+    return {
+        "resolved": resolved,
+        "expired": expired,
+        "deferred": deferred,
+        "errors": errors,
+    }

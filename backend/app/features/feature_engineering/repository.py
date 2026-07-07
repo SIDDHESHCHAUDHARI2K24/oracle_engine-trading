@@ -84,9 +84,8 @@ async def get_latest_feature_date(
     session: AsyncSession, ticker_id: uuid.UUID
 ) -> date | None:
     """Return the most recent bar_date in feature_matrix for a ticker."""
-    stmt = (
-        select(func.max(FeatureMatrix.bar_date))
-        .where(FeatureMatrix.ticker_id == ticker_id)
+    stmt = select(func.max(FeatureMatrix.bar_date)).where(
+        FeatureMatrix.ticker_id == ticker_id
     )
     result = await session.execute(stmt)
     return result.scalar_one_or_none()
@@ -128,9 +127,7 @@ async def delete_feature_rows_for_ticker(
     from_date: date | None = None,
 ) -> int:
     """Delete feature matrix rows for a ticker, optionally from a date."""
-    stmt = FeatureMatrix.__table__.delete().where(
-        FeatureMatrix.ticker_id == ticker_id
-    )
+    stmt = FeatureMatrix.__table__.delete().where(FeatureMatrix.ticker_id == ticker_id)
     if from_date is not None:
         stmt = stmt.where(FeatureMatrix.bar_date >= from_date)
     result = await session.execute(stmt)

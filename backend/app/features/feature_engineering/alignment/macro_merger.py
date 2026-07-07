@@ -32,9 +32,7 @@ class MacroMerger:
 
         macro_to_merge = macro_df[macro_cols].copy()
         macro_to_merge = macro_to_merge.ffill()
-        macro_to_merge = macro_to_merge.reindex(
-            index=equity_df.index, method="ffill"
-        )
+        macro_to_merge = macro_to_merge.reindex(index=equity_df.index, method="ffill")
 
         result = equity_df.copy()
         for col in macro_cols:

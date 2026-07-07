@@ -21,7 +21,6 @@ PRED_COL_KEYS = ["t1", "t5", "t10", "t15"]
 
 
 class TicketService:
-
     async def emit_tickets(
         self,
         session,
@@ -63,22 +62,26 @@ class TicketService:
             ticker_id_str = p["ticker_id"]
             strategies = backtest_strategies.get(ticker_id_str, [])
 
-            ticket_dicts.append({
-                "inference_run_id": inference_run.id,
-                "ticker_id": uuid.UUID(ticker_id_str),
-                "universe_id": uuid.UUID(p["universe_id"]) if p.get("universe_id") else inference_run.universe_id,
-                "inference_date": inference_date,
-                "horizon": HORIZON_META[horizon_idx]["label"],
-                "direction": "LONG",
-                "predicted_return": p["pred"],
-                "conviction_score": p["conviction"],
-                "conformal_lower": p["pred_lo"],
-                "conformal_upper": p["pred_hi"],
-                "backtest_passes": p["backtest_passes"],
-                "backtest_pass_strategies": strategies,
-                "status": "TRADABLE",
-                "resolution_date": resolution_date,
-            })
+            ticket_dicts.append(
+                {
+                    "inference_run_id": inference_run.id,
+                    "ticker_id": uuid.UUID(ticker_id_str),
+                    "universe_id": uuid.UUID(p["universe_id"])
+                    if p.get("universe_id")
+                    else inference_run.universe_id,
+                    "inference_date": inference_date,
+                    "horizon": HORIZON_META[horizon_idx]["label"],
+                    "direction": "LONG",
+                    "predicted_return": p["pred"],
+                    "conviction_score": p["conviction"],
+                    "conformal_lower": p["pred_lo"],
+                    "conformal_upper": p["pred_hi"],
+                    "backtest_passes": p["backtest_passes"],
+                    "backtest_pass_strategies": strategies,
+                    "status": "TRADABLE",
+                    "resolution_date": resolution_date,
+                }
+            )
 
         filter_run = await repository.create_filter_run(
             session,
@@ -109,16 +112,18 @@ def _predictions_to_dicts(predictions: list) -> list[dict]:
             pred_lo = getattr(p, f"pred_lo_{key}", 0.0)
             pred_hi = getattr(p, f"pred_hi_{key}", 0.0)
             conviction = getattr(p, f"conviction_{key}", 0.0)
-            result.append({
-                "ticker_id": str(p.ticker_id),
-                "horizon_idx": horizon_idx,
-                "pred": pred_val,
-                "pred_lo": pred_lo,
-                "pred_hi": pred_hi,
-                "conviction": conviction,
-                "width": pred_hi - pred_lo,
-                "universe_id": str(p.universe_id),
-            })
+            result.append(
+                {
+                    "ticker_id": str(p.ticker_id),
+                    "horizon_idx": horizon_idx,
+                    "pred": pred_val,
+                    "pred_lo": pred_lo,
+                    "pred_hi": pred_hi,
+                    "conviction": conviction,
+                    "width": pred_hi - pred_lo,
+                    "universe_id": str(p.universe_id),
+                }
+            )
     return result
 
 

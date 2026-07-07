@@ -13,10 +13,22 @@ def _make_prediction_row(
     universe_id,
     inference_run_id,
     inference_date,
-    pred_t1=0.02, pred_lo_t1=0.01, pred_hi_t1=0.04, conviction_t1=80.0,
-    pred_t5=0.03, pred_lo_t5=0.01, pred_hi_t5=0.06, conviction_t5=75.0,
-    pred_t10=0.01, pred_lo_t10=0.00, pred_hi_t10=0.03, conviction_t10=70.0,
-    pred_t15=0.015, pred_lo_t15=0.005, pred_hi_t15=0.035, conviction_t15=68.0,
+    pred_t1=0.02,
+    pred_lo_t1=0.01,
+    pred_hi_t1=0.04,
+    conviction_t1=80.0,
+    pred_t5=0.03,
+    pred_lo_t5=0.01,
+    pred_hi_t5=0.06,
+    conviction_t5=75.0,
+    pred_t10=0.01,
+    pred_lo_t10=0.00,
+    pred_hi_t10=0.03,
+    conviction_t10=70.0,
+    pred_t15=0.015,
+    pred_lo_t15=0.005,
+    pred_hi_t15=0.035,
+    conviction_t15=68.0,
 ):
     p = MagicMock()
     p.ticker_id = ticker_id
@@ -174,24 +186,41 @@ async def test_full_filter_emit_resolve_cycle(db_session):
     await db_session.flush()
 
     prediction_row = _make_prediction_row(
-        ticker_id, universe_id, inf_run_id, inference_date,
-        pred_t1=0.02, pred_lo_t1=0.01, pred_hi_t1=0.04, conviction_t1=80.0,
-        pred_t5=0.02, pred_lo_t5=0.01, pred_hi_t5=0.06, conviction_t5=60.0,
-        pred_t10=-0.01, pred_lo_t10=-0.03, pred_hi_t10=0.01, conviction_t10=75.0,
-        pred_t15=0.015, pred_lo_t15=0.005, pred_hi_t15=0.035, conviction_t15=68.0,
+        ticker_id,
+        universe_id,
+        inf_run_id,
+        inference_date,
+        pred_t1=0.02,
+        pred_lo_t1=0.01,
+        pred_hi_t1=0.04,
+        conviction_t1=80.0,
+        pred_t5=0.02,
+        pred_lo_t5=0.01,
+        pred_hi_t5=0.06,
+        conviction_t5=60.0,
+        pred_t10=-0.01,
+        pred_lo_t10=-0.03,
+        pred_hi_t10=0.01,
+        conviction_t10=75.0,
+        pred_t15=0.015,
+        pred_lo_t15=0.005,
+        pred_hi_t15=0.035,
+        conviction_t15=68.0,
     )
     inference_run = _make_inference_run(inf_run_id, universe_id, inference_date)
 
-    bt_metrics = [{
-        "ticker_id": str(ticker_id),
-        "passes": 3,
-        "strategies": {
-            "mean_reversion": True,
-            "momentum_cross": True,
-            "volatility_breakout": True,
-            "stat_arb": False,
-        },
-    }]
+    bt_metrics = [
+        {
+            "ticker_id": str(ticker_id),
+            "passes": 3,
+            "strategies": {
+                "mean_reversion": True,
+                "momentum_cross": True,
+                "volatility_breakout": True,
+                "stat_arb": False,
+            },
+        }
+    ]
     w_max = {0: 0.05, 1: 0.10, 2: 0.10, 3: 0.10}
 
     # 4. RUN FILTER + EMISSION
@@ -271,9 +300,7 @@ async def test_full_filter_emit_resolve_cycle(db_session):
     stmt = select(ConvictionTicket).where(
         ConvictionTicket.inference_run_id == inf_run_id
     )
-    tickets_after_first = list(
-        (await db_session.execute(stmt)).scalars().all()
-    )
+    tickets_after_first = list((await db_session.execute(stmt)).scalars().all())
     first_count = len(tickets_after_first)
 
     tickets2, fr2 = await service.emit_tickets(
@@ -288,9 +315,7 @@ async def test_full_filter_emit_resolve_cycle(db_session):
     stmt = select(ConvictionTicket).where(
         ConvictionTicket.inference_run_id == inf_run_id
     )
-    tickets_after_second = list(
-        (await db_session.execute(stmt)).scalars().all()
-    )
+    tickets_after_second = list((await db_session.execute(stmt)).scalars().all())
     assert len(tickets_after_second) == first_count
 
     result2 = await resolve_tickets(db_session, as_of_date=max_res_date)

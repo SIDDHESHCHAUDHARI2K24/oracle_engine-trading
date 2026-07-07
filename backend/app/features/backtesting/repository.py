@@ -110,9 +110,7 @@ async def get_metrics_for_run(
     session: AsyncSession,
     run_id: uuid.UUID,
 ) -> list[BacktestMetrics]:
-    stmt = select(BacktestMetrics).where(
-        BacktestMetrics.backtest_run_id == run_id
-    )
+    stmt = select(BacktestMetrics).where(BacktestMetrics.backtest_run_id == run_id)
     result = await session.execute(stmt)
     return list(result.scalars().all())
 
@@ -131,9 +129,7 @@ async def get_latest_metrics_for_ticker(
         sub = sub.where(BacktestRun.universe_id == universe_id)
     sub = sub.order_by(BacktestRun.created_at.desc()).limit(1).scalar_subquery()
 
-    stmt = select(BacktestMetrics).where(
-        BacktestMetrics.backtest_run_id == sub
-    )
+    stmt = select(BacktestMetrics).where(BacktestMetrics.backtest_run_id == sub)
     result = await session.execute(stmt)
     return list(result.scalars().all())
 
