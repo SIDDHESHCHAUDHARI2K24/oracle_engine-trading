@@ -52,4 +52,16 @@ dev = [
 requires = ["uv_build>=0.10.2,<0.11.0"]
 build-backend = "uv_build"
 
+[tool.mypy]
+ignore_missing_imports = true
+check_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = [
+    "app.orchestration.tasks.*",
+    "app.orchestration.flows.*",
+    "app.app",
+]
+disable_error_code = ["misc"]
+
 
