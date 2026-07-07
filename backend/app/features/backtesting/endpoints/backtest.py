@@ -128,5 +128,7 @@ async def get_ticker_backtest_detail(
     ]
 
     return TickerBacktestDetail(
-        ticker_id=ticker_id, symbol=symbol, strategies=strategies  # type: ignore[arg-type]
+        ticker_id=ticker_id,
+        symbol=symbol,
+        strategies=strategies,  # type: ignore[arg-type]
     )

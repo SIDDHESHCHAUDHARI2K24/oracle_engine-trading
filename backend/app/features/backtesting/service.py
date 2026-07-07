@@ -46,7 +46,8 @@ class BacktestOrchestrator:
 
     async def _find_spy_ticker(self, session: AsyncSession) -> uuid.UUID | None:
         stmt = select(Ticker.id).where(
-            Ticker.symbol == "SPY", Ticker.deleted_at.is_(None)  # type: ignore[attr-defined]
+            Ticker.symbol == "SPY",
+            Ticker.deleted_at.is_(None),  # type: ignore[attr-defined]
         )
         result = await session.execute(stmt)
         row = result.first()
