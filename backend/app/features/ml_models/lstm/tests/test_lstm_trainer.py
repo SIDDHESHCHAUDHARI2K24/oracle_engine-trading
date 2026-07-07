@@ -12,6 +12,8 @@ from torch.utils.data import DataLoader, TensorDataset
 
 torch.manual_seed(42)
 
+pytestmark = pytest.mark.integration
+
 
 def _make_learnable_synthetic_data(
     n_samples: int = 500,

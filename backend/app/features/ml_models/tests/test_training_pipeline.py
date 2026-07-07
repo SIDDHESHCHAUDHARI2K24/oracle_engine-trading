@@ -20,7 +20,7 @@ from app.features.ml_models.promotion import promote_challenger
 from app.features.ml_models.service import train_universe, TrainingResult
 from app.features.universes.models import Ticker, Universe, UniverseMembership
 
-pytestmark = pytest.mark.anyio
+pytestmark = [pytest.mark.anyio, pytest.mark.integration]
 
 FEATURE_NAMES = list(input_feature_names())
 TARGET_NAMES = list(target_names())
