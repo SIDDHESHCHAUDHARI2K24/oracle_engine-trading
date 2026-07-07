@@ -89,12 +89,12 @@ async def compute_pipeline_success(
                 recent_runs.append(run)
 
     if not recent_runs:
-        result_data = {
+        empty_recent = {
             "total_runs": 0,
             "success_rate": None,
             "trigger_alert": False,
         }
-        return result_data
+        return empty_recent
 
     succeeded = sum(1 for r in recent_runs if r.get("state", "").upper() == "COMPLETED")
     total = len(recent_runs)
