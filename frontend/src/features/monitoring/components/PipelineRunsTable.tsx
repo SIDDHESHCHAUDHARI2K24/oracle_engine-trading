@@ -94,7 +94,7 @@ interface PipelineRunsTableProps {
 
 export function PipelineRunsTable({ runs }: PipelineRunsTableProps): JSX.Element {
   const table = useReactTable({
-    data: runs,
+    data: [...runs],
     columns,
     getCoreRowModel: getCoreRowModel(),
   })

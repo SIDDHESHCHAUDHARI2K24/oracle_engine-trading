@@ -42,8 +42,8 @@ export function CoverageChart({ data, horizon }: CoverageChartProps): JSX.Elemen
           />
           <YAxis domain={[0, 1]} tick={{ fontSize: 11 }} tickFormatter={(v: number) => `${(v * 100).toFixed(0)}%`} />
           <Tooltip
-            formatter={(value: number) => `${(value * 100).toFixed(1)}%`}
-            labelFormatter={(label: string) => `Date: ${label}`}
+            formatter={(value) => [`${((value as number) * 100).toFixed(1)}%`]}
+            labelFormatter={(label) => `Date: ${label as string}`}
           />
           <Legend />
           <Line

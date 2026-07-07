@@ -45,8 +45,8 @@ export function CorrelationChart({ data }: CorrelationChartProps): JSX.Element {
           <YAxis domain={[-1, 1]} tick={{ fontSize: 10 }} />
           <ZAxis range={[60, 60]} />
           <Tooltip
-            formatter={(value: number) => value.toFixed(3)}
-            labelFormatter={(label: string) => label}
+            formatter={(value) => [(value as number).toFixed(3)]}
+            labelFormatter={(label) => label as string}
           />
           <ReferenceLine y={0} stroke="#6b7280" strokeWidth={1} />
           <Scatter

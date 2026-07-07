@@ -116,7 +116,7 @@ function AlertsContent(): JSX.Element {
   )
 
   const table = useReactTable({
-    data: alerts,
+    data: [...alerts],
     columns,
     getCoreRowModel: getCoreRowModel(),
   })
@@ -310,8 +310,8 @@ function AlertActions({
         <span className="text-xs text-gray-500">Resolve this alert?</span>
         <Button
           type="button"
-          size="sm"
-          variant="destructive"
+          variant="default"
+          className="h-8 px-3 text-xs"
           onClick={handleResolve}
           disabled={resolveMutation.isPending}
         >
@@ -319,8 +319,8 @@ function AlertActions({
         </Button>
         <Button
           type="button"
-          size="sm"
           variant="outline"
+          className="h-8 px-3 text-xs"
           onClick={() => onResolveDone()}
         >
           No
@@ -334,8 +334,8 @@ function AlertActions({
       {!alert.acknowledged && (
         <Button
           type="button"
-          size="sm"
           variant="outline"
+          className="h-8 px-3 text-xs"
           onClick={handleAcknowledge}
           disabled={isAcknowledging && acknowledgeMutation.isPending}
         >
@@ -346,8 +346,8 @@ function AlertActions({
       )}
       <Button
         type="button"
-        size="sm"
-        variant="destructive"
+        variant="default"
+        className="h-8 px-3 text-xs"
         onClick={() => onResolveClick(alert.id)}
       >
         Resolve
@@ -375,7 +375,7 @@ function ResolveConfirmDialog({
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancel
           </Button>
-          <Button type="button" variant="destructive" onClick={onConfirm}>
+          <Button type="button" variant="default" onClick={onConfirm}>
             Resolve
           </Button>
         </div>

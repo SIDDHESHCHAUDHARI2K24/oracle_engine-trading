@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient, type UseMutationResult } from '@tanstack/react-query'
 import { apiClient } from '../../../core/api-client'
 import type { IngestionTriggerResponse } from '../../../core/types'
-import { monitoringKeys } from './useIngestStatus'
+import { monitoringKeys } from './monitoringKeys'
 
 interface TriggerVariables {
   readonly mode?: string

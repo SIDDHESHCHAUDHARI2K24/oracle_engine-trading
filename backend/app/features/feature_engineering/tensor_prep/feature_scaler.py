@@ -14,7 +14,6 @@ import pandas as pd
 
 from app.features.feature_engineering.shared.feature_schema import (
     input_feature_names,
-    target_names,
 )
 
 WINDOW = 252
