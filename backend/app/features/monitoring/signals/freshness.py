@@ -22,7 +22,7 @@ async def compute_freshness(
     last_completed = result.scalar_one_or_none()
 
     if last_completed is None:
-        result_data = {
+        no_data_result = {
             "last_successful_ingest": None,
             "hours_since": None,
             "stale": True,
@@ -34,7 +34,7 @@ async def compute_freshness(
                 code="INGEST_STALE",
                 message="No successful ingest run found",
                 universe_id=universe_id,
-                context=result_data,
+                context=no_data_result,
             )
         return result_data
 
@@ -70,12 +70,12 @@ async def compute_pipeline_success(
     runs = await get_recent_runs(limit=100)
 
     if not runs:
-        result_data = {
+        empty_result = {
             "total_runs": 0,
             "success_rate": None,
             "trigger_alert": False,
         }
-        return result_data
+        return empty_result
 
     now = datetime.now(timezone.utc)
     cutoff = now - timedelta(hours=lookback_hours)

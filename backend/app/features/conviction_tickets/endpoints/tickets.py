@@ -75,4 +75,4 @@ async def ticket_history(
     )
     if status:
         tickets = [t for t in tickets if t.status == status]
-    return TicketListResponse(tickets=tickets, total=len(tickets))
+    return TicketListResponse(tickets=tickets, total=len(tickets))  # type: ignore[arg-type]

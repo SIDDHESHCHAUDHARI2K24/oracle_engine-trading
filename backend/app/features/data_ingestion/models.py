@@ -7,6 +7,7 @@ ingest_runs (plain table).
 from __future__ import annotations
 
 import uuid
+from typing import TYPE_CHECKING
 from datetime import date, datetime, timezone
 from decimal import Decimal
 
@@ -26,6 +27,9 @@ from sqlalchemy.dialects.postgresql import ARRAY, JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.features.core.base import Base, UUIDPrimaryKey
+
+if TYPE_CHECKING:
+    from app.features.universes.models import Ticker
 
 
 class OHLCVBar(Base):
@@ -56,7 +60,7 @@ class OHLCVBar(Base):
         default=lambda: datetime.now(timezone.utc),
     )
 
-    ticker: Mapped["Ticker"] = relationship("Ticker")  # noqa: F821
+    ticker: Mapped["Ticker"] = relationship("Ticker")  # type: ignore[type-arg]
     ingest_run: Mapped["IngestRun | None"] = relationship(
         "IngestRun", back_populates="ohlcv_bars"
     )
