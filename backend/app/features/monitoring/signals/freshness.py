@@ -36,7 +36,7 @@ async def compute_freshness(
                 universe_id=universe_id,
                 context=no_data_result,
             )
-        return result_data
+        return no_data_result
 
     now = datetime.now(timezone.utc)
     hours_since = (now - last_completed).total_seconds() / 3600
