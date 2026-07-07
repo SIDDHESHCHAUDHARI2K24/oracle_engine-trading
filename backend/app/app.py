@@ -4,6 +4,8 @@ This module configures the FastAPI app instance, attaches middleware
 such as CORS, and wires feature routers.
 """
 
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -13,6 +15,7 @@ from fastapi import Depends
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.services.scheduler import BackgroundScheduler
 from app.features.auth.routers import auth_router
 from app.features.core.config import settings
 from app.features.core.database import get_async_session
@@ -25,14 +28,33 @@ from app.features.backtesting.router import router as backtesting_router
 from app.features.ml_models.router import router as ml_models_router
 from app.features.universes.endpoints.ticker_sync import ticker_sync_router
 from app.features.conviction_tickets.router import router as conviction_tickets_router
+from app.features.monitoring.router import router as monitoring_router
 from app.features.universes.router import universes_router
+
+
+async def _reap_sessions() -> None:
+    from app.features.core.database import _init_engine, async_session_factory
+
+    _init_engine()
+    async with async_session_factory() as session:
+        await session.execute(text("DELETE FROM sessions WHERE expires_at < now()"))
+        await session.commit()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    scheduler = BackgroundScheduler()
+    scheduler.register(3600, _reap_sessions)
+    scheduler.start()
+    yield
+    await scheduler.shutdown()
 
 
 def create_app() -> FastAPI:
     """Create and configure the main FastAPI application instance."""
     configure_logging()
 
-    app = FastAPI(title=settings.project_name)
+    app = FastAPI(title=settings.project_name, lifespan=lifespan)
 
     app.state.limiter = limiter
     app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
@@ -77,5 +99,6 @@ def create_app() -> FastAPI:
     app.include_router(backtesting_router)
     app.include_router(ml_models_router)
     app.include_router(conviction_tickets_router)
+    app.include_router(monitoring_router)
 
     return app

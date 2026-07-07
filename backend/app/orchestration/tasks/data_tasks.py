@@ -81,7 +81,6 @@ async def compute_features(
     logger = get_run_logger()
 
     import uuid as _uuid
-    from datetime import date as _date
 
     import pandas as pd
 
@@ -90,7 +89,6 @@ async def compute_features(
         get_bars_in_range as _get_bars,
     )
     from app.features.data_ingestion.models import (
-        OHLCVBar,
         MacroObservation,
     )
     from app.features.feature_engineering.service import (

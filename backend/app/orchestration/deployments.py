@@ -10,8 +10,11 @@ Usage:
 import asyncio
 
 
+from app.orchestration.flows.conformal_coverage_check import conformal_coverage_check_flow
+from app.orchestration.flows.artifact_retention import artifact_retention_flow
 from app.orchestration.flows.daily_data_refresh import daily_data_refresh_flow
 from app.orchestration.flows.daily_inference import daily_inference_flow
+from app.orchestration.flows.daily_monitoring import daily_monitoring_flow
 from app.orchestration.flows.outcome_resolution import outcome_resolution_flow
 from app.orchestration.flows.weekly_backtest import weekly_backtest_flow
 from app.orchestration.flows.weekly_retrain import weekly_retrain_flow
@@ -67,12 +70,45 @@ def deploy_weekly_retrain():
     )
 
 
+def deploy_conformal_coverage_check():
+    """Deploy the conformal coverage check flow, daily at 11pm ET."""
+    conformal_coverage_check_flow.serve(
+        name="conformal-coverage-check",
+        cron="0 23 * * *",
+        timezone="America/New_York",
+        description="Daily conformal coverage check for all active universes (daily 11pm ET)",
+    )
+
+
+def deploy_daily_monitoring():
+    """Deploy the daily monitoring flow, daily at 10pm ET."""
+    daily_monitoring_flow.serve(
+        name="daily-monitoring",
+        cron="0 22 * * *",
+        timezone="America/New_York",
+        description="Daily monitoring signals: freshness, pipeline success, and Mon/Thu heavy signals (daily 10pm ET)",
+    )
+
+
+def deploy_artifact_retention():
+    """Deploy the artifact retention reaper, Sundays at 11pm ET."""
+    artifact_retention_flow.serve(
+        name="artifact-retention",
+        cron="0 23 * * 0",
+        timezone="America/New_York",
+        description="Weekly artifact retention — archives inactive artifacts older than 6 months",
+    )
+
+
 async def main():
     deploy_daily_refresh()
     deploy_daily_inference()
     deploy_outcome_resolution()
     deploy_weekly_backtest()
     deploy_weekly_retrain()
+    deploy_conformal_coverage_check()
+    deploy_daily_monitoring()
+    deploy_artifact_retention()
     print("Deployments registered. Keeping process alive for serve...")
     await asyncio.Event().wait()
 

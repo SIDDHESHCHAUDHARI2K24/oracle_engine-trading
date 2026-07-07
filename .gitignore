@@ -12,6 +12,8 @@ graphify-out/converted/
 .codex/
 .cursor/
 .opencode/
+.agents/
+.blackboxcli/
 
 # Python
 __pycache__/
@@ -52,7 +54,6 @@ Thumbs.db
 htmlcov/
 .coverage
 coverage.xml
-.blackboxcli/
 
 # Runtime artifacts (uvicorn, loguru/stdlib logs, PID files)
 backend/stdout.log
@@ -61,4 +62,6 @@ backend/startup_test.log
 backend/uvicorn.pid
 *.pid
 *.log
-!backend/.venv/**
+
+# Training artifacts
+backend/lightning_logs/

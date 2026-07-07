@@ -57,6 +57,9 @@ class Settings(BaseSettings):
     # CORS
     cors_allow_origins: list[str] = ["http://localhost:5173"]
 
+    # Slack monitoring webhook
+    slack_webhook_url: str = ""
+
     def get_artifact_store_path(self) -> Path:
         """Return the resolved artifact store path, expanding ~."""
         return Path(self.artifact_store_path).expanduser().resolve()

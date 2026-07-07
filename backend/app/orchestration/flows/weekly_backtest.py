@@ -10,6 +10,8 @@ from datetime import date, timedelta
 from prefect import flow, task
 from prefect.logging import get_run_logger
 
+from app.features.monitoring.service import AlertService
+
 
 @task(
     name="backtest-universe",
@@ -74,10 +76,12 @@ async def backtest_universe(universe_id: uuid.UUID, universe_name: str) -> dict:
                 universe_id,
                 universe_name,
             )
-            _write_system_alert(
-                universe_id=str(universe_id),
-                alert_type="backtest_failure",
+            await AlertService().raise_alert(
+                session,
+                severity="critical",
+                code="backtest_failure",
                 message=f"Backtest failed for universe {universe_name} ({universe_id})",
+                universe_id=universe_id,
             )
             return {
                 "universe_id": str(universe_id),
@@ -85,23 +89,6 @@ async def backtest_universe(universe_id: uuid.UUID, universe_name: str) -> dict:
                 "status": "failed",
             }
 
-
-def _write_system_alert(
-    universe_id: str,
-    alert_type: str,
-    message: str,
-) -> None:
-    """Stub: write a system alert row.
-
-    Replace with DB-backed alert once monitoring feature lands.
-    """
-    logger = get_run_logger()
-    logger.warning(
-        "SYSTEM_ALERT | type=%s universe=%s message=%s",
-        alert_type,
-        universe_id,
-        message,
-    )
 
 
 @flow(name="weekly_backtest", log_prints=True)

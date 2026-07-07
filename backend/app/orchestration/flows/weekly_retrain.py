@@ -10,6 +10,8 @@ from datetime import date
 from prefect import flow, task
 from prefect.logging import get_run_logger
 
+from app.features.monitoring.service import AlertService
+
 
 @task(
     name="retrain-universe",
@@ -80,33 +82,18 @@ async def retrain_universe(universe_id: uuid.UUID) -> dict:
 
         except Exception:
             logger.exception("Retrain failed for universe %s", universe_id)
-            _write_system_alert(
-                universe_id=str(universe_id),
-                alert_type="retrain_failure",
+            await AlertService().raise_alert(
+                session,
+                severity="critical",
+                code="retrain_failure",
                 message=f"Retrain failed for universe {universe_id}",
+                universe_id=universe_id,
             )
             return {
                 "universe_id": str(universe_id),
                 "status": "failed",
             }
 
-
-def _write_system_alert(
-    universe_id: str,
-    alert_type: str,
-    message: str,
-) -> None:
-    """Stub: write a system alert row.
-
-    Replace with DB-backed alert once monitoring feature lands.
-    """
-    logger = get_run_logger()
-    logger.warning(
-        "SYSTEM_ALERT | type=%s universe=%s message=%s",
-        alert_type,
-        universe_id,
-        message,
-    )
 
 
 @flow(name="weekly_retrain", log_prints=True)

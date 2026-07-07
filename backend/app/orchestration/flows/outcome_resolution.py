@@ -1,6 +1,8 @@
 from prefect import flow, task
 from prefect.logging import get_run_logger
 
+from app.features.monitoring.service import AlertService
+
 
 @task(retries=1, timeout_seconds=600)
 async def resolve_due_tickets() -> dict:
@@ -37,7 +39,20 @@ async def outcome_resolution_flow() -> dict:
 
     logger.info("Outcome resolution flow starting")
 
-    result = await resolve_due_tickets()
+    try:
+        result = await resolve_due_tickets()
+    except Exception:
+        logger.exception("Outcome resolution flow failed")
+        from app.features.core.database import async_session_factory
+
+        async with async_session_factory() as session:
+            await AlertService().raise_alert(
+                session,
+                severity="critical",
+                code="FLOW_FAILED",
+                message="Outcome resolution flow failed",
+            )
+        raise
 
     logger.info(
         "Outcome resolution flow complete: %s",
